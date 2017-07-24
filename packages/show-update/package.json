@@ -1,0 +1,22 @@
+{
+  "name": "episodehunter-update",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "start": "tsc && serverless offline start"
+  },
+  "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^7.0.31",
+    "serverless-offline": "^3.14.2",
+    "typescript": "^2.3.4"
+  },
+  "dependencies": {
+    "@episodehunter/datastore": "^1.0.1",
+    "got": "^7.0.0",
+    "popsicle": "^9.1.0",
+    "raven": "^2.0.2"
+  }
+}

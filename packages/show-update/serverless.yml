@@ -1,0 +1,31 @@
+service: episodehunter-update
+
+custom:
+  stage: "${opt:stage, self:provider.stage}"
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-1
+  versionFunctions: false
+  environment: ${file(env.yml):${self:custom.stage}}
+
+plugins:
+  - serverless-offline
+
+package:
+  include:
+    - dist/**
+    - node_modules/**
+  exclude:
+    - src/**
+    - env.yml
+
+functions:
+  update:
+    handler: dist/handler.update
+    events:
+      - http:
+          path: ping
+          method: get
