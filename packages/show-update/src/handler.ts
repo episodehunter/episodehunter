@@ -1,7 +1,7 @@
 import { connect, Connection, entities } from '@episodehunter/datastore';
 import { TheTvDbShow } from './types/the-tv-db-show';
 import { TheTvDbShowEpisode } from './types/the-tv-db-show-episode';
-import { getTheTvDbToken, getTvDbShow, getTvDbShowImage, getTvDbShowEpisodes } from './the-tv-db.util';
+import { getTheTvDbToken, getTvDbShow, getTvDbShowEpisodes, getInformationFromTvDb } from './the-tv-db.util';
 import { ImageAction } from './types/image-action';
 
 function unixtimestamp() {
@@ -71,16 +71,6 @@ async function updateEpisodes(db: Connection, showId: number, theTvDbShowId: num
   return { episodesToPersist, episodeToDelete };
 }
 
-async function getInformationFromTvDb(theTvDbId: number) {
-  const theTvDbToken = await getTheTvDbToken();
-  return await Promise.all([
-    getTvDbShow(theTvDbToken, theTvDbId),
-    getTvDbShowImage(theTvDbToken, theTvDbId, 'fanart'),
-    getTvDbShowImage(theTvDbToken, theTvDbId, 'poster'),
-    getTvDbShowEpisodes(theTvDbToken, theTvDbId)
-  ]);
-}
-
 function updateImages(show: entities.Show, updateEpisodes: entities.Episode[], removedEpisodes: entities.Episode[]) {
   const actions: ImageAction[] = [];
   if (show.poster) {
@@ -118,7 +108,7 @@ function updateImages(show: entities.Show, updateEpisodes: entities.Episode[], r
 }
 
 async function updateShowAndEpisodes(theTvDbId: number, db: Connection) {
-  const [ tShow, tFanart, tPoster, tEpisodes ] = await getInformationFromTvDb(theTvDbId);
+  const [ tShow, tEpisodes ] = await getInformationFromTvDb(theTvDbId);
   const show = await updateShowInDb(db, tShow);
   const { episodesToPersist, episodeToDelete } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
   updateImages(show, episodesToPersist, episodeToDelete);
