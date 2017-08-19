@@ -1,117 +1,8 @@
 import { connect, Connection, entities } from '@episodehunter/datastore';
-import fetch from 'node-fetch';
-
-interface ImageAction {
-  id: number;
-  type: 'showPoster' | 'showFanart' | 'episode';
-  action: 'update' | 'add' | 'remove';
-}
-
-interface TheTvDbShow {
-  id: number;
-  seriesName: string;
-  seriesId: string;
-  status: 'Continuing';
-  firstAired: string; // YYYY-MM-DD
-  network: string;
-  runtime: string; // eg. 55
-  genre: string[];
-  overview: string;
-  lastUpdated: number; // unix timestamp
-  airsDayOfWeek: string; // eg. Sunday
-  airsTime: string; // 9:00 PM
-  imdbId: string;
-  zap2itId: string;
-}
-
-interface TheTvDbShowEpisode {
-  airedEpisodeNumber: number;
-  airedSeason: number;
-  episodeName: string;
-  firstAired: string; // 2010-12-05
-  id: number;
-  lastUpdated: 1305321193;
-  overview: string;
-}
-
-interface TheTvDbShowImages {
-  id: number;
-  keyType: 'fanart' | 'poster';
-  subKey: string;
-  fileName: string; // fanart/original/121361-3.jpg
-  resolution: string; // 1280x720
-  ratingsInfo: {
-    average: number;
-    count: number;
-  };
-  thumbnail: string;
-}
-
-function updateIsNeeded(show: entities.Show | undefined): show is entities.Show {
-  if (show && show.status === 'Continuing') {
-    return true;
-  }
-  return false;
-}
-
-function getTheTvDbToken(): Promise<string> {
-  return fetch('https://api.thetvdb.com/login', {
-    method: 'POST',
-    body: JSON.stringify({
-      apikey: process.env.THE_TV_DB_API_KEY,
-      userkey: process.env.THE_TV_DB_USER_KEY
-    }),
-    headers: { 'Content-Type': 'application/json' }
-  })
-  .then(res => res.json())
-  .then(result => result.token);
-}
-
-function getTvDbShow(token: string, theTvDbId: number): Promise<TheTvDbShow> {
-  return fetch('https://api.thetvdb.com/series/' + theTvDbId, {
-    method: 'GET',
-    headers: { Authorization: 'Bearer ' + token }
-  })
-  .then(res => res.json());
-}
-
-function getTvDbShowEpisodes(token: string, theTvDbId: number): Promise<TheTvDbShowEpisode[]> {
-  // TODO: fix paging and fetch images as well
-  return fetch('https://api.thetvdb.com/series/' + theTvDbId + '/episodes', {
-    method: 'GET',
-    headers: { Authorization: 'Bearer ' + token }
-  })
-  .then(res => res.json());
-}
-
-function findBestShowImage(images: TheTvDbShowImages[]): string {
-  const bestImage = images.reduce((p, c) => {
-    const average = c.ratingsInfo.average * Math.log(c.ratingsInfo.count);
-    if (p.average < average) {
-      return { average, url: c.fileName };
-    }
-    return p;
-  }, {average: -1, url: null});
-  if (bestImage.average > 7) {
-    return bestImage.url;
-  }
-  const highestAverage = images.reduce((p, c) => {
-    if (p.average < c.ratingsInfo.average) {
-      return { average: c.ratingsInfo.average, url: c.fileName };
-    }
-    return p;
-  }, {average: -1, url: null});
-  return highestAverage.url;
-}
-
-function getTvDbShowImage(token: string, theTvDbId: number, type: 'fanart' | 'poster'): Promise<string> {
-  return fetch(`https://api.thetvdb.com/series/${theTvDbId}/images/query?keyType=${type}`, {
-    method: 'GET',
-    headers: { Authorization: 'Bearer ' + token }
-  })
-  .then(res => res.json())
-  .then((res: {data: TheTvDbShowImages[]}) => findBestShowImage(res.data));
-}
+import { TheTvDbShow } from './types/the-tv-db-show';
+import { TheTvDbShowEpisode } from './types/the-tv-db-show-episode';
+import { getTheTvDbToken, getTvDbShow, getTvDbShowImage, getTvDbShowEpisodes } from './the-tv-db.util';
+import { ImageAction } from './types/image-action';
 
 function unixtimestamp() {
   return Date.now() / 1000 | 0;
@@ -226,7 +117,7 @@ function updateImages(show: entities.Show, updateEpisodes: entities.Episode[], r
     });
 }
 
-async function update(theTvDbId: number, db: Connection) {
+async function updateShowAndEpisodes(theTvDbId: number, db: Connection) {
   const [ tShow, tFanart, tPoster, tEpisodes ] = await getInformationFromTvDb(theTvDbId);
   const show = await updateShowInDb(db, tShow);
   const { episodesToPersist, episodeToDelete } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
