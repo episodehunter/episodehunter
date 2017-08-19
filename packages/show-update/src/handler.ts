@@ -1,5 +1,5 @@
 import { connect, Connection, entities } from '@episodehunter/datastore';
-import * as got from 'got';
+import fetch from 'node-fetch';
 
 interface TheTvDbShow {
   id: number;
@@ -36,30 +36,32 @@ function updateIsNeeded(show: entities.Show | undefined): show is entities.Show 
 }
 
 function getTheTvDbToken(): Promise<string> {
-  return got.post('https://api.thetvdb.com/login', {
-    json: true,
+  return fetch('https://api.thetvdb.com/login', {
+    method: 'POST',
     body: JSON.stringify({
       apikey: process.env.THE_TV_DB_API_KEY,
       userkey: process.env.THE_TV_DB_USER_KEY
-    })
+    }),
+    headers: { 'Content-Type': 'application/json' }
   })
-  .then(res => res.body.token);
+  .then(res => res.json())
+  .then(result => result.token);
 }
 
 function getTheTvDbShow(token: string, theTvDbId: string): Promise<TheTvDbShow> {
-  return got.post('https://api.thetvdb.com/series/' + theTvDbId, {
-    json: true,
+  return fetch('https://api.thetvdb.com/series/' + theTvDbId, {
+    method: 'GET',
     headers: { Authorization: 'Bearer ' + token }
   })
-  .then(res => res.body.data);
+  .then(res => res.json());
 }
 
 function getTheTvDbShowEpisodes(token: string, theTvDbId: string): Promise<TheTvDbShowEpisode[]> {
-  return got.post('https://api.thetvdb.com/series/' + theTvDbId + '/episodes', {
-    json: true,
+  return fetch('https://api.thetvdb.com/series/' + theTvDbId + '/episodes', {
+    method: 'GET',
     headers: { Authorization: 'Bearer ' + token }
   })
-  .then(res => res.body.data);
+  .then(res => res.json());
 }
 
 async function update(theTvDbId: string, db: Connection) {
@@ -70,9 +72,10 @@ async function update(theTvDbId: string, db: Connection) {
   }
   const theTvDbToken = await getTheTvDbToken();
   const [ theTvDbShow, tvdbEpisodes ] = await Promise.all([
-    getTheTvDbShow(theTvDbToken, theTvDbId), getTheTvDbShowEpisodes(theTvDbToken, theTvDbId)
+    getTheTvDbShow(theTvDbToken, theTvDbId),
+    getTheTvDbShowEpisodes(theTvDbToken, theTvDbId)
   ]);
-
+  const episodeRepo = db.getRepository(entities);
 
 }
 

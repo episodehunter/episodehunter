@@ -15,8 +15,7 @@
   },
   "dependencies": {
     "@episodehunter/datastore": "^1.0.1",
-    "got": "^7.0.0",
-    "popsicle": "^9.1.0",
+    "node-fetch": "^1.7.1",
     "raven": "^2.0.2"
   }
 }
