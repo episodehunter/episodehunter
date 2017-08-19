@@ -1,0 +1,25 @@
+{
+  "name": "@episodehunter/logger",
+  "version": "1.0.0",
+  "description": "Logger for episodehunter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episodehunter/logger.git"
+  },
+  "keywords": [
+    "logger"
+  ],
+  "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/episodehunter/logger/issues"
+  },
+  "homepage": "https://github.com/episodehunter/logger#readme",
+  "dependencies": {
+    "raven": "^2.1.2"
+  }
+}
