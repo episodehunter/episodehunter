@@ -11,9 +11,6 @@ provider:
   versionFunctions: false
   environment: ${file(env.yml):${self:custom.stage}}
 
-plugins:
-  - serverless-offline
-
 package:
   include:
     - dist/**
