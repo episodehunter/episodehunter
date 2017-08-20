@@ -1,3 +1,13 @@
+export interface TheTvDbShowEpisodeResponse {
+  links: {
+    first: number;
+    last: number;
+    next: number;
+    prev: number;
+  };
+  data: TheTvDbShowEpisode[];
+}
+
 export interface TheTvDbShowEpisode {
   airedEpisodeNumber: number;
   airedSeason: number;

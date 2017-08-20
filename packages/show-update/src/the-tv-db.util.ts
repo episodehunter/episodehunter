@@ -1,4 +1,4 @@
-import { TheTvDbShowEpisode } from './types/the-tv-db-show-episode';
+import { TheTvDbShowEpisode, TheTvDbShowEpisodeResponse } from './types/the-tv-db-show-episode';
 import { TheTvDbShow } from './types/the-tv-db-show';
 import { TheTvDbShowImages } from './types/the-tv-db-show-images';
 
@@ -10,6 +10,13 @@ export async function getInformationFromTvDb(theTvDbId: number) {
   ]);
 }
 
+function handelHttpError(res: Response) {
+  if (!res.ok) {
+    throw new Error('Unable to make the http request: ' + res.statusText);
+  }
+  return res;
+}
+
 export function getTheTvDbToken(): Promise<string> {
   return fetch('https://api.thetvdb.com/login', {
     method: 'POST',
@@ -19,6 +26,7 @@ export function getTheTvDbToken(): Promise<string> {
     }),
     headers: { 'Content-Type': 'application/json' }
   })
+  .then(handelHttpError)
   .then(res => res.json())
   .then(result => result.token);
 }
@@ -28,14 +36,27 @@ export function getTvDbShow(token: string, theTvDbId: number): Promise<TheTvDbSh
     method: 'GET',
     headers: { Authorization: 'Bearer ' + token }
   })
-  .then(res => res.json());
+  .then(handelHttpError)
+  .then(res => res.json())
+  .then(res => res.data);
 }
 
-export function getTvDbShowEpisodes(token: string, theTvDbId: number): Promise<TheTvDbShowEpisode[]> {
-  // TODO: fix paging and fetch images as well
-  return fetch('https://api.thetvdb.com/series/' + theTvDbId + '/episodes', {
+export async function getTvDbShowEpisodes(token: string, theTvDbId: number, page = 1): Promise<TheTvDbShowEpisode[]> {
+  let episodes: TheTvDbShowEpisode[] = [];
+  const response: TheTvDbShowEpisodeResponse = await fetch(`https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`, {
     method: 'GET',
     headers: { Authorization: 'Bearer ' + token }
   })
+  .then(handelHttpError)
   .then(res => res.json());
+
+  if (Array.isArray(response.data)) {
+    episodes = response.data;
+  }
+
+  if (response.links.next) {
+    episodes.concat(await getTvDbShowEpisodes(token, theTvDbId, response.links.next));
+  }
+
+  return episodes;
 }

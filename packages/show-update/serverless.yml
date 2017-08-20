@@ -26,6 +26,4 @@ functions:
   update:
     handler: dist/handler.update
     events:
-      - http:
-          path: ping
-          method: get
+      - sns: showupdater
