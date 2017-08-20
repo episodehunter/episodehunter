@@ -13,7 +13,4 @@ function createLogger(dsn, projectId, functionName = 's') {
   return raven;
 }
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
 exports.createLogger = createLogger;
