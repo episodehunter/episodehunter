@@ -21,5 +21,12 @@
   "homepage": "https://github.com/episodehunter/logger#readme",
   "dependencies": {
     "raven": "^2.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^4.5.0",
+    "eslint-plugin-node": "^5.1.1"
+  },
+  "engines": {
+    "node": "6.1.0"
   }
 }
