@@ -13,7 +13,7 @@
     "typescript": "^2.3.4"
   },
   "dependencies": {
-    "@episodehunter/datastore": "^1.0.3",
+    "@episodehunter/datastore": "^1.0.4",
     "@episodehunter/logger": "^1.0.0",
     "@types/aws-lambda": "0.0.16",
     "aws-sdk": "^2.100.0",
