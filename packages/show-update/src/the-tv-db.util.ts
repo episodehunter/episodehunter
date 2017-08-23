@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import { TheTvDbShowEpisode, TheTvDbShowEpisodeResponse } from './types/the-tv-db-show-episode';
 import { TheTvDbShow } from './types/the-tv-db-show';
 import { TheTvDbShowImages } from './types/the-tv-db-show-images';
