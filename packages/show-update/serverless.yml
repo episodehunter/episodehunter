@@ -23,4 +23,4 @@ functions:
   update:
     handler: dist/handler.update
     events:
-      - sns: showupdater
+      - sns: arn:aws:sns:us-east-1:952297637849:showupdater
