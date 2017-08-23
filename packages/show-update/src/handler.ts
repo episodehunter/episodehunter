@@ -24,7 +24,7 @@ async function updateShowAndEpisodes(theTvDbId: number, db: Connection) {
   const [ tShow, tEpisodes ] = await getInformationFromTvDb(theTvDbId);
   const show = await updateShowInDb(db, tShow);
   const { removedEpisodes, updatedEpisodes } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
-  updateImages(show, updatedEpisodes, removedEpisodes);
+  // updateImages(show, updatedEpisodes, removedEpisodes);
   console.log(`Updated ${updatedEpisodes.length} episodes. Removed ${removedEpisodes.length} episodes`);
 }
 
