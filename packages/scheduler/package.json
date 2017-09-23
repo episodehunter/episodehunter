@@ -1,0 +1,49 @@
+{
+  "name": "show-delegator",
+  "version": "1.0.0",
+  "description": "Delegator for show updator and insertions",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc -w",
+    "test": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episodehunter/show-delegator.git"
+  },
+  "keywords": [
+    "serverless episodehunter"
+  ],
+  "bugs": {
+    "url": "https://github.com/episodehunter/show-delegator/issues"
+  },
+  "homepage": "https://github.com/episodehunter/show-delegator#readme",
+  "author": "tjoskar <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "0.0.16",
+    "@types/node": "^8.0.28",
+    "jest": "^21.1.0",
+    "ts-jest": "^21.0.1",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "@episodehunter/datastore": "^1.0.5",
+    "@episodehunter/logger": "^1.0.0",
+    "assert-env": "^0.6.0",
+    "aws-sdk": "^2.122.0",
+    "node-fetch": "^1.7.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(j|t)sx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "src/.*(__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
+  }
+}
