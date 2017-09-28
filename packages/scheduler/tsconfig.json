@@ -4,8 +4,9 @@
     "module": "commonjs",
     "outDir": "./dist",
     "strict": false,
+    "sourceMap": true,
     "noImplicitAny": true,
-    "types" : ["node"],
+    "types": ["node", "jest"],
     "moduleResolution": "node"
   }
 }

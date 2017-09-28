@@ -1,22 +1,38 @@
 import { connect, Connection, entities } from '@episodehunter/datastore';
 import { SNSEvent, Context, Callback } from 'aws-lambda';
 import * as assertRequiredConfig from 'assert-env';
+import { UpdatedId } from './types/the-tv-db-updates';
+import { getLastUpdateShows } from './the-tv-db.util';
+import { getLastUpdated, getExistingShows, updateLastUpdate } from './database.util';
+import { logger } from './logger';
+import { publishUpdateShow } from './sns';
 
-assertRequiredConfig(
-  'EH_DB_HOST',
-  'EH_DB_PORT',
-  'EH_DB_USERNAME',
-  'EH_DB_PASSWORD',
-  'EH_DB_DATABASE',
-  'EH_RAVEN_DSN',
-  'EH_RAVEN_PROJECT'
-);
+assertRequiredConfig(['EH_DB_HOST', 'EH_DB_PORT', 'EH_DB_USERNAME', 'EH_DB_PASSWORD', 'EH_DB_DATABASE']);
+
+function* groupIds(ids: UpdatedId[]) {
+  while (ids.length > 0) {
+    yield ids.splice(0, 100).map(id => id.id);
+  }
+}
+
+async function emitUpdates(connection: Connection) {
+  const now = unixtimestamp();
+  const lastUpdate = await getLastUpdated(connection);
+  const ids = await getLastUpdateShows(lastUpdate);
+  const publishingUpdateShows: Promise<any>[] = [];
+  for (const idGroup of groupIds(ids)) {
+    const showsToUpdate = await getExistingShows(connection, idGroup);
+    publishingUpdateShows.concat(showsToUpdate.map(theTvDbId => publishUpdateShow(theTvDbId)));
+  }
+  await Promise.all(publishingUpdateShows);
+  await updateLastUpdate(connection, now);
+}
+
+export function unixtimestamp() {
+  return (Date.now() / 1000) | 0;
+}
 
 export async function update(event: SNSEvent, context: Context, callback: Callback) {
-  const message = event.Records[0].Sns.Message;
-
-  console.log(`Will do something with ${message}`);
-
   let connection: Connection;
 
   try {
@@ -27,13 +43,14 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
       port: process.env.EH_DB_PORT,
       username: process.env.EH_DB_USERNAME
     });
+    await emitUpdates(connection);
     callback(null, true);
   } catch (error) {
+    logger.captureException(error);
     callback(error);
   } finally {
     if (connection && connection.close) {
       connection.close();
     }
   }
-
 }

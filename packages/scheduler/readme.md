@@ -1,3 +1,3 @@
 # show-delegator
 
-Delegator for show updator and insertions
+Delegator for show update and insertions

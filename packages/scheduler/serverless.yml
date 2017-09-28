@@ -10,6 +10,7 @@ provider:
   region: us-east-1
   versionFunctions: false
   environment: ${file(env.yml):${self:custom.stage}}
+  timeout: 10
 
 package:
   include:

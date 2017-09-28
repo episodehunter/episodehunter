@@ -12,7 +12,8 @@
     "url": "git+https://github.com/episodehunter/show-delegator.git"
   },
   "keywords": [
-    "serverless episodehunter"
+    "serverless",
+    "episodehunter"
   ],
   "bugs": {
     "url": "https://github.com/episodehunter/show-delegator/issues"
@@ -22,13 +23,14 @@
   "license": "MIT",
   "devDependencies": {
     "@types/aws-lambda": "0.0.16",
+    "@types/jest": "^21.1.1",
     "@types/node": "^8.0.28",
     "jest": "^21.1.0",
     "ts-jest": "^21.0.1",
     "typescript": "^2.5.2"
   },
   "dependencies": {
-    "@episodehunter/datastore": "^1.0.5",
+    "@episodehunter/datastore": "^1.0.6",
     "@episodehunter/logger": "^1.0.0",
     "assert-env": "^0.6.0",
     "aws-sdk": "^2.122.0",
@@ -45,5 +47,9 @@
       "js",
       "json"
     ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 130
   }
 }
