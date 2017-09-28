@@ -2,6 +2,7 @@ service: episodehunter-show-update
 
 custom:
   stage: "${opt:stage, self:provider.stage}"
+  env: ${file(env.yml):${self:custom.stage}}
 
 provider:
   name: aws
@@ -9,7 +10,7 @@ provider:
   stage: dev
   region: us-east-1
   versionFunctions: false
-  environment: ${file(env.yml):${self:custom.stage}}
+  environment: ${self:custom.env}
 
 package:
   include:
@@ -18,9 +19,11 @@ package:
   exclude:
     - src/**
     - env.yml
+    - .git/**
+    - .vscode/**
 
 functions:
   update:
     handler: dist/handler.update
     events:
-      - sns: arn:aws:sns:us-east-1:952297637849:showupdater
+      - sns: ${self:custom.env.EH_SNS_UPDATE_SHOW}
