@@ -25,6 +25,8 @@ package:
   exclude:
     - src/**
     - env.yml
+    - .git/**
+    - .vscode/**
 
 functions:
   update:
