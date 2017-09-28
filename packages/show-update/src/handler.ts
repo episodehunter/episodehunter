@@ -6,7 +6,7 @@ import { getTheTvDbToken, getTvDbShow, getTvDbShowEpisodes, getInformationFromTv
 import { updateEpisodes, updateShowInDb } from './update-show';
 import { ImageAction } from './types/image-action';
 import { assertRequiredConfig, unixtimestamp } from './util';
-import { updateImages } from './update-image';
+import { logger } from './logger';
 
 assertRequiredConfig(
   'EH_DB_HOST',
@@ -35,7 +35,9 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
   console.log(`Will update ${theTvDbId} and associated epesodes`);
 
   if (theTvDbId <= 0) {
-    callback(new Error('theTvDbId is not a valid id:' + message));
+    const error = new Error('theTvDbId is not a valid id:' + message);
+    logger.captureException(error);
+    callback(error);
   }
 
   let connection: Connection;
@@ -51,6 +53,7 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
     await updateShowAndEpisodes(theTvDbId, connection);
     callback(null, true);
   } catch (error) {
+    logger.captureException(error);
     callback(error);
   } finally {
     if (connection && connection.close) {
