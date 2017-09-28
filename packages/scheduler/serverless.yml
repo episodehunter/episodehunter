@@ -11,6 +11,12 @@ provider:
   versionFunctions: false
   environment: ${file(env.yml):${self:custom.stage}}
   timeout: 10
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sns:Publish"
+      Resource:
+        - ${file(env.yml):${self:custom.stage}:"EH_SNS_UPDATE_SHOW"}
 
 package:
   include:
