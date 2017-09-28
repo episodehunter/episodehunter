@@ -23,3 +23,5 @@ package:
 functions:
   update:
     handler: dist/handler.update
+    events:
+      - schedule: cron(0 5 * * ? *)
