@@ -2,6 +2,7 @@ service: show-delegator
 
 custom:
   stage: "${opt:stage, self:provider.stage}"
+  env: ${file(env.yml):${self:custom.stage}}
 
 provider:
   name: aws
@@ -9,14 +10,14 @@ provider:
   stage: dev
   region: us-east-1
   versionFunctions: false
-  environment: ${file(env.yml):${self:custom.stage}}
+  environment: ${self:custom.env}
   timeout: 10
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "sns:Publish"
       Resource:
-        - ${file(env.yml):${self:custom.stage}:"EH_SNS_UPDATE_SHOW"}
+        - ${self:custom.env.EH_SNS_UPDATE_SHOW}
 
 package:
   include:
