@@ -15,7 +15,7 @@ function* groupIds(ids: UpdatedId[]) {
   }
 }
 
-async function emitUpdates(connection: Connection) {
+async function emitUpdates(connection: Connection): Promise<number> {
   const now = unixtimestamp();
   const lastUpdate = await getLastUpdated(connection);
   const ids = await getLastUpdateShows(lastUpdate);
@@ -26,6 +26,7 @@ async function emitUpdates(connection: Connection) {
   }
   await Promise.all(publishingUpdateShows);
   await updateLastUpdate(connection, now);
+  return publishingUpdateShows.length;
 }
 
 export function unixtimestamp() {
@@ -43,8 +44,8 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
       port: process.env.EH_DB_PORT,
       username: process.env.EH_DB_USERNAME
     });
-    await emitUpdates(connection);
-    callback(null, true);
+    const numberOfRequestedUpdates = await emitUpdates(connection);
+    callback(null, numberOfRequestedUpdates);
   } catch (error) {
     logger.captureException(error);
     callback(error);
