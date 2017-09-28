@@ -30,7 +30,7 @@
     "typescript": "^2.5.2"
   },
   "dependencies": {
-    "@episodehunter/datastore": "^1.0.6",
+    "@episodehunter/datastore": "^1.0.7",
     "@episodehunter/logger": "^1.0.0",
     "assert-env": "^0.6.0",
     "aws-sdk": "^2.122.0",
