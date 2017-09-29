@@ -45,6 +45,7 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
       username: process.env.EH_DB_USERNAME
     });
     const numberOfRequestedUpdates = await emitUpdates(connection);
+    console.log(`Request ${numberOfRequestedUpdates} shows to be updated`);
     callback(null, numberOfRequestedUpdates);
   } catch (error) {
     logger.captureException(error);
