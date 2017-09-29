@@ -33,4 +33,4 @@ functions:
   update:
     handler: dist/handler.update
     events:
-      - schedule: cron(0 5 * * ? *)
+      - schedule: rate(2 hours)
