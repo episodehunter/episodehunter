@@ -19,7 +19,7 @@ async function emitUpdates(connection: Connection): Promise<number> {
   const now = unixtimestamp();
   const lastUpdate = await getLastUpdated(connection);
   const ids = await getLastUpdateShows(lastUpdate);
-  const publishingUpdateShows: Promise<any>[] = [];
+  const publishingUpdateShows: Array<Promise<any>> = [];
   for (const idGroup of groupIds(ids)) {
     const showsToUpdate = await getExistingShows(connection, idGroup);
     publishingUpdateShows.concat(showsToUpdate.map(theTvDbId => publishUpdateShow(theTvDbId)));
