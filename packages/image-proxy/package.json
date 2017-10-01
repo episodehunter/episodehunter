@@ -1,0 +1,49 @@
+{
+  "name": "image-master",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc -w",
+    "test": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episodehunter/image-master.git"
+  },
+  "keywords": [
+    "serverless"
+  ],
+  "bugs": {
+    "url": "https://github.com/episodehunter/image-master/issues"
+  },
+  "homepage": "https://github.com/episodehunter/image-master#readme",
+  "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "0.0.16",
+    "@types/node": "^8.0.28",
+    "jest": "^21.0.2",
+    "ts-jest": "^20.0.7",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "@episodehunter/datastore": "^1.0.7",
+    "@episodehunter/logger": "^1.0.0",
+    "assert-env": "^0.6.0",
+    "aws-sdk": "^2.125.0",
+    "node-fetch": "^1.7.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(j|t)sx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "src/.*(__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
+  }
+}
