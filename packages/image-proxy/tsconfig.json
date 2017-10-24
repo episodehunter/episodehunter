@@ -6,7 +6,7 @@
     "strict": false,
     "pretty": true,
     "noImplicitAny": true,
-    "types" : ["node"],
+    "types": ["node", "jest"],
     "moduleResolution": "node"
   }
 }
