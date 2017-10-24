@@ -27,6 +27,11 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
     return;
   }
 
+  if (images.length < 1) {
+    callback(undefined, 0);
+    return;
+  }
+
   let connection: Connection;
 
   try {
