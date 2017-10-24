@@ -22,3 +22,5 @@ package:
 functions:
   update:
     handler: dist/handler.update
+    events:
+      - sns: ${self:custom.env.EH_SNS_IMAGE}
