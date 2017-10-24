@@ -5,13 +5,7 @@ import { Image } from './types';
 import { logger } from './logger';
 import { insertImagesToDownload } from './db.util';
 
-assertRequiredConfig([
-  'EH_DB_HOST',
-  'EH_DB_PORT',
-  'EH_DB_USERNAME',
-  'EH_DB_PASSWORD',
-  'EH_DB_DATABASE'
-]);
+assertRequiredConfig(['EH_DB_HOST', 'EH_DB_PORT', 'EH_DB_USERNAME', 'EH_DB_PASSWORD', 'EH_DB_DATABASE']);
 
 async function handleImages(images: Image[], connection: Connection) {
   await insertImagesToDownload(images, connection);
@@ -52,5 +46,4 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
       connection.close();
     }
   }
-
 }
