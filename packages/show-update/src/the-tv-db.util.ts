@@ -1,7 +1,5 @@
 import fetch from 'node-fetch';
-import { TheTvDbShowEpisode, TheTvDbShowEpisodeResponse } from './types/the-tv-db-show-episode';
-import { TheTvDbShow } from './types/the-tv-db-show';
-import { TheTvDbShowImages } from './types/the-tv-db-show-images';
+import { TheTvDbShow, TheTvDbShowEpisode, TheTvDbShowEpisodePage } from '@episodehunter/types/thetvdb';
 
 export async function getInformationFromTvDb(theTvDbId: number) {
   const theTvDbToken = await getTheTvDbToken();
@@ -54,7 +52,7 @@ export function getTvDbShow(token: string, theTvDbId: number): Promise<TheTvDbSh
 
 export async function getTvDbShowEpisodes(token: string, theTvDbId: number, page = 1): Promise<TheTvDbShowEpisode[]> {
   let episodes: TheTvDbShowEpisode[] = [];
-  const response: TheTvDbShowEpisodeResponse = await fetchAndLog(
+  const response: TheTvDbShowEpisodePage = await fetchAndLog(
     `https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`,
     {
       method: 'GET',

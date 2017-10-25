@@ -1,11 +1,8 @@
-import { connect, Connection, entities } from '@episodehunter/datastore';
+import { connect, Connection } from '@episodehunter/datastore';
 import { SNSEvent, Context, Callback } from 'aws-lambda';
-import { TheTvDbShow } from './types/the-tv-db-show';
-import { TheTvDbShowEpisode } from './types/the-tv-db-show-episode';
-import { getTheTvDbToken, getTvDbShow, getTvDbShowEpisodes, getInformationFromTvDb } from './the-tv-db.util';
+import { getInformationFromTvDb } from './the-tv-db.util';
 import { updateEpisodes, updateShowInDb } from './update-show';
-import { ImageAction } from './types/image-action';
-import { assertRequiredConfig, unixtimestamp } from './util';
+import { assertRequiredConfig } from './util';
 import { logger } from './logger';
 
 assertRequiredConfig(

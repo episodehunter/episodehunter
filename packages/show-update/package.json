@@ -9,6 +9,7 @@
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
+    "@episodehunter/types": "^1.0.0",
     "@types/aws-lambda": "0.0.16",
     "@types/node": "^7.0.31",
     "typescript": "^2.3.4"

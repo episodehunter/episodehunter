@@ -5,7 +5,8 @@
     "outDir": "./dist",
     "strict": false,
     "noImplicitAny": true,
-    "types" : ["node"],
+    "noUnusedLocals": true,
+    "types": ["node"],
     "moduleResolution": "node"
   }
 }

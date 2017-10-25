@@ -1,7 +1,6 @@
-import { TheTvDbShow } from './types/the-tv-db-show';
 import { Connection, entities } from '@episodehunter/datastore';
+import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/types/thetvdb';
 import { unixtimestamp } from './util';
-import { TheTvDbShowEpisode } from './types/the-tv-db-show-episode';
 
 export async function updateShowInDb(db: Connection, tShow: TheTvDbShow) {
   console.log('Update show in db');
