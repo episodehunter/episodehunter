@@ -4,6 +4,8 @@ import { unixtimestamp } from './util';
 import { TheTvDbShowEpisode } from './types/the-tv-db-show-episode';
 
 export async function updateShowInDb(db: Connection, tShow: TheTvDbShow) {
+  console.log('Update show in db');
+  console.time('updateShowInDb');
   const showRepo = db.getRepository(entities.Show);
   const show = await showRepo.findOne({ tvdb_id: tShow.id });
   if (!show) {
@@ -20,7 +22,9 @@ export async function updateShowInDb(db: Connection, tShow: TheTvDbShow) {
   show.runtime = tShow.runtime;
   show.status = tShow.status;
   show.lastupdate = unixtimestamp();
-  return showRepo.persist(show);
+  const updatedShow = await showRepo.save(show);
+  console.timeEnd('updateShowInDb');
+  return updatedShow;
 }
 
 function updateEpisode(episode: entities.Episode, tEpisode: TheTvDbShowEpisode) {
@@ -38,6 +42,8 @@ function isSameEpisode(episode: entities.Episode, tEpisode: TheTvDbShowEpisode) 
 }
 
 export async function updateEpisodes(db: Connection, showId: number, theTvDbShowId: number, tEpisodes: TheTvDbShowEpisode[]) {
+  console.log('Update episodes in db');
+  console.time('updateEpisodes');
   const episodeRepo = db.getRepository(entities.Episode);
   const episodes = await episodeRepo.find({ serie_id: showId });
   const episodeToUpdate: entities.Episode[] = [];
@@ -65,8 +71,10 @@ export async function updateEpisodes(db: Connection, showId: number, theTvDbShow
       return episode;
     });
 
-  return {
-    updatedEpisodes: await episodeRepo.persist(episodesToAdd.concat(episodeToUpdate)),
+  const stat = {
+    updatedEpisodes: await episodeRepo.save(episodesToAdd.concat(episodeToUpdate)),
     removedEpisodes: await episodeRepo.remove(episodeToDelete)
   };
+  console.timeEnd('updateEpisodes');
+  return stat;
 }

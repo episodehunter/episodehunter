@@ -14,10 +14,14 @@
     "typescript": "^2.3.4"
   },
   "dependencies": {
-    "@episodehunter/datastore": "^1.0.7",
+    "@episodehunter/datastore": "^1.0.11",
     "@episodehunter/logger": "^1.0.0",
     "aws-sdk": "^2.100.0",
     "node-fetch": "^1.7.1",
     "raven": "^2.0.2"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 130
   }
 }

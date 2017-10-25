@@ -14,14 +14,12 @@ assertRequiredConfig(
   'EH_DB_USERNAME',
   'EH_DB_PASSWORD',
   'EH_DB_DATABASE',
-  'EH_RAVEN_DSN',
-  'EH_RAVEN_PROJECT',
   'THE_TV_DB_API_KEY',
   'THE_TV_DB_USER_KEY'
 );
 
 async function updateShowAndEpisodes(theTvDbId: number, db: Connection) {
-  const [ tShow, tEpisodes ] = await getInformationFromTvDb(theTvDbId);
+  const [tShow, tEpisodes] = await getInformationFromTvDb(theTvDbId);
   const show = await updateShowInDb(db, tShow);
   const { removedEpisodes, updatedEpisodes } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
   // updateImages(show, updatedEpisodes, removedEpisodes);
@@ -32,7 +30,7 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
   const message = event.Records[0].Sns.Message;
   const theTvDbId = Number(message) | 0;
 
-  console.log(`Will update ${theTvDbId} and associated epesodes`);
+  console.log(`Will update the show with theTvDbId: ${theTvDbId} and associated epesodes`);
 
   if (theTvDbId <= 0) {
     const error = new Error('theTvDbId is not a valid id:' + message);
@@ -43,13 +41,17 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
   let connection: Connection;
 
   try {
+    console.log('Get a connection');
+    console.time('connection');
     connection = await connect({
       database: process.env.EH_DB_DATABASE,
       host: process.env.EH_DB_HOST,
       password: process.env.EH_DB_PASSWORD,
       port: process.env.EH_DB_PORT,
-      username: process.env.EH_DB_USERNAME
+      username: process.env.EH_DB_USERNAME,
+      ssl: null
     });
+    console.timeEnd('connection');
     await updateShowAndEpisodes(theTvDbId, connection);
     callback(null, true);
   } catch (error) {
@@ -60,5 +62,4 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
       connection.close();
     }
   }
-
 }

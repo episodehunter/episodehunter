@@ -5,10 +5,7 @@ import { TheTvDbShowImages } from './types/the-tv-db-show-images';
 
 export async function getInformationFromTvDb(theTvDbId: number) {
   const theTvDbToken = await getTheTvDbToken();
-  return await Promise.all([
-    getTvDbShow(theTvDbToken, theTvDbId),
-    getTvDbShowEpisodes(theTvDbToken, theTvDbId)
-  ]);
+  return await Promise.all([getTvDbShow(theTvDbToken, theTvDbId), getTvDbShowEpisodes(theTvDbToken, theTvDbId)]);
 }
 
 function handelHttpError(res: Response) {
@@ -18,8 +15,23 @@ function handelHttpError(res: Response) {
   return res;
 }
 
+const fetchAndLog: typeof fetch = (url: string, init) => {
+  console.log('Making request to: ' + url);
+  console.time(url);
+  return fetch(url, init)
+    .catch(error => {
+      console.timeEnd(url);
+      return Promise.reject(error);
+    })
+    .then(data => {
+      console.timeEnd(url);
+      return data;
+    })
+    .then(handelHttpError);
+};
+
 export function getTheTvDbToken(): Promise<string> {
-  return fetch('https://api.thetvdb.com/login', {
+  return fetchAndLog('https://api.thetvdb.com/login', {
     method: 'POST',
     body: JSON.stringify({
       apikey: process.env.THE_TV_DB_API_KEY,
@@ -27,29 +39,28 @@ export function getTheTvDbToken(): Promise<string> {
     }),
     headers: { 'Content-Type': 'application/json' }
   })
-  .then(handelHttpError)
-  .then(res => res.json())
-  .then(result => result.token);
+    .then(res => res.json())
+    .then(result => result.token);
 }
 
 export function getTvDbShow(token: string, theTvDbId: number): Promise<TheTvDbShow> {
-  return fetch('https://api.thetvdb.com/series/' + theTvDbId, {
+  return fetchAndLog('https://api.thetvdb.com/series/' + theTvDbId, {
     method: 'GET',
     headers: { Authorization: 'Bearer ' + token }
   })
-  .then(handelHttpError)
-  .then(res => res.json())
-  .then(res => res.data);
+    .then(res => res.json())
+    .then(res => res.data);
 }
 
 export async function getTvDbShowEpisodes(token: string, theTvDbId: number, page = 1): Promise<TheTvDbShowEpisode[]> {
   let episodes: TheTvDbShowEpisode[] = [];
-  const response: TheTvDbShowEpisodeResponse = await fetch(`https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`, {
-    method: 'GET',
-    headers: { Authorization: 'Bearer ' + token }
-  })
-  .then(handelHttpError)
-  .then(res => res.json());
+  const response: TheTvDbShowEpisodeResponse = await fetchAndLog(
+    `https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`,
+    {
+      method: 'GET',
+      headers: { Authorization: 'Bearer ' + token }
+    }
+  ).then(res => res.json());
 
   if (Array.isArray(response.data)) {
     episodes = response.data;
