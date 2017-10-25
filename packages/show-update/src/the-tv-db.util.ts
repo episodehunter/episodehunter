@@ -24,8 +24,7 @@ const fetchAndLog: typeof fetch = (url: string, init) => {
     .then(data => {
       console.timeEnd(url);
       return data;
-    })
-    .then(handelHttpError);
+    });
 };
 
 export function getTheTvDbToken(): Promise<string> {
@@ -37,6 +36,7 @@ export function getTheTvDbToken(): Promise<string> {
     }),
     headers: { 'Content-Type': 'application/json' }
   })
+    .then(handelHttpError)
     .then(res => res.json())
     .then(result => result.token);
 }
@@ -46,6 +46,7 @@ export function getTvDbShow(token: string, theTvDbId: number): Promise<TheTvDbSh
     method: 'GET',
     headers: { Authorization: 'Bearer ' + token }
   })
+    .then(handelHttpError)
     .then(res => res.json())
     .then(res => res.data);
 }
@@ -58,7 +59,17 @@ export async function getTvDbShowEpisodes(token: string, theTvDbId: number, page
       method: 'GET',
       headers: { Authorization: 'Bearer ' + token }
     }
-  ).then(res => res.json());
+  ).then(res => {
+    // The tv db API has a bug where the next page can give a 404
+    if (res.status === 404) {
+      return {
+        data: [],
+        links: {}
+      } as TheTvDbShowEpisodePage;
+    }
+    handelHttpError(res);
+    return res.json();
+  });
 
   if (Array.isArray(response.data)) {
     episodes = response.data;
