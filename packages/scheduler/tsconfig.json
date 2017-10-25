@@ -6,6 +6,7 @@
     "strict": false,
     "sourceMap": true,
     "noImplicitAny": true,
+    "noUnusedLocals": true,
     "types": ["node", "jest"],
     "moduleResolution": "node"
   }

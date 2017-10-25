@@ -1,7 +1,7 @@
-import { connect, Connection, entities } from '@episodehunter/datastore';
+import { connect, Connection } from '@episodehunter/datastore';
+import { TheTvDbUpdatedShowId } from '@episodehunter/types/thetvdb';
 import { SNSEvent, Context, Callback } from 'aws-lambda';
 import * as assertRequiredConfig from 'assert-env';
-import { UpdatedId } from './types/the-tv-db-updates';
 import { getLastUpdateShows } from './the-tv-db.util';
 import { getLastUpdated, getExistingShows, updateLastUpdate } from './database.util';
 import { logger } from './logger';
@@ -9,7 +9,7 @@ import { publishUpdateShow } from './sns';
 
 assertRequiredConfig(['EH_DB_HOST', 'EH_DB_PORT', 'EH_DB_USERNAME', 'EH_DB_PASSWORD', 'EH_DB_DATABASE']);
 
-function* groupIds(ids: UpdatedId[]) {
+function* groupIds(ids: TheTvDbUpdatedShowId[]) {
   while (ids.length > 0) {
     yield ids.splice(0, 100).map(id => id.id);
   }
@@ -42,7 +42,8 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
       host: process.env.EH_DB_HOST,
       password: process.env.EH_DB_PASSWORD,
       port: process.env.EH_DB_PORT,
-      username: process.env.EH_DB_USERNAME
+      username: process.env.EH_DB_USERNAME,
+      ssl: null
     });
     const numberOfRequestedUpdates = await emitUpdates(connection);
     console.log(`Request ${numberOfRequestedUpdates} shows to be updated`);

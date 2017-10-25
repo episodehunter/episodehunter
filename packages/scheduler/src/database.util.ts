@@ -1,4 +1,4 @@
-import { connect, Connection, entities } from '@episodehunter/datastore';
+import { Connection, entities } from '@episodehunter/datastore';
 
 export async function getLastUpdated(connection: Connection) {
   const systemRepo = connection.getRepository(entities.SystemInfo);
@@ -10,7 +10,7 @@ export async function updateLastUpdate(connection: Connection, lastUpdate: numbe
   const systemRepo = connection.getRepository(entities.SystemInfo);
   const dbRow = await systemRepo.findOne({ key: 'TV_UPDATE' });
   dbRow.value = String(lastUpdate);
-  await systemRepo.persist(dbRow);
+  await systemRepo.save(dbRow);
 }
 
 export async function getExistingShows(connection: Connection, ids: number[]): Promise<number[]> {

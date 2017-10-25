@@ -1,5 +1,4 @@
 import { SNS } from 'aws-sdk';
-
 import * as assertRequiredConfig from 'assert-env';
 
 assertRequiredConfig(['EH_SNS_UPDATE_SHOW']);

@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
-import { UpdateResponse } from './types/the-tv-db-updates';
+import { TheTvDbUpdatedShowId } from '@episodehunter/types/thetvdb';
 
-export async function getLastUpdateShows(lastUpdate: number): Promise<UpdateResponse['data']> {
+export async function getLastUpdateShows(lastUpdate: number): Promise<TheTvDbUpdatedShowId[]> {
   const token = await getTheTvDbToken();
   return fetch('https://api.thetvdb.com/updated/query?fromTime=' + lastUpdate, {
     method: 'GET',
