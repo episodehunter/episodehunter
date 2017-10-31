@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/logger",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Logger for episodehunter",
   "main": "index.js",
   "scripts": {
@@ -10,9 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/episodehunter/logger.git"
   },
-  "keywords": [
-    "logger"
-  ],
+  "keywords": ["logger"],
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "bugs": {
@@ -23,10 +21,14 @@
     "raven": "^2.1.2"
   },
   "devDependencies": {
-    "eslint": "^4.5.0",
-    "eslint-plugin-node": "^5.1.1"
+    "@types/raven": "^2.1.2",
+    "@types/aws-lambda": "0.0.19"
   },
   "engines": {
     "node": "6.1.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 110
   }
 }
