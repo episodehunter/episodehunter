@@ -14,6 +14,10 @@ const event = {
   ]
 };
 
-const callback = (error, result) => console.log(error, result);
+const context = {
+  functionName: 'showUpdate-local',
+  getRemainingTimeInMillis: () => 10000
+};
 
-handler.update(event, null, callback);
+const callback = (error, result) => console.log(error, result);
+handler.update(event, context, callback);

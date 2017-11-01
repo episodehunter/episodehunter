@@ -20,26 +20,41 @@ async function updateShowAndEpisodes(theTvDbId: number, db: Connection) {
   const show = await updateShowInDb(db, tShow);
   const { removedEpisodes, updatedEpisodes } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
   // updateImages(show, updatedEpisodes, removedEpisodes);
-  console.log(`Updated ${updatedEpisodes.length} episodes. Removed ${removedEpisodes.length} episodes`);
+  logger.log(`Updated ${updatedEpisodes.length} episodes. Removed ${removedEpisodes.length} episodes`);
 }
 
-export async function update(event: SNSEvent, context: Context, callback: Callback) {
+function assertTimeout<T>(fun: (event: T, context: Context) => any) {
+  return async (event: T, context: Context, callback: Callback) => {
+    const timeoutId = setTimeout(() => {
+      logger.captureException(new Error(`Timeout in 500ms for ${context.functionName}`));
+    }, context.getRemainingTimeInMillis() - 500);
+    try {
+      const result = await fun(event, context);
+      callback(undefined, result);
+    } catch (error) {
+      logger.captureException(error);
+      callback(error);
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  };
+}
+
+export const update = assertTimeout(async function updateInner(event: SNSEvent, context: Context) {
+  logger.install(context);
   const message = event.Records[0].Sns.Message;
   const theTvDbId = Number(message) | 0;
 
-  console.log(`Will update the show with theTvDbId: ${theTvDbId} and associated epesodes`);
+  logger.log(`Will update the show with theTvDbId: ${theTvDbId} and associated epesodes`);
 
   if (theTvDbId <= 0) {
-    const error = new Error('theTvDbId is not a valid id:' + message);
-    logger.captureException(error);
-    callback(error);
+    throw new Error('theTvDbId is not a valid id:' + message);
   }
 
   let connection: Connection;
 
   try {
-    console.log('Get a connection');
-    console.time('connection');
+    const eventEnd = logger.eventStart('connection');
     connection = await connect({
       database: process.env.EH_DB_DATABASE,
       host: process.env.EH_DB_HOST,
@@ -48,15 +63,12 @@ export async function update(event: SNSEvent, context: Context, callback: Callba
       username: process.env.EH_DB_USERNAME,
       ssl: null
     });
-    console.timeEnd('connection');
+    eventEnd();
     await updateShowAndEpisodes(theTvDbId, connection);
-    callback(null, true);
-  } catch (error) {
-    logger.captureException(error);
-    callback(error);
+    return true;
   } finally {
     if (connection && connection.close) {
       connection.close();
     }
   }
-}
+});

@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { TheTvDbShow, TheTvDbShowEpisode, TheTvDbShowEpisodePage } from '@episodehunter/types/thetvdb';
+import { logger } from './logger';
 
 export async function getInformationFromTvDb(theTvDbId: number) {
   const theTvDbToken = await getTheTvDbToken();
@@ -14,15 +15,14 @@ function handelHttpError(res: Response) {
 }
 
 const fetchAndLog: typeof fetch = (url: string, init) => {
-  console.log('Making request to: ' + url);
-  console.time(url);
+  const eventStop = logger.eventStart('Making request to: ' + url);
   return fetch(url, init)
     .catch(error => {
-      console.timeEnd(url);
+      eventStop();
       return Promise.reject(error);
     })
     .then(data => {
-      console.timeEnd(url);
+      eventStop();
       return data;
     });
 };
