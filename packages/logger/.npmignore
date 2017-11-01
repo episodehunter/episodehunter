@@ -1,0 +1,6 @@
+!index.d.ts
+!index.js
+!index.js.map
+index.ts
+tsconfig.json
+tslint.json
