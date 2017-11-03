@@ -21,7 +21,7 @@ export class Logger {
   }
 
   log(...args: any[]) {
-    console.debug(...args);
+    console.log(...args);
   }
 
   warn(...args: any[]) {
