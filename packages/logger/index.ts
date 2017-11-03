@@ -41,22 +41,14 @@ export class Logger {
   }
 
   eventStart(message: string) {
-    const startMsg = `[START] ${message}. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`;
-    this.log(startMsg);
-    this.captureBreadcrumb({
-      message: startMsg,
-      category: 'start'
-    });
+    this.log(`[START] ${message}. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`);
     const startTime = process.hrtime();
     return () => {
       const endTime = process.hrtime(startTime);
       const totalTime = endTime[0] * 1000 + endTime[1] / 1000000;
-      const endMsg = `[END] ${message}. Time elapsed: ${totalTime}ms. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`;
-      this.captureBreadcrumb({
-        message: endMsg,
-        category: 'end'
-      });
-      this.log(endMsg);
+      this.log(
+        `[END] ${message}. Time elapsed: ${totalTime}ms. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`
+      );
     };
   }
 
