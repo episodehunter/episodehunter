@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/logger",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "Logger for episodehunter",
   "main": "index.js",
   "scripts": {

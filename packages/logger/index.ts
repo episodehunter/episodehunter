@@ -18,17 +18,29 @@ export class Logger {
 
   info(...args: any[]) {
     console.info(...args);
+    this.captureBreadcrumb({
+      category: 'console.info',
+      message: args.join(', ')
+    });
   }
 
   log(...args: any[]) {
     console.log(...args);
+    this.captureBreadcrumb({
+      category: 'console.log',
+      message: args.join(', ')
+    });
   }
 
   warn(...args: any[]) {
     console.warn(...args);
+    this.captureBreadcrumb({
+      category: 'console.warn',
+      message: args.join(', ')
+    });
   }
 
-  captureBreadcrumb(breadcrumb: { message: string; category: string; data: object }) {
+  captureBreadcrumb(breadcrumb: { message: string; category: string; data?: object }) {
     raven.captureBreadcrumb(breadcrumb);
   }
 
@@ -40,15 +52,23 @@ export class Logger {
     raven.captureMessage(msg);
   }
 
-  eventStart(message: string) {
-    this.log(`[START] ${message}. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`);
+  eventStart(message: string, category = 'event') {
+    const startMsg = `[START] ${message}. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`;
+    console.log(startMsg);
+    this.captureBreadcrumb({
+      category: 'Start ' + category,
+      message: startMsg
+    });
     const startTime = process.hrtime();
     return () => {
       const endTime = process.hrtime(startTime);
       const totalTime = endTime[0] * 1000 + endTime[1] / 1000000;
-      this.log(
-        `[END] ${message}. Time elapsed: ${totalTime}ms. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`
-      );
+      const endMsg = `[END] ${message}. Time elapsed: ${totalTime}ms. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`;
+      console.log(endMsg);
+      this.captureBreadcrumb({
+        category: 'End ' + category,
+        message: `[END] ${message}. Time elapsed: ${totalTime}ms. Remaning time ${this.awsContext.getRemainingTimeInMillis()}ms`
+      });
     };
   }
 
@@ -59,7 +79,7 @@ export class Logger {
           functionName: this.awsContext ? this.awsContext.functionName : ''
         },
         autoBreadcrumbs: {
-          console: true,
+          console: false,
           http: true
         }
       })
