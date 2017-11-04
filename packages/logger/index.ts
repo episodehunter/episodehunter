@@ -28,7 +28,7 @@ export class Logger {
     console.warn(...args);
   }
 
-  captureBreadcrumb(breadcrumb: any) {
+  captureBreadcrumb(breadcrumb: { message: string; category: string; data: object }) {
     raven.captureBreadcrumb(breadcrumb);
   }
 
