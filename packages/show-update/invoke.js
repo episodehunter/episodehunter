@@ -2,7 +2,7 @@ console.time('loading');
 const handler = require('./dist/handler');
 console.timeEnd('loading');
 
-const data = 121361; // theTvDbId
+const data = 73388; // theTvDbId
 
 const event = {
   Records: [
@@ -14,9 +14,15 @@ const event = {
   ]
 };
 
+const timeout = Date.now() + 15000;
+
+function timeLeft() {
+  return timeout - Date.now();
+}
+
 const context = {
   functionName: 'showUpdate-local',
-  getRemainingTimeInMillis: () => 10000
+  getRemainingTimeInMillis: timeLeft
 };
 
 const callback = (error, result) => console.log(error, result);
