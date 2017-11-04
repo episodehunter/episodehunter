@@ -11,7 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/episodehunter/logger.git"
   },
-  "keywords": ["logger"],
+  "keywords": [
+    "logger"
+  ],
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "bugs": {
@@ -19,11 +21,9 @@
   },
   "homepage": "https://github.com/episodehunter/logger#readme",
   "dependencies": {
-    "raven": "^2.1.2"
-  },
-  "devDependencies": {
     "@types/raven": "^2.1.2",
-    "@types/aws-lambda": "0.0.19"
+    "@types/aws-lambda": "0.0.19",
+    "raven": "^2.1.2"
   },
   "engines": {
     "node": "6.1.0"
