@@ -18,9 +18,9 @@ assertRequiredConfig(
 async function updateShowAndEpisodes(theTvDbId: number, db: Connection) {
   const [tShow, tEpisodes] = await getInformationFromTvDb(theTvDbId);
   const show = await updateShowInDb(db, tShow);
-  const { removedEpisodes, updatedEpisodes } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
+  const { addedEpisodes, removedEpisodes, updatedEpisodes } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
   // updateImages(show, updatedEpisodes, removedEpisodes);
-  logger.log(`Updated ${updatedEpisodes.length} episodes. Removed ${removedEpisodes.length} episodes`);
+  logger.log(`Added ${addedEpisodes}, updated: ${updatedEpisodes} and removed ${removedEpisodes} episodes`);
 }
 
 function assertTimeout<T>(fun: (event: T, context: Context) => any) {
@@ -61,7 +61,9 @@ export const update = assertTimeout(async function updateInner(event: SNSEvent, 
       password: process.env.EH_DB_PASSWORD,
       port: process.env.EH_DB_PORT,
       username: process.env.EH_DB_USERNAME,
-      ssl: null
+      ssl: null,
+      logger,
+      consoleAllQuerys: true
     });
     eventEnd();
     await updateShowAndEpisodes(theTvDbId, connection);

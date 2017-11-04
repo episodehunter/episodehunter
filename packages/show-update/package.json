@@ -15,7 +15,7 @@
     "typescript": "^2.3.4"
   },
   "dependencies": {
-    "@episodehunter/datastore": "^1.0.11",
+    "@episodehunter/datastore": "^1.1.0",
     "@episodehunter/logger": "^2.1.1",
     "aws-sdk": "^2.100.0",
     "node-fetch": "^1.7.1",
