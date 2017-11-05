@@ -1,0 +1,53 @@
+{
+  "name": "@episodehunter/kingsguard",
+  "version": "1.0.0",
+  "description": "Kingsguard for episodehunter",
+  "main": "index.js",
+  "scripts": {
+    "prepublishOnly": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episodehunter/kingsguard.git"
+  },
+  "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/episodehunter/kingsguard/issues"
+  },
+  "homepage": "https://github.com/episodehunter/kingsguard#readme",
+  "engines": {
+    "node": "6.1.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 110,
+    "semi": false
+  },
+  "dependencies": {
+    "@episodehunter/datastore": "^1.1.0",
+    "@episodehunter/logger": "^2.1.2",
+    "@types/aws-lambda": "0.0.19",
+    "@types/jest": "^21.1.5"
+  },
+  "devDependencies": {
+    "jest": "^21.2.1",
+    "simple-spy": "^2.1.0",
+    "ts-jest": "^21.1.4",
+    "typescript": "^2.6.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  }
+}
