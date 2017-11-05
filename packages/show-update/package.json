@@ -4,25 +4,35 @@
   "description": "",
   "main": "",
   "scripts": {
-    "start": "tsc -w"
+    "start": "tsc -w",
+    "test": "jest --watch"
   },
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
     "@episodehunter/types": "^1.0.0",
     "@types/aws-lambda": "0.0.16",
+    "@types/jest": "^21.1.5",
     "@types/node": "^7.0.31",
+    "jest": "^21.2.1",
+    "simple-spy": "^2.1.0",
+    "ts-jest": "^21.1.4",
     "typescript": "^2.3.4"
   },
   "dependencies": {
-    "@episodehunter/datastore": "^1.1.0",
-    "@episodehunter/logger": "^2.1.1",
+    "@episodehunter/kingsguard": "^1.0.0",
     "aws-sdk": "^2.100.0",
-    "node-fetch": "^1.7.1",
-    "raven": "^2.0.2"
+    "node-fetch": "^1.7.1"
   },
   "prettier": {
     "singleQuote": true,
     "printWidth": 130
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]
   }
 }

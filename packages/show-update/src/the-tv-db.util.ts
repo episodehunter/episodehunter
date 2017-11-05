@@ -1,34 +1,20 @@
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import { TheTvDbShow, TheTvDbShowEpisode, TheTvDbShowEpisodePage } from '@episodehunter/types/thetvdb';
-import { logger } from './logger';
 
 export async function getInformationFromTvDb(theTvDbId: number) {
   const theTvDbToken = await getTheTvDbToken();
   return await Promise.all([getTvDbShow(theTvDbToken, theTvDbId), getTvDbShowEpisodes(theTvDbToken, theTvDbId)]);
 }
 
-function handelHttpError(res: Response) {
+export function handelHttpError(res: Response) {
   if (!res.ok) {
     throw new Error('Unable to make the http request: ' + res.statusText);
   }
   return res;
 }
 
-const fetchAndLog: typeof fetch = (url: string, init) => {
-  const eventStop = logger.eventStart('Making request to: ' + url);
-  return fetch(url, init)
-    .catch(error => {
-      eventStop();
-      return Promise.reject(error);
-    })
-    .then(data => {
-      eventStop();
-      return data;
-    });
-};
-
-export function getTheTvDbToken(): Promise<string> {
-  return fetchAndLog('https://api.thetvdb.com/login', {
+export function getTheTvDbToken(_fetch = fetch): Promise<string> {
+  return _fetch('https://api.thetvdb.com/login', {
     method: 'POST',
     body: JSON.stringify({
       apikey: process.env.THE_TV_DB_API_KEY,
@@ -41,8 +27,8 @@ export function getTheTvDbToken(): Promise<string> {
     .then(result => result.token);
 }
 
-export function getTvDbShow(token: string, theTvDbId: number): Promise<TheTvDbShow> {
-  return fetchAndLog('https://api.thetvdb.com/series/' + theTvDbId, {
+export function getTvDbShow(token: string, theTvDbId: number, _fetch = fetch): Promise<TheTvDbShow> {
+  return _fetch('https://api.thetvdb.com/series/' + theTvDbId, {
     method: 'GET',
     headers: { Authorization: 'Bearer ' + token }
   })
@@ -51,15 +37,17 @@ export function getTvDbShow(token: string, theTvDbId: number): Promise<TheTvDbSh
     .then(res => res.data);
 }
 
-export async function getTvDbShowEpisodes(token: string, theTvDbId: number, page = 1): Promise<TheTvDbShowEpisode[]> {
+export async function getTvDbShowEpisodes(
+  token: string,
+  theTvDbId: number,
+  page = 1,
+  _fetch = fetch
+): Promise<TheTvDbShowEpisode[]> {
   let episodes: TheTvDbShowEpisode[] = [];
-  const response: TheTvDbShowEpisodePage = await fetchAndLog(
-    `https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`,
-    {
-      method: 'GET',
-      headers: { Authorization: 'Bearer ' + token }
-    }
-  ).then(res => {
+  const response: TheTvDbShowEpisodePage = await _fetch(`https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`, {
+    method: 'GET',
+    headers: { Authorization: 'Bearer ' + token }
+  }).then(res => {
     // The tv db API has a bug where the next page can give a 404
     if (res.status === 404) {
       return {
@@ -75,8 +63,8 @@ export async function getTvDbShowEpisodes(token: string, theTvDbId: number, page
     episodes = response.data;
   }
 
-  if (response.links.next) {
-    episodes.concat(await getTvDbShowEpisodes(token, theTvDbId, response.links.next));
+  if (response.links && response.links.next) {
+    episodes = episodes.concat(await getTvDbShowEpisodes(token, theTvDbId, response.links.next, _fetch));
   }
 
   return episodes;

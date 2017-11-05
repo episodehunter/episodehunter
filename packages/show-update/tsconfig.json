@@ -6,7 +6,7 @@
     "strict": false,
     "noImplicitAny": true,
     "noUnusedLocals": true,
-    "types": ["node"],
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "sourceMap": true
   }
 }

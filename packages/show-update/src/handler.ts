@@ -1,9 +1,7 @@
-import { connect, Connection } from '@episodehunter/datastore';
-import { SNSEvent, Context, Callback } from 'aws-lambda';
+import { guard, assertRequiredConfig } from '@episodehunter/kingsguard';
+import { SNSEvent } from 'aws-lambda';
 import { getInformationFromTvDb } from './the-tv-db.util';
 import { updateEpisodes, updateShowInDb } from './update-show';
-import { assertRequiredConfig } from './util';
-import { logger } from './logger';
 
 assertRequiredConfig(
   'EH_DB_HOST',
@@ -15,33 +13,7 @@ assertRequiredConfig(
   'THE_TV_DB_USER_KEY'
 );
 
-async function updateShowAndEpisodes(theTvDbId: number, db: Connection) {
-  const [tShow, tEpisodes] = await getInformationFromTvDb(theTvDbId);
-  const show = await updateShowInDb(db, tShow);
-  const { addedEpisodes, removedEpisodes, updatedEpisodes } = await updateEpisodes(db, show.id, theTvDbId, tEpisodes);
-  // updateImages(show, updatedEpisodes, removedEpisodes);
-  logger.log(`Added ${addedEpisodes}, updated: ${updatedEpisodes} and removed ${removedEpisodes} episodes`);
-}
-
-function assertTimeout<T>(fun: (event: T, context: Context) => any) {
-  return async (event: T, context: Context, callback: Callback) => {
-    const timeoutId = setTimeout(() => {
-      logger.captureException(new Error(`Timeout in 500ms for ${context.functionName}`));
-    }, context.getRemainingTimeInMillis() - 500);
-    try {
-      const result = await fun(event, context);
-      callback(undefined, result);
-    } catch (error) {
-      logger.captureException(error);
-      callback(error);
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  };
-}
-
-export const update = assertTimeout(async function updateInner(event: SNSEvent, context: Context) {
-  logger.install(context);
+export const update = guard<SNSEvent>(async function updateInner(event, logger, connect) {
   const message = event.Records[0].Sns.Message;
   const theTvDbId = Number(message) | 0;
 
@@ -51,26 +23,16 @@ export const update = assertTimeout(async function updateInner(event: SNSEvent, 
     throw new Error('theTvDbId is not a valid id:' + message);
   }
 
-  let connection: Connection;
-
-  try {
-    const eventEnd = logger.eventStart('connection');
-    connection = await connect({
-      database: process.env.EH_DB_DATABASE,
-      host: process.env.EH_DB_HOST,
-      password: process.env.EH_DB_PASSWORD,
-      port: process.env.EH_DB_PORT,
-      username: process.env.EH_DB_USERNAME,
-      ssl: null,
-      logger,
-      consoleAllQuerys: true
-    });
-    eventEnd();
-    await updateShowAndEpisodes(theTvDbId, connection);
-    return true;
-  } finally {
-    if (connection && connection.close) {
-      connection.close();
-    }
-  }
+  const connection = await connect();
+  const [tShow, tEpisodes] = await getInformationFromTvDb(theTvDbId);
+  const show = await updateShowInDb(connection, logger, tShow);
+  const { addedEpisodes, removedEpisodes, updatedEpisodes } = await updateEpisodes(
+    connection,
+    logger,
+    show.id,
+    theTvDbId,
+    tEpisodes
+  );
+  logger.log(`Added ${addedEpisodes}, updated: ${updatedEpisodes} and removed ${removedEpisodes} episodes`);
+  return true;
 });

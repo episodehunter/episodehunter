@@ -17,7 +17,9 @@
     "no-bitwise": false,
     "trailing-comma": [false],
     "no-var-requires": false,
-    "max-line-length": [true, 150]
+    "max-line-length": [true, 150],
+    "variable-name": false,
+    "interface-over-type-literal": false
   },
   "rulesDirectory": []
 }

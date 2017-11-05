@@ -1,22 +1,26 @@
 import * as AWS from 'aws-sdk';
-import { entities } from '@episodehunter/datastore';
 import { Image as ImageMessage } from '@episodehunter/types/sns-message';
-import { logger } from './logger';
+import { Logger, entities } from '@episodehunter/kingsguard';
 
 const sns = new AWS.SNS();
 
-const publishUpdateImages = (obj: ImageMessage) =>
+const publishUpdateImages = (log: Logger, obj: ImageMessage) =>
   sns
     .publish({
       Message: JSON.stringify(obj),
       TopicArn: ''
     })
     .promise()
-    .catch(error => logger.captureException(error));
+    .catch(error => log.captureException(error));
 
-export function updateImages(show: entities.Show, updateEpisodes: entities.Episode[], removedEpisodes: entities.Episode[]) {
+export function updateImages(
+  log: Logger,
+  show: entities.Show,
+  updateEpisodes: entities.Episode[],
+  removedEpisodes: entities.Episode[]
+) {
   if (!show.poster) {
-    publishUpdateImages({
+    publishUpdateImages(log, {
       action: 'add',
       id: show.id,
       theTvDbId: show.tvdb_id,
@@ -25,7 +29,7 @@ export function updateImages(show: entities.Show, updateEpisodes: entities.Episo
     });
   }
   if (!show.fanart) {
-    publishUpdateImages({
+    publishUpdateImages(log, {
       action: 'add',
       id: show.id,
       theTvDbId: show.tvdb_id,
@@ -34,7 +38,7 @@ export function updateImages(show: entities.Show, updateEpisodes: entities.Episo
     });
   }
   updateEpisodes.filter(episode => !Boolean(episode.image)).forEach(episode => {
-    publishUpdateImages({
+    publishUpdateImages(log, {
       action: 'add',
       id: episode.id,
       theTvDbId: episode.tvdb_id,
@@ -43,7 +47,7 @@ export function updateImages(show: entities.Show, updateEpisodes: entities.Episo
     });
   });
   removedEpisodes.filter(episode => !Boolean(episode.image)).forEach(episode => {
-    publishUpdateImages({
+    publishUpdateImages(log, {
       action: 'remove',
       id: episode.id,
       theTvDbId: episode.tvdb_id,
