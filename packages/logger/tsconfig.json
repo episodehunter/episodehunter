@@ -6,6 +6,7 @@
     "sourceMap": true,
     "outDir": "./",
     "strict": true,
+    "strictPropertyInitialization": false,
     "noUnusedLocals": true
   },
   "files": ["index.ts"]
