@@ -4,9 +4,17 @@
     "module": "commonjs",
     "outDir": "./dist",
     "strict": false,
-    "noImplicitAny": true,
+    "lib": ["es2017", "dom", "esnext.asynciterable"],
+    "noImplicitAny": false,
     "noUnusedLocals": true,
     "moduleResolution": "node",
-    "sourceMap": true
+    "sourceMap": true,
+    "plugins": [
+      {
+        "name": "ts-graphql-plugin",
+        "schema": "src/schema.json",
+        "tag": "gql"
+      }
+    ]
   }
 }

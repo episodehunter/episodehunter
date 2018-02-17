@@ -16,13 +16,16 @@
     "@types/node": "^7.0.54",
     "jest": "^21.2.1",
     "simple-spy": "^2.2.1",
+    "ts-graphql-plugin": "^1.1.2",
     "ts-jest": "^21.2.4",
     "typescript": "^2.7.1"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^1.0.0",
     "aws-sdk": "^2.192.0",
-    "node-fetch": "^1.7.3"
+    "graphql-request": "^1.4.1",
+    "node-fetch": "^1.7.3",
+    "ramda": "^0.25.0"
   },
   "prettier": {
     "singleQuote": true,

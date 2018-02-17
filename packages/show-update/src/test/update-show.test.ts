@@ -1,5 +1,5 @@
 import { spy } from 'simple-spy';
-import { unixtimestamp, updateShow, updateEpisode, isSameEpisode, updateEpisodes } from '../update-show';
+import { unixtimestamp, updateShowProperties, updateEpisode, isSameEpisode, updateEpisodes } from '../update-show';
 
 test('unixtimestamp', () => {
   const result = unixtimestamp();
@@ -15,7 +15,7 @@ test('Do not overwrite show name with null', () => {
   const tShow = {
     seriesName: null as null | string
   };
-  const updatedShow = updateShow(show as any, tShow as any);
+  const updatedShow = updateShowProperties(show as any, tShow as any);
 
   expect(updatedShow.name).toBe('Game of thrones');
 });

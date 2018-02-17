@@ -2,7 +2,7 @@ console.time('loading');
 const handler = require('./dist/handler');
 console.timeEnd('loading');
 
-const data = 73388; // theTvDbId
+const data = 121361; // theTvDbId
 
 const event = {
   Records: [
