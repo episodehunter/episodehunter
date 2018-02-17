@@ -21,7 +21,7 @@
     "typescript": "^2.7.1"
   },
   "dependencies": {
-    "@episodehunter/kingsguard": "^1.0.0",
+    "@episodehunter/kingsguard": "^2.0.0",
     "aws-sdk": "^2.192.0",
     "graphql-request": "^1.4.1",
     "node-fetch": "^1.7.3",
