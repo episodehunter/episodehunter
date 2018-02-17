@@ -1,7 +1,7 @@
 import { EpisodeDefinitionType } from './episode-definition.type';
 
 export type ShowDefinitionType = {
-  id: number;
+  id?: number;
   tvdbId: number;
   imdbId: string;
   name: string;
@@ -9,13 +9,13 @@ export type ShowDefinitionType = {
   airsTime: string;
   firstAired: string;
   genre: string[];
-  language: string;
+  language?: string; // Deprecated
   network: string;
   overview: string;
   runtime: number;
   ended: boolean;
-  fanart: string;
-  poster: string;
+  fanart?: string;
+  poster?: string;
   episodes?: EpisodeDefinitionType[];
   lastupdate: number;
 };

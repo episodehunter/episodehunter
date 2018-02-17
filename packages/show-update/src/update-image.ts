@@ -1,58 +1,36 @@
-import * as AWS from 'aws-sdk';
-import { Image as ImageMessage } from '@episodehunter/types/sns-message';
-import { Logger, entities } from '@episodehunter/kingsguard';
+import { ShowDefinitionType } from './types/show-definition.type';
+import { EpisodeDefinitionType } from './types/episode-definition.type';
 
-const sns = new AWS.SNS();
-
-const publishUpdateImages = (log: Logger, obj: ImageMessage) =>
-  sns
-    .publish({
-      Message: JSON.stringify(obj),
-      TopicArn: ''
-    })
-    .promise()
-    .catch(error => log.captureException(error));
-
-export function updateImages(
-  log: Logger,
-  show: entities.Show,
-  updateEpisodes: entities.Episode[],
-  removedEpisodes: entities.Episode[]
-) {
-  if (!show.poster) {
-    publishUpdateImages(log, {
-      action: 'add',
-      id: show.id,
-      theTvDbId: show.tvdb_id,
-      media: 'show',
-      type: 'poster'
-    });
-  }
+export function requestShowFanartIfMissing(show: ShowDefinitionType) {
   if (!show.fanart) {
-    publishUpdateImages(log, {
+    return Promise.resolve({
+      type: 'fanart',
       action: 'add',
-      id: show.id,
-      theTvDbId: show.tvdb_id,
-      media: 'show',
-      type: 'fanart'
+      tvdbId: show.tvdbId
     });
   }
-  updateEpisodes.filter(episode => !Boolean(episode.image)).forEach(episode => {
-    publishUpdateImages(log, {
+  return Promise.resolve();
+}
+
+export function requestShowPosterIfMissing(show: ShowDefinitionType) {
+  if (!show.poster) {
+    return Promise.resolve({
+      type: 'poster',
       action: 'add',
-      id: episode.id,
-      theTvDbId: episode.tvdb_id,
-      media: 'show',
-      type: 'episode'
+      tvdbId: show.tvdbId
     });
-  });
-  removedEpisodes.filter(episode => !Boolean(episode.image)).forEach(episode => {
-    publishUpdateImages(log, {
-      action: 'remove',
-      id: episode.id,
-      theTvDbId: episode.tvdb_id,
-      media: 'show',
-      type: 'episode'
-    });
-  });
+  }
+  return Promise.resolve();
+}
+
+export function requestEpisodesImagesIfMissing(episodes: EpisodeDefinitionType[]) {
+  return Promise.all(
+    episodes.map(episode =>
+      Promise.resolve({
+        type: 'episode',
+        action: 'add',
+        tvdbId: episode.tvdbId
+      })
+    )
+  );
 }
