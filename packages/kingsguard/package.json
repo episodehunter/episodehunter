@@ -1,11 +1,11 @@
 {
   "name": "@episodehunter/kingsguard",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Kingsguard for episodehunter",
   "main": "index.js",
   "scripts": {
     "prepublishOnly": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -26,12 +26,11 @@
     "semi": false
   },
   "dependencies": {
-    "@episodehunter/datastore": "^1.1.0",
     "@episodehunter/logger": "^2.1.2",
-    "@types/aws-lambda": "0.0.19",
-    "@types/jest": "^21.1.5"
+    "@types/aws-lambda": "0.0.19"
   },
   "devDependencies": {
+    "@types/jest": "^21.1.5",
     "jest": "^21.2.1",
     "simple-spy": "^2.1.0",
     "ts-jest": "^21.1.4",
