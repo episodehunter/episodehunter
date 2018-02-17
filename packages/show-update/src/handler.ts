@@ -4,7 +4,7 @@ import { updateShow } from './update-show';
 
 assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_KEEP_TOKEN', 'THE_TV_DB_API_KEY', 'THE_TV_DB_USER_KEY');
 
-export const update = guard<SNSEvent>(async function updateInner(event, logger) {
+export const update = guard<SNSEvent>(function updateInner(event, logger) {
   const message = event.Records[0].Sns.Message;
   const theTvDbId = Number(message) | 0;
 
