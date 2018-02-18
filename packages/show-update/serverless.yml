@@ -9,7 +9,7 @@ provider:
   runtime: nodejs6.10
   stage: dev
   region: us-east-1
-  timeout: 10
+  timeout: 25
   versionFunctions: false
   environment: ${self:custom.env}
 
