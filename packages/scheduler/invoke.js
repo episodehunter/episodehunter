@@ -1,10 +1,17 @@
 const handler = require('./dist/handler');
 
-function callback(error, data) {
-  if (error) {
-    throw error;
-  }
-  console.log(data);
+const event = null;
+
+const timeout = Date.now() + 60 * 60 * 1000;
+
+function timeLeft() {
+  return timeout - Date.now();
 }
 
-handler.update(null, null, callback);
+const context = {
+  functionName: 'showDelegator-local',
+  getRemainingTimeInMillis: timeLeft
+};
+
+const callback = (error, result) => console.log(error, result);
+handler.update(event, context, callback);

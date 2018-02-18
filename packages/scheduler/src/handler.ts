@@ -1,13 +1,10 @@
-import { connect, Connection } from '@episodehunter/datastore';
+import { guard, assertRequiredConfig } from '@episodehunter/kingsguard';
 import { TheTvDbUpdatedShowId } from '@episodehunter/types/thetvdb';
-import { SNSEvent, Context, Callback } from 'aws-lambda';
-import * as assertRequiredConfig from 'assert-env';
 import { getLastUpdateShows } from './the-tv-db.util';
-import { getLastUpdated, getExistingShows, updateLastUpdate } from './database.util';
-import { logger } from './logger';
+import { getExistingShows } from './red-keep.util';
 import { publishUpdateShow } from './sns';
 
-assertRequiredConfig(['EH_DB_HOST', 'EH_DB_PORT', 'EH_DB_USERNAME', 'EH_DB_PASSWORD', 'EH_DB_DATABASE']);
+assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_KEEP_TOKEN', 'THE_TV_DB_API_KEY', 'THE_TV_DB_USER_KEY', 'EH_SNS_UPDATE_SHOW');
 
 function* groupIds(ids: TheTvDbUpdatedShowId[]) {
   while (ids.length > 0) {
@@ -15,45 +12,28 @@ function* groupIds(ids: TheTvDbUpdatedShowId[]) {
   }
 }
 
-async function emitUpdates(connection: Connection): Promise<number> {
-  const now = unixtimestamp();
-  const lastUpdate = await getLastUpdated(connection);
-  const ids = await getLastUpdateShows(lastUpdate);
+async function emitUpdates(): Promise<number> {
+  const twoHoursAgo = unixtimestamp() - twoHours;
+  const ids = await getLastUpdateShows(twoHoursAgo);
+
   const publishingUpdateShows: Array<Promise<any>> = [];
+
   for (const idGroup of groupIds(ids)) {
-    const showsToUpdate = await getExistingShows(connection, idGroup);
-    publishingUpdateShows.concat(showsToUpdate.map(theTvDbId => publishUpdateShow(theTvDbId)));
+    const showsToUpdate = await getExistingShows(idGroup);
+    publishingUpdateShows.push(...showsToUpdate.map(show => publishUpdateShow(show.tvdbId)));
   }
+
   await Promise.all(publishingUpdateShows);
-  await updateLastUpdate(connection, now);
   return publishingUpdateShows.length;
 }
 
-export function unixtimestamp() {
+function unixtimestamp() {
   return (Date.now() / 1000) | 0;
 }
 
-export async function update(event: SNSEvent, context: Context, callback: Callback) {
-  let connection: Connection;
+const twoHours = 7200;
 
-  try {
-    connection = await connect({
-      database: process.env.EH_DB_DATABASE,
-      host: process.env.EH_DB_HOST,
-      password: process.env.EH_DB_PASSWORD,
-      port: process.env.EH_DB_PORT,
-      username: process.env.EH_DB_USERNAME,
-      ssl: null
-    });
-    const numberOfRequestedUpdates = await emitUpdates(connection);
-    console.log(`Request ${numberOfRequestedUpdates} shows to be updated`);
-    callback(null, numberOfRequestedUpdates);
-  } catch (error) {
-    logger.captureException(error);
-    callback(error);
-  } finally {
-    if (connection && connection.close) {
-      connection.close();
-    }
-  }
-}
+export const update = guard(function updateInner(event, logger) {
+  logger.log('Start a mass update of shows');
+  return emitUpdates();
+});
