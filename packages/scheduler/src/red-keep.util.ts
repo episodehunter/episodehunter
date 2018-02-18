@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
 
-const client = new GraphQLClient(process.env.EH_RED_KEEP_API, {
+const client = new GraphQLClient(process.env.EH_RED_KEEP_URL, {
   headers: { Authorization: `Bearer ${process.env.EH_RED_KEEP_TOKEN}` }
 });
 
