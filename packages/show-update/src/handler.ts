@@ -14,7 +14,5 @@ export const update = guard<SNSEvent>(function updateInner(event, logger) {
     throw new Error('theTvDbId is not a valid id:' + message);
   }
 
-  return updateShow(theTvDbId)
-    .then(result => console.log(result))
-    .catch(error => console.error(error));
+  return updateShow(theTvDbId);
 });
