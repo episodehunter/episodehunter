@@ -60,7 +60,7 @@ export async function getTvDbShowEpisodes(
     return res.json();
   });
 
-  if (response.links && response.links.last && response.links.last > 5) {
+  if (response.links && response.links.last && response.links.last > 30) {
     throw new TooManyEpisodes(`Number of episodes pages: ${response.links.last}`);
   }
 
