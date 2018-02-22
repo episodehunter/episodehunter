@@ -1,5 +1,6 @@
 import fetch, { Response } from 'node-fetch';
 import { TheTvDbShow, TheTvDbShowEpisode, TheTvDbShowEpisodePage } from '@episodehunter/types/thetvdb';
+import { TooManyEpisodes } from './custom-erros';
 
 export async function getInformationFromTvDb(theTvDbId: number) {
   const theTvDbToken = await getTheTvDbToken();
@@ -58,6 +59,10 @@ export async function getTvDbShowEpisodes(
     handelHttpError(res);
     return res.json();
   });
+
+  if (response.links && response.links.last && response.links.last > 5) {
+    throw new TooManyEpisodes(`Number of episodes pages: ${response.links.last}`);
+  }
 
   if (Array.isArray(response.data)) {
     episodes = response.data;

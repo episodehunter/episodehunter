@@ -1,9 +1,11 @@
+import { Logger } from '@episodehunter/kingsguard';
 import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/types/thetvdb';
 import { getInformationFromTvDb } from './the-tv-db.util';
 import { ShowDefinitionType } from './types/show-definition.type';
 import { EpisodeDefinitionType } from './types/episode-definition.type';
 import { updateShowRequest } from './red-keep.util';
 import { requestEpisodesImagesIfMissing, requestShowPosterIfMissing, requestShowFanartIfMissing } from './update-image';
+import { InsufficientShowInformation } from './custom-erros';
 
 function safeMap<T, R>(fu: (a: T) => R): (arr: T[]) => R[] {
   return (arr: T[]) => (Array.isArray(arr) ? arr.map(fu) : []);
@@ -28,7 +30,7 @@ function assertShow(show: TheTvDbShow) {
   if (Boolean(show.seriesName && show.id && show.lastUpdated)) {
     return show;
   }
-  throw new Error('Insufficient information about show ' + show.id);
+  throw new InsufficientShowInformation('Insufficient information about show ' + show.id);
 }
 
 function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): EpisodeDefinitionType {
@@ -61,10 +63,17 @@ function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpis
   };
 }
 
-export function updateShow(tvDbId: number) {
+export function updateShow(logger: Logger, tvDbId: number) {
+  const tapLogger = (msg: string) => <T>(value: T): T => {
+    logger.captureMessage(msg);
+    return value;
+  };
   return getInformationFromTvDb(tvDbId)
+    .then(tapLogger('Got information from the tv db, start mapping'))
     .then(([tShow, tEpisodes]) => mapTheTvShowToDefinition(assertShow(tShow), tEpisodes))
+    .then(tapLogger('Update show in red keep'))
     .then(showDef => updateShowRequest(showDef))
+    .then(tapLogger('Done and done!'))
     .then(showDef =>
       Promise.all<any>([
         requestEpisodesImagesIfMissing(showDef.episodes),
