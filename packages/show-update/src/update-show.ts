@@ -4,7 +4,6 @@ import { getInformationFromTvDb } from './the-tv-db.util';
 import { ShowDefinitionType } from './types/show-definition.type';
 import { EpisodeDefinitionType } from './types/episode-definition.type';
 import { updateShowRequest } from './red-keep.util';
-import { requestEpisodesImagesIfMissing, requestShowPosterIfMissing, requestShowFanartIfMissing } from './update-image';
 import { InsufficientShowInformation } from './custom-erros';
 
 function safeMap<T, R>(fu: (a: T) => R): (arr: T[]) => R[] {
@@ -73,12 +72,5 @@ export function updateShow(logger: Logger, tvDbId: number) {
     .then(([tShow, tEpisodes]) => mapTheTvShowToDefinition(assertShow(tShow), tEpisodes))
     .then(tapLogger('Update show in red keep'))
     .then(showDef => updateShowRequest(showDef))
-    .then(tapLogger('Done and done!'))
-    .then(showDef =>
-      Promise.all<any>([
-        requestEpisodesImagesIfMissing(showDef.episodes),
-        requestShowPosterIfMissing(showDef),
-        requestShowFanartIfMissing(showDef)
-      ])
-    );
+    .then(tapLogger('Done and done!'));
 }

@@ -8,14 +8,9 @@ const client = new GraphQLClient(process.env.EH_RED_KEEP_URL, {
 
 export function updateShowRequest(showDef: ShowDefinitionType) {
   const query = gql`
-    mutation UpdateShowAndGetMissingImg($showInput: ShowInput!) {
+    mutation UpdateShow($showInput: ShowInput!) {
       showUpdate(show: $showInput) {
-        tvdbId
-        poster
-        fanart
-        episodes(onlyMissingImages: true) {
-          tvdbId
-        }
+        id
       }
     }
   `;
