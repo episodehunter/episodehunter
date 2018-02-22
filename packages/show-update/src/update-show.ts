@@ -64,7 +64,7 @@ function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpis
 
 export function updateShow(logger: Logger, tvDbId: number) {
   const tapLogger = (msg: string) => <T>(value: T): T => {
-    logger.captureMessage(msg);
+    logger.captureBreadcrumb({ message: msg, category: 'debug', data: undefined });
     return value;
   };
   return getInformationFromTvDb(tvDbId)
