@@ -1,11 +1,11 @@
 .vscode
 bucket
-node_modules
 src
 .editorconfig
 .gitignore
 .prettierignore
-.travis
+.travis.yml
 invoke.js
 tsconfig.json
 wallaby.js
+!package-lock.json
