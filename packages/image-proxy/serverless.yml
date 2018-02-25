@@ -1,4 +1,4 @@
-service: image-master
+service: images
 
 custom:
   stage: "${opt:stage, self:provider.stage}"
@@ -10,6 +10,11 @@ provider:
   region: us-east-1
   versionFunctions: false
   environment: ${file(env.yml):${self:custom.stage}}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: "arn:aws:s3:::${self:custom.env.BUCKET_NAME}/*"
 
 package:
   include:
@@ -21,6 +26,8 @@ package:
 
 functions:
   update:
-    handler: dist/handler.update
+    handler: dist/handler.handler
     events:
-      - sns: ${self:custom.env.EH_SNS_IMAGE}
+      - http:
+          path: images
+          method: get
