@@ -1,5 +1,5 @@
 {
-  "name": "thetvdb",
+  "name": "@episodehunter/thetvdb",
   "description": "",
   "version": "1.0.0",
   "scripts": {
