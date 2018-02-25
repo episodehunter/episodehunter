@@ -1,33 +1,26 @@
+process.env.EH_RAVEN_DSN = 'missing';
+process.env.EH_RAVEN_PROJECT = 'missing';
+process.env.THE_TV_DB_API_KEY = process.argv[2];
+process.env.THE_TV_DB_USER_KEY = process.argv[3];
+process.env.BUCKET_NAME = process.argv[4];
+process.env.BUCKET_URL = process.argv[5] || 'https://d1lolx4ilifvdr.cloudfront.net';
+const key = process.argv[6] || '/poster/80379.jpg';
+
 const handler = require('./dist/handler');
 
-const data = [
-  {
-    media: 'show',
-    type: 'poster',
-    action: 'add',
-    id: 10,
-    path: 'some/path/to/image.jpg'
-  },
-  {
-    media: 'show',
-    type: 'episode',
-    action: 'add',
-    id: 10,
-    theTvDbId: 1000,
-    path: 'some/path/to/episode/image.jpg'
-  }
-];
-
-const callback = (error, result) => console.log(error, result);
-
 const event = {
-  Records: [
-    {
-      Sns: {
-        Message: JSON.stringify(data)
-      }
-    }
-  ]
+  queryStringParameters: {
+    key
+  }
 };
 
-handler.update(event, null, callback);
+const logger = {
+  log(...msgs) {
+    console.log(...msgs);
+  }
+};
+
+handler
+  .imageFetcher(event, logger)
+  .then(result => console.log(result))
+  .catch(error => console.error(error));
