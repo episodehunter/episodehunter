@@ -100,6 +100,23 @@ test('Get updated show list', async () => {
   expect(result).toEqual([show])
 })
 
+test('Return a not found error', () => {
+  // Arrange
+  const res = {
+    ok: false,
+    status: 404
+  }
+  const fetch = () => Promise.resolve(res)
+  const theTvDb = new TheTvDb('apikey', 'userkey', fetch as any)
+  theTvDb.jwt = Promise.resolve('token')
+
+  // Act and Assert
+  return expect(theTvDb.fetchLastUpdateShowsList(1)).rejects.toHaveProperty(
+    'name',
+    'NotFound'
+  )
+})
+
 describe('getTvDbShowEpisodes', () => {
   test('Get one page of episodes', async () => {
     // Arrange

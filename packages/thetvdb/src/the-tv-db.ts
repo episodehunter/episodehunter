@@ -1,5 +1,5 @@
 import fetch, { Response } from 'node-fetch'
-import { TooManyEpisodes } from './custom-erros'
+import { TooManyEpisodes, NotFound } from './custom-erros'
 import {
   TheTvDbShow,
   TheTvDbShowEpisode,
@@ -150,6 +150,9 @@ export function getHigestRating(images: TheTvDbShowImage[]): TheTvDbShowImage {
 }
 
 export function handelHttpError(res: Response) {
+  if (res.status === 404) {
+    throw new NotFound()
+  }
   if (!res.ok) {
     throw new Error('Unable to make the http request: ' + res.statusText)
   }
