@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2015",
+    "noEmit": false,
+    "moduleResolution": "node",
+    "lib": ["es2015"],
+    "strict": false,
+    "noImplicitThis": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedParameters": true,
+    "strictPropertyInitialization": false,
+    "allowUnusedLabels": false,
+    "sourceMap": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "outDir": "dist",
+    "rootDir": "./src",
+    "pretty": true
+  }
+}
