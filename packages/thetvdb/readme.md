@@ -13,12 +13,12 @@ $ npm install @episodehunter/thetvdb
 ## Usage
 
 ```js
-const theTvDb = new TheTvDb(apikey, userkey)
+const theTvDb = new TheTvDb(apikey)
 ```
 
 ## API
 
-#### `constructor(apikey: string, userkey: string)`
+#### `constructor(apikey: string)`
 
 Creates an instance of `TheTvDb`
 
