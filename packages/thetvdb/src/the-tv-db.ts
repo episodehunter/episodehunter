@@ -11,13 +11,11 @@ import {
 
 export class TheTvDb {
   private apikey: string
-  private userkey: string
   private fetch: typeof fetch
   jwt: Promise<string>
 
-  constructor(apikey: string, userkey: string, _fetch = fetch) {
+  constructor(apikey: string, _fetch = fetch) {
     this.apikey = apikey
-    this.userkey = userkey
     this.fetch = _fetch
   }
 
@@ -128,8 +126,7 @@ export class TheTvDb {
     return this.fetch('https://api.thetvdb.com/login', {
       method: 'POST',
       body: JSON.stringify({
-        apikey: this.apikey,
-        userkey: this.userkey
+        apikey: this.apikey
       }),
       headers: { 'Content-Type': 'application/json' }
     })
