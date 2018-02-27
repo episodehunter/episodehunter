@@ -2,6 +2,7 @@ service: images
 
 custom:
   stage: "${opt:stage, self:provider.stage}"
+  env: ${file(env.yml):${self:custom.stage}}
 
 provider:
   name: aws
@@ -9,20 +10,19 @@ provider:
   stage: dev
   region: us-east-1
   versionFunctions: false
-  environment: ${file(env.yml):${self:custom.stage}}
+  environment: ${self:custom.env}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - s3:PutObject
+        - s3:PutObjectAcl
       Resource: "arn:aws:s3:::${self:custom.env.BUCKET_NAME}/*"
 
 package:
-  include:
-    - dist/**
-    - node_modules/**
   exclude:
-    - src/**
+    - test/**
     - env.yml
+    - invoke.js
 
 functions:
   update:
