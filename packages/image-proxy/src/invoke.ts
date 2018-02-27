@@ -6,21 +6,21 @@ process.env.BUCKET_NAME = process.argv[4];
 process.env.BUCKET_URL = process.argv[5] || 'https://d1lolx4ilifvdr.cloudfront.net';
 const key = process.argv[6] || '/poster/80379.jpg';
 
-const handler = require('./dist/handler');
+const handler = require('./handler');
 
-const event = {
+const customEvent = {
   queryStringParameters: {
     key
   }
 };
 
 const logger = {
-  log(...msgs) {
+  log(...msgs: string[]) {
     console.log(...msgs);
   }
 };
 
 handler
-  .imageFetcher(event, logger)
-  .then(result => console.log(result))
-  .catch(error => console.error(error));
+  .imageFetcher(customEvent, logger)
+  .then((result: any) => console.log(result))
+  .catch((error: any) => console.error(error));

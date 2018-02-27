@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc -w",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "exce": "docker run --rm --volume ${PWD}/dist:/build amazonlinux:nodejs node invoke.js"
   },
   "repository": {
     "type": "git",
