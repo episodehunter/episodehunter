@@ -7,9 +7,9 @@ import { imageInformation, ImageInformation } from './util';
 import { BadRequest } from './custom-error';
 import { BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE, move } from './response';
 
-assertRequiredConfig('BUCKET_NAME', 'BUCKET_URL', 'THE_TV_DB_API_KEY', 'THE_TV_DB_USER_KEY');
+assertRequiredConfig('BUCKET_NAME', 'BUCKET_URL', 'THE_TV_DB_API_KEY');
 
-const theTvDb = new TheTvDb(process.env.THE_TV_DB_API_KEY, process.env.THE_TV_DB_USER_KEY);
+const theTvDb = new TheTvDb(process.env.THE_TV_DB_API_KEY);
 const s3 = new S3();
 
 const ALLOWED_RESOLUTIONS = new Map([[185, 273], [216, 122]]); // [ width, height ]

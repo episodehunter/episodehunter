@@ -12,7 +12,9 @@
     "type": "git",
     "url": "git+https://github.com/episodehunter/image-master.git"
   },
-  "keywords": ["serverless"],
+  "keywords": [
+    "serverless"
+  ],
   "bugs": {
     "url": "https://github.com/episodehunter/image-master/issues"
   },
@@ -31,7 +33,7 @@
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^2.0.0",
-    "@episodehunter/thetvdb": "^1.1.7",
+    "@episodehunter/thetvdb": "^2.0.1",
     "aws-sdk": "^2.125.0",
     "sharp": "^0.19.1"
   },
@@ -40,7 +42,12 @@
       "^.+\\.(j|t)sx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "src/.*(__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
   },
   "prettier": {
     "singleQuote": true,
