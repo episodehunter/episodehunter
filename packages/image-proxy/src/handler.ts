@@ -42,6 +42,7 @@ function saveImage(buffer: Buffer, key: string) {
       Key: key,
       Body: buffer,
       ContentType: 'image/jpeg',
+      CacheControl: 'max-age=86400',
       ACL: 'public-read'
     })
     .promise();
