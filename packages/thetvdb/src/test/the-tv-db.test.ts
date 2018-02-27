@@ -1,6 +1,7 @@
 import * as url from 'url'
 import { spy } from 'simple-spy'
 import { handelHttpError, TheTvDb, getHigestRating } from '../the-tv-db'
+import { NotFound } from '../custom-erros'
 
 describe('handelHttpError', () => {
   test('reject when not okay', () => {
@@ -304,4 +305,70 @@ test('Get higest rating image', () => {
 
   // Assert
   expect(result.ratingsInfo.average).toBe(9)
+})
+
+describe('Episode image', () => {
+  test('Fetch image', async () => {
+    // Arrange
+    const apikey = 'apikey'
+    const episodeId = 123
+    const res = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: {
+              filename: 'some-image.jpg'
+            }
+          })
+      },
+      {
+        ok: true,
+        buffer: () => Promise.resolve('buffer')
+      }
+    ]
+    const fetch = spy((url: string) => {
+      if (url === 'https://api.thetvdb.com/episodes/123') {
+        return Promise.resolve(res[0])
+      } else if (url === 'https://www.thetvdb.com/banners/some-image.jpg') {
+        return Promise.resolve(res[1])
+      }
+    })
+    const theTvDb = new TheTvDb(apikey, fetch as any)
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act
+    const result = await theTvDb.fetchEpisodeImage(episodeId)
+
+    // Assert
+    expect(result).toBe('buffer')
+    expect(fetch.callCount).toBe(2)
+  })
+
+  test('Throw an 404 if there is no image', async () => {
+    // Arrange
+    const apikey = 'apikey'
+    const episodeId = 123
+    const res = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: {
+              filename: ''
+            }
+          })
+      }
+    ]
+    const fetch = spy((url: string) => {
+      if (url === 'https://api.thetvdb.com/episodes/123') {
+        return Promise.resolve(res[0])
+      }
+    })
+    const theTvDb = new TheTvDb(apikey, fetch as any)
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act and Assert
+    return expect(theTvDb.fetchEpisodeImage(episodeId)).rejects.toBeInstanceOf(NotFound)
+  })
 })

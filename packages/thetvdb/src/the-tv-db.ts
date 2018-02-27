@@ -80,6 +80,7 @@ export class TheTvDb {
       .then(res => res.json())
       .then(res => res.data)
       .then((episode: TheTvDbEpisode) => episode.filename)
+      .then(rejectIfNot(new NotFound()))
       .then(filename => this.fetchImage(filename))
   }
 
@@ -161,4 +162,8 @@ function ensureArray(data: any) {
     return data
   }
   return []
+}
+
+function rejectIfNot(error) {
+  return val => (val ? val : Promise.reject(error))
 }
