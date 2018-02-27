@@ -1,6 +1,6 @@
 import * as url from 'url'
 import { spy } from 'simple-spy'
-import { handelHttpError, TheTvDb, getHigestRating } from '../the-tv-db'
+import { handelHttpError, TheTvDb, getHigestRating, ensureArray } from '../the-tv-db'
 import { NotFound } from '../custom-erros'
 
 describe('handelHttpError', () => {
@@ -370,5 +370,183 @@ describe('Episode image', () => {
 
     // Act and Assert
     return expect(theTvDb.fetchEpisodeImage(episodeId)).rejects.toBeInstanceOf(NotFound)
+  })
+})
+
+describe('Show poster', () => {
+  test('Fetch poster', async () => {
+    // Arrange
+    const apikey = 'apikey'
+    const showId = 123
+    const res = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [
+              {
+                fileName: 'posters/121361-1.jpg',
+                ratingsInfo: {
+                  average: 5.5,
+                  count: 29
+                }
+              },
+              {
+                fileName: 'posters/121361-2.jpg',
+                ratingsInfo: {
+                  average: 6,
+                  count: 1
+                }
+              }
+            ]
+          })
+      },
+      {
+        ok: true,
+        buffer: () => Promise.resolve('buffer')
+      }
+    ]
+    const fetch = spy((url: string) => {
+      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=poster') {
+        return Promise.resolve(res[0])
+      } else if (url === 'https://www.thetvdb.com/banners/posters/121361-2.jpg') {
+        return Promise.resolve(res[1])
+      }
+    })
+    const theTvDb = new TheTvDb(apikey, fetch as any)
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act
+    const result = await theTvDb.fetchShowPoster(showId)
+
+    // Assert
+    expect(result).toBe('buffer')
+    expect(fetch.callCount).toBe(2)
+  })
+
+  test('Return a 404 when there is no poster', async () => {
+    // Arrange
+    const apikey = 'apikey'
+    const showId = 123
+    const res = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: []
+          })
+      }
+    ]
+    const fetch = spy((url: string) => {
+      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=poster') {
+        return Promise.resolve(res[0])
+      }
+    })
+    const theTvDb = new TheTvDb(apikey, fetch as any)
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act and Assert
+    return expect(theTvDb.fetchShowPoster(showId)).rejects.toBeInstanceOf(NotFound)
+  })
+})
+
+describe('Show fanart', () => {
+  test('Fetch fanart', async () => {
+    // Arrange
+    const apikey = 'apikey'
+    const showId = 123
+    const res = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [
+              {
+                fileName: 'fanart/original/121361-1.jpg',
+                ratingsInfo: {
+                  average: 5.5,
+                  count: 29
+                }
+              },
+              {
+                fileName: 'fanart/original/121361-2.jpg',
+                ratingsInfo: {
+                  average: 6,
+                  count: 1
+                }
+              }
+            ]
+          })
+      },
+      {
+        ok: true,
+        buffer: () => Promise.resolve('buffer')
+      }
+    ]
+    const fetch = spy((url: string) => {
+      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=fanart') {
+        return Promise.resolve(res[0])
+      } else if (url === 'https://www.thetvdb.com/banners/fanart/original/121361-2.jpg') {
+        return Promise.resolve(res[1])
+      }
+    })
+    const theTvDb = new TheTvDb(apikey, fetch as any)
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act
+    const result = await theTvDb.fetchShowFanart(showId)
+
+    // Assert
+    expect(result).toBe('buffer')
+    expect(fetch.callCount).toBe(2)
+  })
+
+  test('Return a 404 when there is no fanart', async () => {
+    // Arrange
+    const apikey = 'apikey'
+    const showId = 123
+    const res = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: []
+          })
+      }
+    ]
+    const fetch = spy((url: string) => {
+      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=fanart') {
+        return Promise.resolve(res[0])
+      }
+    })
+    const theTvDb = new TheTvDb(apikey, fetch as any)
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act and Assert
+    return expect(theTvDb.fetchShowFanart(showId)).rejects.toBeInstanceOf(NotFound)
+  })
+})
+
+describe('ensureArray', () => {
+  test('Ensure we have an array', () => {
+    // Arrange
+    const arr = [1, 2]
+
+    // Act
+    const result = ensureArray(arr)
+
+    // Assert
+    expect(result).toBe(arr)
+  })
+
+  test('Convert non-array object to an array', () => {
+    // Arrange
+    const arr = null
+
+    // Act
+    const result = ensureArray(arr)
+
+    // Assert
+    expect(result).toEqual([])
   })
 })

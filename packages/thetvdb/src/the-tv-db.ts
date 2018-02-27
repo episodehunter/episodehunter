@@ -92,6 +92,7 @@ export class TheTvDb {
       .then(res => res.json())
       .then(res => res.data)
       .then(getHigestRating)
+      .then(rejectIfNot(new NotFound()))
       .then(image => image.fileName)
       .then(filename => this.fetchImage(filename))
   }
@@ -104,6 +105,7 @@ export class TheTvDb {
       .then(res => res.json())
       .then(res => res.data)
       .then(getHigestRating)
+      .then(rejectIfNot(new NotFound()))
       .then(image => image.fileName)
       .then(filename => this.fetchImage(filename))
   }
@@ -138,7 +140,7 @@ export class TheTvDb {
 }
 
 export function getHigestRating(images: TheTvDbShowImage[]): TheTvDbShowImage {
-  return images.reduce((acc, image) => {
+  return ensureArray(images).reduce((acc, image) => {
     if (image.ratingsInfo.average > acc.ratingsInfo.average) {
       return image
     } else {
@@ -157,7 +159,7 @@ export function handelHttpError(res: Response) {
   return res
 }
 
-function ensureArray(data: any) {
+export function ensureArray<T = any>(data: T[]): T[] {
   if (Array.isArray(data)) {
     return data
   }
