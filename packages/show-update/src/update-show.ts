@@ -1,9 +1,9 @@
 import { Logger } from '@episodehunter/kingsguard';
-import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/types/thetvdb';
+import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/thetvdb';
 import { getInformationFromTvDb } from './the-tv-db.util';
 import { ShowDefinitionType } from './types/show-definition.type';
 import { EpisodeDefinitionType } from './types/episode-definition.type';
-import { updateShowRequest } from './red-keep.util';
+import { updateShowRequest, addShowRequest } from './red-keep.util';
 import { InsufficientShowInformation } from './custom-erros';
 
 function safeMap<T, R>(fu: (a: T) => R): (arr: T[]) => R[] {
@@ -73,4 +73,10 @@ export function updateShow(logger: Logger, tvDbId: number) {
     .then(tapLogger('Update show in red keep'))
     .then(showDef => updateShowRequest(showDef))
     .then(tapLogger('Done and done!'));
+}
+
+export function addShow(logger: Logger, tvDbId: number) {
+  return getInformationFromTvDb(tvDbId)
+    .then(([tShow, tEpisodes]) => mapTheTvShowToDefinition(assertShow(tShow), tEpisodes))
+    .then(showDef => addShowRequest(showDef));
 }

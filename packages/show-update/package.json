@@ -7,41 +7,23 @@
     "start": "tsc -w",
     "test": "jest --watch"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/episodehunter/show-update.git"
+  },
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@episodehunter/types": "^1.0.1",
-    "@types/aws-lambda": "0.0.16",
-    "@types/jest": "^21.1.10",
-    "@types/node": "^7.0.54",
-    "jest": "^21.2.1",
-    "simple-spy": "^2.2.1",
     "ts-graphql-plugin": "^1.1.2",
-    "ts-jest": "^21.2.4",
     "typescript": "^2.7.1"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^2.0.0",
-    "aws-sdk": "^2.192.0",
-    "graphql-request": "^1.4.1",
-    "node-fetch": "^1.7.3",
-    "ramda": "^0.25.0"
+    "@episodehunter/thetvdb": "^2.0.1",
+    "graphql-request": "^1.4.1"
   },
   "prettier": {
     "singleQuote": true,
     "printWidth": 130
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": "src/.*(\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ]
   }
 }
