@@ -24,7 +24,7 @@ export const update = guard<SNSEvent>(function updateInner(event, logger) {
   });
 });
 
-export const add = guard<{ theTvDbId: number }>(function updateInner(event, logger) {
+export const add = guard<{ theTvDbId: number }>(function updateAdd(event, logger) {
   const theTvDbId = event.theTvDbId | 0;
 
   logger.log(`Will add the show with theTvDbId: ${theTvDbId} and associated epesodes`);
