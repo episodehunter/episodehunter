@@ -1,3 +1,3 @@
-# show-delegator
+# Scheduler
 
-Delegator for show update and insertions
+Scheduler for show update and insertions
