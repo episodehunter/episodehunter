@@ -43,7 +43,7 @@ export function addShowRequest(showDef: ShowDefinitionType) {
     }
   `;
   return client
-    .request<{ addShow: ShowDefinitionType }>(query, { showInput: showDef })
-    .then(result => result.addShow)
+    .request<{ addShow: { id: number } }>(query, { showInput: showDef })
+    .then(result => result.addShow.id)
     .catch(handleError);
 }
