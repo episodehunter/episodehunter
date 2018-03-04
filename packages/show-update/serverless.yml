@@ -1,4 +1,4 @@
-service: episodehunter-show-update
+service: show-updater
 
 custom:
   stage: "${opt:stage, self:provider.stage}"
