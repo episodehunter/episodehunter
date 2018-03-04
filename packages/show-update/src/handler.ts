@@ -18,7 +18,6 @@ export const update = guard<SNSEvent>(function updateInner(event, logger) {
 
   return updateShow(logger, theTvDbId).catch((error: Error) => {
     if (error instanceof TooManyEpisodes || error instanceof InsufficientShowInformation) {
-      logger.captureException(error);
       return Promise.resolve('Error but OK: ' + error.message);
     }
     return Promise.reject(error);
