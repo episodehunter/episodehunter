@@ -1,5 +1,5 @@
 export const BAD_REQUEST_RESPONSE = {
-  statusCode: '403',
+  statusCode: '400',
   headers: {},
   body: ''
 };
