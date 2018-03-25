@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/kingsguard",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Kingsguard for episodehunter",
   "main": "index.js",
   "scripts": {
@@ -26,15 +26,15 @@
     "semi": false
   },
   "dependencies": {
-    "@episodehunter/logger": "^2.1.2",
-    "@types/aws-lambda": "0.0.19"
+    "@episodehunter/logger": "^3.0.1",
+    "@types/aws-lambda": "0.0.34"
   },
   "devDependencies": {
-    "@types/jest": "^21.1.5",
-    "jest": "^21.2.1",
-    "simple-spy": "^2.1.0",
-    "ts-jest": "^21.1.4",
-    "typescript": "^2.6.1"
+    "@types/jest": "^22.2.2",
+    "jest": "^22.4.3",
+    "simple-spy": "^2.2.1",
+    "ts-jest": "^22.4.2",
+    "typescript": "^2.7.2"
   },
   "jest": {
     "transform": {

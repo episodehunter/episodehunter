@@ -14,7 +14,7 @@ export function assertRequiredConfigImp(envVars = process.env) {
 export function guardImp(Logger: any, envVars = process.env) {
   return function guard<T>(fun: (event: T, logger: EhLogger, context: Context) => any) {
     return async (event: T, context: Context, callback: Callback) => {
-      const logger: EhLogger = new Logger(envVars.EH_RAVEN_DSN as string, envVars.EH_RAVEN_PROJECT as string)
+      const logger: EhLogger = new Logger(envVars.EH_RAVEN_DSN, envVars.EH_RAVEN_PROJECT, envVars.LOGDNA_KEY)
       logger.install(context)
 
       const timeoutId = setTimeout(() => {
