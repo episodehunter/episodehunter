@@ -1,3 +1,3 @@
 ## Logger for episodehunter
 
-A simple wrapper for the sentry client.
+A simple wrapper for the sentry and logdna clients.

@@ -1,19 +1,28 @@
 import { Context } from 'aws-lambda';
+import * as DnaLogger from 'logdna';
 import * as raven from 'raven';
+
+interface DnaLogger {
+  log: (message: string, level: 'Debug' | 'Trace' | 'Info' | 'Warn' | 'Error' | 'Fatal') => void;
+}
 
 export class Logger {
   private awsContext: Context;
   private ravenDns: string;
+  private logDnaApiKey: string;
   private ravenProjectId: string;
+  private dnaLogger: DnaLogger;
 
-  constructor(ravenDns: string, ravenProjectId: string) {
+  constructor(ravenDns: string, ravenProjectId: string, logDnaApiKey: string) {
     this.ravenDns = ravenDns;
     this.ravenProjectId = ravenProjectId;
+    this.logDnaApiKey = logDnaApiKey;
   }
 
   install(awsContext: Context) {
     this.awsContext = awsContext;
     this.installRaven();
+    this.installLogdna();
   }
 
   info(...args: any[]) {
@@ -22,6 +31,7 @@ export class Logger {
       category: 'console.info',
       message: args.join(', ')
     });
+    this.dnaLogger.log(args.join(', '), 'Info');
   }
 
   log(...args: any[]) {
@@ -30,6 +40,7 @@ export class Logger {
       category: 'console.log',
       message: args.join(', ')
     });
+    this.dnaLogger.log(args.join(', '), 'Info');
   }
 
   warn(...args: any[]) {
@@ -38,6 +49,7 @@ export class Logger {
       category: 'console.warn',
       message: args.join(', ')
     });
+    this.dnaLogger.log(args.join(', '), 'Warn');
   }
 
   captureBreadcrumb(breadcrumb: { message: string; category: string; data?: object }) {
@@ -72,11 +84,31 @@ export class Logger {
     };
   }
 
+  private installLogdna() {
+    const dnaLogger = DnaLogger.setupDefaultLogger(this.logDnaApiKey, {
+      app: this.awsContext.functionName,
+      env: process.env.NODE_ENV,
+      index_meta: true
+    });
+    this.dnaLogger = {
+      log: (message: string, level: string) => {
+        dnaLogger.log(message, {
+          level,
+          meta: { functionName: this.awsContext.functionName, requestId: this.awsContext.awsRequestId }
+        });
+      }
+    };
+  }
+
   private installRaven() {
     raven
       .config(`https://${this.ravenDns}@sentry.io/${this.ravenProjectId}`, {
         extra: {
-          functionName: this.awsContext ? this.awsContext.functionName : ''
+          functionName: this.awsContext.functionName,
+          functionVersion: this.awsContext.functionVersion,
+          requestId: this.awsContext.awsRequestId,
+          logGroupName: this.awsContext.logGroupName,
+          logStreamName: this.awsContext.logStreamName
         },
         autoBreadcrumbs: {
           console: false,
