@@ -12,11 +12,16 @@ import {
 export class TheTvDb {
   private apikey: string
   private fetch: typeof fetch
+  private logger: (msg: string) => void
   jwt: Promise<string>
 
   constructor(apikey: string, _fetch = fetch) {
     this.apikey = apikey
     this.fetch = _fetch
+  }
+
+  setLogger(logger?: (msg: string) => void) {
+    this.logger = logger
   }
 
   get token() {
@@ -110,10 +115,24 @@ export class TheTvDb {
       .then(filename => this.fetchImage(filename))
   }
 
+  private log<T>(msgFun: (val: T) => string) {
+    return (value: T): T => {
+      if (this.logger) {
+        this.logger(msgFun(value))
+      }
+      return value
+    }
+  }
+
   private fetchImage(filename: string): Promise<Buffer> {
+    this.log(() => `Making request to: 'https://www.thetvdb.com/banners/${filename}'`)(
+      undefined
+    )
     return this.fetch('https://www.thetvdb.com/banners/' + filename)
       .then(handelHttpError)
+      .then(this.log<Response>(() => 'Parse the response as a buffer'))
       .then(response => response.buffer())
+      .then(this.log<Buffer>(() => 'Done and done'))
   }
 
   private get(url: string): Promise<Response> {
