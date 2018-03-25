@@ -12,6 +12,7 @@ export class Logger {
   private logDnaApiKey: string;
   private ravenProjectId: string;
   private dnaLogger: DnaLogger;
+  private dnaLoggerInstance: any;
 
   constructor(ravenDns: string, ravenProjectId: string, logDnaApiKey: string) {
     this.ravenDns = ravenDns;
@@ -58,6 +59,8 @@ export class Logger {
 
   captureException(error: Error) {
     raven.captureException(error);
+    this.dnaLogger.log(String(error), 'Fatal');
+    this.dnaLoggerInstance.flushAll();
   }
 
   captureMessage(msg: string) {
@@ -85,14 +88,14 @@ export class Logger {
   }
 
   private installLogdna() {
-    const dnaLogger = DnaLogger.setupDefaultLogger(this.logDnaApiKey, {
+    this.dnaLoggerInstance = DnaLogger.setupDefaultLogger(this.logDnaApiKey, {
       app: this.awsContext.functionName,
       env: process.env.NODE_ENV,
       index_meta: true
     });
     this.dnaLogger = {
       log: (message: string, level: string) => {
-        dnaLogger.log(message, {
+        this.dnaLoggerInstance.log(message, {
           level,
           meta: { functionName: this.awsContext.functionName, requestId: this.awsContext.awsRequestId }
         });
