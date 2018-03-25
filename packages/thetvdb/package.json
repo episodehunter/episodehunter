@@ -43,6 +43,7 @@
       "js",
       "json"
     ],
+    "testEnvironment": "node",
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [
