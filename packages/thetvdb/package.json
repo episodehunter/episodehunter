@@ -1,7 +1,7 @@
 {
   "name": "@episodehunter/thetvdb",
   "description": "Helper lib for thetvdb api",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "scripts": {
     "test": "jest",
     "compile:watch": "tsc --watch",
