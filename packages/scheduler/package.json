@@ -1,7 +1,7 @@
 {
-  "name": "show-delegator",
+  "name": "scheduler",
   "version": "1.0.0",
-  "description": "Delegator for show updator and insertions",
+  "description": "Scheduler for episodehunter",
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc -w"
