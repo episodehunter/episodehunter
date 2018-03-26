@@ -4,10 +4,9 @@
     "module": "commonjs",
     "outDir": "./dist",
     "strict": false,
-    "sourceMap": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
-    "types": ["node", "jest"],
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "sourceMap": true
   }
 }
