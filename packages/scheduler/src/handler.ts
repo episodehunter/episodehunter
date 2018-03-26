@@ -1,10 +1,10 @@
-import { guard, assertRequiredConfig } from '@episodehunter/kingsguard';
+import { guard, assertRequiredConfig, Logger, Context } from '@episodehunter/kingsguard';
 import { TheTvDbUpdatedShowId } from '@episodehunter/types/thetvdb';
-import { getLastUpdateShows } from './the-tv-db.util';
+import { theTvDb } from './the-tv-db.util';
 import { getExistingShows } from './red-keep.util';
 import { publishUpdateShow } from './sns';
 
-assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_KEEP_TOKEN', 'THE_TV_DB_API_KEY', 'THE_TV_DB_USER_KEY', 'EH_SNS_UPDATE_SHOW');
+assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_API_KEY', 'THE_TV_DB_API_KEY', 'EH_SNS_UPDATE_SHOW');
 
 function* groupIds(ids: TheTvDbUpdatedShowId[]) {
   while (ids.length > 0) {
@@ -12,17 +12,21 @@ function* groupIds(ids: TheTvDbUpdatedShowId[]) {
   }
 }
 
-async function emitUpdates(): Promise<number> {
+async function emitUpdates(logger: Logger, context: Context): Promise<number> {
   const twoHoursAgo = unixtimestamp() - twoHours;
-  const ids = await getLastUpdateShows(twoHoursAgo);
+  logger.log(`Get list of shows to update`);
+  const ids = await theTvDb.fetchLastUpdateShowsList(twoHoursAgo);
 
   const publishingUpdateShows: Array<Promise<any>> = [];
 
   for (const idGroup of groupIds(ids)) {
-    const showsToUpdate = await getExistingShows(idGroup);
+    logger.log(`Check if shows exists in db. Length: ${idGroup.length}`);
+    const showsToUpdate = await getExistingShows(idGroup, context);
+    logger.log(`Publish shows to update. length: ${showsToUpdate.length}`);
     publishingUpdateShows.push(...showsToUpdate.map(show => publishUpdateShow(show.tvdbId)));
   }
 
+  logger.log(`Waiting for sns publish. Length: ${publishingUpdateShows.length}`);
   await Promise.all(publishingUpdateShows);
   return publishingUpdateShows.length;
 }
@@ -33,7 +37,9 @@ function unixtimestamp() {
 
 const twoHours = 7200;
 
-export const update = guard(function updateInner(event, logger) {
+export const update = guard(function updateInner(event, logger, context) {
   logger.log('Start a mass update of shows');
-  return emitUpdates();
+  const result = emitUpdates(logger, context);
+  logger.log('We are done. Result: ' + result);
+  return result;
 });
