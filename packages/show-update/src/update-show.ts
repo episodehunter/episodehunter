@@ -64,10 +64,10 @@ function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpis
 
 export function updateShow(logger: Logger, tvDbId: number) {
   const tapLogger = (msg: string) => <T>(value: T): T => {
-    logger.captureBreadcrumb({ message: msg, category: 'debug', data: undefined });
+    logger.log(msg);
     return value;
   };
-  return getInformationFromTvDb(tvDbId)
+  return getInformationFromTvDb(tvDbId, logger)
     .then(tapLogger('Got information from the tv db, start mapping'))
     .then(([tShow, tEpisodes]) => mapTheTvShowToDefinition(assertShow(tShow), tEpisodes))
     .then(tapLogger('Update show in red keep'))
@@ -76,7 +76,7 @@ export function updateShow(logger: Logger, tvDbId: number) {
 }
 
 export function addShow(logger: Logger, tvDbId: number) {
-  return getInformationFromTvDb(tvDbId)
+  return getInformationFromTvDb(tvDbId, logger)
     .then(([tShow, tEpisodes]) => mapTheTvShowToDefinition(assertShow(tShow), tEpisodes))
     .then(showDef => addShowRequest(showDef));
 }

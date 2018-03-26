@@ -18,8 +18,8 @@
     "typescript": "^2.7.1"
   },
   "dependencies": {
-    "@episodehunter/kingsguard": "^2.0.0",
-    "@episodehunter/thetvdb": "^2.0.1",
+    "@episodehunter/kingsguard": "^2.1.0",
+    "@episodehunter/thetvdb": "^3.0.0",
     "graphql-request": "^1.4.1"
   },
   "prettier": {
