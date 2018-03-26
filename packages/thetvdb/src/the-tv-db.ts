@@ -9,19 +9,20 @@ import {
   TheTvDbShowImage
 } from './types'
 
+const noop: (msg: string) => void = () => undefined
+const logWrapper = (log, msg: string) => <T>(val: T): T => {
+  log(msg)
+  return val
+}
+
 export class TheTvDb {
   private apikey: string
   private fetch: typeof fetch
-  private logger: (msg: string) => void
   jwt: Promise<string>
 
   constructor(apikey: string, _fetch = fetch) {
     this.apikey = apikey
     this.fetch = _fetch
-  }
-
-  setLogger(logger?: (msg: string) => void) {
-    this.logger = logger
   }
 
   get token() {
@@ -31,28 +32,36 @@ export class TheTvDb {
     return this.jwt
   }
 
-  fetchShow(theTvDbId: number): Promise<TheTvDbShow> {
-    return this.get('https://api.thetvdb.com/series/' + theTvDbId)
+  fetchShow(theTvDbId: number, log = noop): Promise<TheTvDbShow> {
+    return this.get('https://api.thetvdb.com/series/' + theTvDbId, log)
       .then(handelHttpError)
       .then(res => res.json())
+      .then(logWrapper(log, `Done, getting back`))
       .then(res => res.data)
   }
 
-  async fetchShowEpisodes(theTvDbId: number, page = 1): Promise<TheTvDbShowEpisode[]> {
+  async fetchShowEpisodes(
+    theTvDbId: number,
+    page = 1,
+    log = noop
+  ): Promise<TheTvDbShowEpisode[]> {
     let episodes: TheTvDbShowEpisode[] = []
     const response: TheTvDbShowEpisodePage = await this.get(
-      `https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`
-    ).then(res => {
-      // The tv db API has a bug where the next page can give a 404
-      if (res.status === 404) {
-        return {
-          data: [],
-          links: {} as any
-        } as TheTvDbShowEpisodePage
-      }
-      handelHttpError(res)
-      return res.json()
-    })
+      `https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`,
+      log
+    )
+      .then(res => {
+        // The tv db API has a bug where the next page can give a 404
+        if (res.status === 404) {
+          return {
+            data: [],
+            links: {} as any
+          } as TheTvDbShowEpisodePage
+        }
+        handelHttpError(res)
+        return res.json()
+      })
+      .then(logWrapper(log, `Done, getting back`))
 
     if (response.links && response.links.last && response.links.last > 10) {
       throw new TooManyEpisodes(`Number of episodes pages: ${response.links.last}`)
@@ -64,34 +73,38 @@ export class TheTvDb {
 
     if (response.links && response.links.next) {
       episodes = episodes.concat(
-        await this.fetchShowEpisodes(theTvDbId, response.links.next)
+        await this.fetchShowEpisodes(theTvDbId, response.links.next, log)
       )
     }
 
     return episodes
   }
 
-  fetchLastUpdateShowsList(lastUpdate: number): Promise<TheTvDbUpdatedShowId[]> {
-    return this.get('https://api.thetvdb.com/updated/query?fromTime=' + lastUpdate)
+  fetchLastUpdateShowsList(
+    lastUpdate: number,
+    log = noop
+  ): Promise<TheTvDbUpdatedShowId[]> {
+    return this.get('https://api.thetvdb.com/updated/query?fromTime=' + lastUpdate, log)
       .then(handelHttpError)
       .then(res => res.json())
       .then(res => res.data)
       .then(data => ensureArray(data))
   }
 
-  fetchEpisodeImage(episodeId: number): Promise<Buffer> {
-    return this.get('https://api.thetvdb.com/episodes/' + episodeId)
+  fetchEpisodeImage(episodeId: number, log = noop): Promise<Buffer> {
+    return this.get('https://api.thetvdb.com/episodes/' + episodeId, log)
       .then(handelHttpError)
       .then(res => res.json())
       .then(res => res.data)
       .then((episode: TheTvDbEpisode) => episode.filename)
       .then(rejectIfNot(new NotFound()))
-      .then(filename => this.fetchImage(filename))
+      .then(filename => this.fetchImage(filename, log))
   }
 
-  fetchShowPoster(showId: number): Promise<Buffer> {
+  fetchShowPoster(showId: number, log = noop): Promise<Buffer> {
     return this.get(
-      `https://api.thetvdb.com/series/${showId}/images/query?keyType=poster`
+      `https://api.thetvdb.com/series/${showId}/images/query?keyType=poster`,
+      log
     )
       .then(handelHttpError)
       .then(res => res.json())
@@ -99,12 +112,13 @@ export class TheTvDb {
       .then(getHigestRating)
       .then(rejectIfNot(new NotFound()))
       .then(image => image.fileName)
-      .then(filename => this.fetchImage(filename))
+      .then(filename => this.fetchImage(filename, log))
   }
 
-  fetchShowFanart(showId: number): Promise<Buffer> {
+  fetchShowFanart(showId: number, log = noop): Promise<Buffer> {
     return this.get(
-      `https://api.thetvdb.com/series/${showId}/images/query?keyType=fanart`
+      `https://api.thetvdb.com/series/${showId}/images/query?keyType=fanart`,
+      log
     )
       .then(handelHttpError)
       .then(res => res.json())
@@ -112,35 +126,25 @@ export class TheTvDb {
       .then(getHigestRating)
       .then(rejectIfNot(new NotFound()))
       .then(image => image.fileName)
-      .then(filename => this.fetchImage(filename))
+      .then(filename => this.fetchImage(filename, log))
   }
 
-  private log<T>(msgFun: (val: T) => string) {
-    return (value: T): T => {
-      if (this.logger) {
-        this.logger(msgFun(value))
-      }
-      return value
-    }
-  }
-
-  private fetchImage(filename: string): Promise<Buffer> {
-    this.log(() => `Making request to: 'https://www.thetvdb.com/banners/${filename}'`)(
-      undefined
-    )
+  private fetchImage(filename: string, log: typeof noop): Promise<Buffer> {
+    log(`Making request to: 'https://www.thetvdb.com/banners/${filename}'`)
     return this.fetch('https://www.thetvdb.com/banners/' + filename)
       .then(handelHttpError)
-      .then(this.log<Response>(() => 'Parse the response as a buffer'))
+      .then(logWrapper(log, 'Parse the response as a buffer'))
       .then(response => response.buffer())
-      .then(this.log<Buffer>(() => 'Done and done'))
+      .then(logWrapper(log, 'Done and done'))
   }
 
-  private get(url: string): Promise<Response> {
+  private get(url: string, log: typeof noop): Promise<Response> {
+    log('Making request to ' + url)
     return this.token.then(token =>
       this.fetch(url, {
         method: 'GET',
         headers: { Authorization: 'Bearer ' + token }
-      })
+      }).then(logWrapper(log, 'We got a result from ' + url))
     )
   }
 
