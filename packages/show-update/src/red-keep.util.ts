@@ -3,7 +3,7 @@ import { gql } from './gql';
 import { ShowDefinitionType } from './types/show-definition.type';
 
 const client = new GraphQLClient(process.env.EH_RED_KEEP_URL, {
-  headers: { Authorization: `Bearer ${process.env.EH_RED_KEEP_TOKEN}` }
+  headers: { 'api-key': process.env.EH_RED_API_KEY }
 });
 
 class RedKeepError extends Error {

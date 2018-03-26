@@ -4,7 +4,7 @@ import { SNSEvent } from 'aws-lambda';
 import { updateShow, addShow } from './update-show';
 import { InsufficientShowInformation } from './custom-erros';
 
-assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_KEEP_TOKEN', 'THE_TV_DB_API_KEY');
+assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_API_KEY', 'THE_TV_DB_API_KEY');
 
 export const update = guard<SNSEvent>(function updateInner(event, logger) {
   const message = event.Records[0].Sns.Message;
