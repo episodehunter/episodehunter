@@ -20,7 +20,7 @@ function handleError(error: any) {
   return Promise.reject(error);
 }
 
-export function updateShowRequest(showDef: ShowDefinitionType) {
+export function updateShowRequest(showDef: ShowDefinitionType, awsRequestId: string) {
   const query = gql`
     mutation UpdateShow($showInput: ShowInput!) {
       showUpdate(show: $showInput) {
@@ -28,13 +28,14 @@ export function updateShowRequest(showDef: ShowDefinitionType) {
       }
     }
   `;
+  client.setHeader('request-id', awsRequestId);
   return client
     .request<{ showUpdate: ShowDefinitionType }>(query, { showInput: showDef })
     .then(result => result.showUpdate)
     .catch(handleError);
 }
 
-export function addShowRequest(showDef: ShowDefinitionType) {
+export function addShowRequest(showDef: ShowDefinitionType, awsRequestId: string) {
   const query = gql`
     mutation AddShow($showInput: ShowInput!) {
       showAdd(show: $showInput) {
@@ -42,6 +43,7 @@ export function addShowRequest(showDef: ShowDefinitionType) {
       }
     }
   `;
+  client.setHeader('request-id', awsRequestId);
   return client
     .request<{ addShow: { id: number } }>(query, { showInput: showDef })
     .then(result => result.addShow.id)

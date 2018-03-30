@@ -62,7 +62,7 @@ function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpis
   };
 }
 
-export function updateShow(logger: Logger, tvDbId: number) {
+export function updateShow(tvDbId: number, logger: Logger, awsRequestId: string) {
   const tapLogger = (msg: string) => <T>(value: T): T => {
     logger.log(msg);
     return value;
@@ -71,12 +71,12 @@ export function updateShow(logger: Logger, tvDbId: number) {
     .then(tapLogger('Got information from the tv db, start mapping'))
     .then(([tShow, tEpisodes]) => mapTheTvShowToDefinition(assertShow(tShow), tEpisodes))
     .then(tapLogger('Update show in red keep'))
-    .then(showDef => updateShowRequest(showDef))
+    .then(showDef => updateShowRequest(showDef, awsRequestId))
     .then(tapLogger('Done and done!'));
 }
 
-export function addShow(logger: Logger, tvDbId: number) {
+export function addShow(tvDbId: number, logger: Logger, awsRequestId: string) {
   return getInformationFromTvDb(tvDbId, logger)
     .then(([tShow, tEpisodes]) => mapTheTvShowToDefinition(assertShow(tShow), tEpisodes))
-    .then(showDef => addShowRequest(showDef));
+    .then(showDef => addShowRequest(showDef, awsRequestId));
 }
