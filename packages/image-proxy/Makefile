@@ -11,12 +11,10 @@ package: image
         docker run --rm --volume ${PWD}/dist:/build amazonlinux:nodejs npm install --production
 
 deployfunction: compile
-        cd dist
-        serverless deploy function -f update
+        cd dist; serverless deploy function -f update
 
 deploy: compile
-        cd dist
-        serverless deploy
+        cd dist; serverless deploy
 
 clean:
         rm -r dist
