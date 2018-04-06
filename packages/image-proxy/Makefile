@@ -18,4 +18,5 @@ deploy: compile
 
 clean:
         rm -r dist
+        rm -r node_modules
         docker rmi --force amazonlinux:nodejs
