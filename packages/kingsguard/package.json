@@ -26,15 +26,16 @@
     "semi": false
   },
   "dependencies": {
-    "@episodehunter/logger": "^3.0.1",
-    "@types/aws-lambda": "0.0.34"
+    "@episodehunter/logger": "^3.0.2",
+    "@types/aws-lambda": "0.0.35"
   },
   "devDependencies": {
     "@types/jest": "^22.2.2",
+    "@types/node": "^9.6.2",
     "jest": "^22.4.3",
     "simple-spy": "^2.2.1",
     "ts-jest": "^22.4.2",
-    "typescript": "^2.7.2"
+    "typescript": "^2.8.1"
   },
   "jest": {
     "transform": {
