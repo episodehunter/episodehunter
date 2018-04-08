@@ -43,7 +43,7 @@ function resizeImage(logger: Logger, buffer: Buffer, width?: number, height?: nu
 }
 
 function saveImage(logger: Logger, buffer: Buffer, key: string) {
-  logger.captureBreadcrumb({ message: 'Put image to disk', category: 'debug', data: { key } });
+  logger.log('Put image to disk: ' + key);
   return s3
     .putObject({
       Bucket: process.env.BUCKET_NAME,
