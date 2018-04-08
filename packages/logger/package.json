@@ -21,10 +21,13 @@
   },
   "homepage": "https://github.com/episodehunter/logger#readme",
   "dependencies": {
-    "@types/aws-lambda": "0.0.34",
-    "@types/raven": "^2.1.6",
     "logdna": "^2.0.0",
     "raven": "^2.1.6"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "0.0.35",
+    "@types/raven": "^2.1.6",
+    "typescript": "^2.8.1"
   },
   "engines": {
     "node": "6.1.0"
@@ -32,8 +35,5 @@
   "prettier": {
     "singleQuote": true,
     "printWidth": 110
-  },
-  "devDependencies": {
-    "typescript": "^2.7.2"
   }
 }
