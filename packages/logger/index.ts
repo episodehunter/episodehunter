@@ -29,7 +29,7 @@ export class Logger {
   info(...args: any[]) {
     console.info(...args);
     this.captureBreadcrumb({
-      category: 'console.info',
+      category: 'info-log',
       message: args.join(', ')
     });
     this.dnaLogger.log(args.join(', '), 'Info');
@@ -38,7 +38,7 @@ export class Logger {
   log(...args: any[]) {
     console.log(...args);
     this.captureBreadcrumb({
-      category: 'console.log',
+      category: 'log-log',
       message: args.join(', ')
     });
     this.dnaLogger.log(args.join(', '), 'Info');
@@ -47,7 +47,7 @@ export class Logger {
   warn(...args: any[]) {
     console.warn(...args);
     this.captureBreadcrumb({
-      category: 'console.warn',
+      category: 'warn-log',
       message: args.join(', ')
     });
     this.dnaLogger.log(args.join(', '), 'Warn');
