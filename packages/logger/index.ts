@@ -60,7 +60,7 @@ export class Logger {
   captureException(error: Error) {
     raven.captureException(error);
     this.dnaLogger.log(String(error), 'Fatal');
-    this.dnaLoggerInstance.flushAll();
+    DnaLogger.flushAll(() => null);
   }
 
   captureMessage(msg: string) {
