@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/episodehunter/kingsguard#readme",
   "engines": {
-    "node": "6.1.0"
+    "node": "8.10.0"
   },
   "prettier": {
     "singleQuote": true,
