@@ -15,12 +15,12 @@
   "license": "MIT",
   "devDependencies": {
     "ts-graphql-plugin": "^1.1.2",
-    "typescript": "^2.7.1"
+    "typescript": "^2.9.2"
   },
   "dependencies": {
-    "@episodehunter/kingsguard": "^2.1.0",
+    "@episodehunter/kingsguard": "^2.1.1",
     "@episodehunter/thetvdb": "^3.0.0",
-    "graphql-request": "^1.4.1"
+    "graphql-request": "^1.6.0"
   },
   "prettier": {
     "singleQuote": true,
