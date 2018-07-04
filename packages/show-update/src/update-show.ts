@@ -15,14 +15,7 @@ function safeFilter<T>(fu: (a: T) => boolean): (arr: T[]) => T[] {
 }
 
 function isValidEpisode(episode: TheTvDbShowEpisode): boolean {
-  return Boolean(
-    episode.id &&
-      episode.airedEpisodeNumber &&
-      episode.airedSeason &&
-      episode.episodeName &&
-      episode.lastUpdated &&
-      episode.firstAired
-  );
+  return Boolean(episode.id && episode.airedEpisodeNumber && episode.airedSeason && episode.lastUpdated && episode.firstAired);
 }
 
 function assertShow(show: TheTvDbShow) {
@@ -35,7 +28,7 @@ function assertShow(show: TheTvDbShow) {
 function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): EpisodeDefinitionType {
   return {
     tvdbId: tEpisodes.id,
-    name: tEpisodes.episodeName,
+    name: tEpisodes.episodeName || `Episode #${tEpisodes.airedSeason}.${tEpisodes.airedEpisodeNumber}`,
     season: tEpisodes.airedSeason,
     episode: tEpisodes.airedEpisodeNumber,
     firstAired: tEpisodes.firstAired,
