@@ -45,7 +45,7 @@ export function addShowRequest(showDef: ShowDefinitionType, awsRequestId: string
   `;
   client.setHeader('request-id', awsRequestId);
   return client
-    .request<{ addShow: { id: number } }>(query, { showInput: showDef })
-    .then(result => result.addShow.id)
+    .request<{ showAdd: { id: number } }>(query, { showInput: showDef })
+    .then(result => result.showAdd.id)
     .catch(handleError);
 }
