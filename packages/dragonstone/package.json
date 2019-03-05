@@ -1,0 +1,25 @@
+{
+  "name": "dragonstone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=develop node index.js",
+    "build": "tsc",
+    "deploy": "tsc && now",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.4.8",
+    "firebase-admin": "^7.0.0",
+    "graphql": "^14.1.1",
+    "graphql-import": "^0.7.1",
+    "typescript": "^3.3.3333"
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.0.7",
+    "@types/node": "^11.10.4"
+  }
+}
