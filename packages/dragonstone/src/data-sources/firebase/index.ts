@@ -1,14 +1,16 @@
-import { createShowResolver } from './show/show.resolver';
-import { createFirebaseDocs } from './util/firebase-docs';
-import { createFirebase } from './util/firebase-app';
+import { Firestore } from '@google-cloud/firestore';
+import { createEpisodeResolver } from './episode/episode.resolver';
 import { createUpcomingResolver } from './episode/upcoming.resolver';
+import { createShowResolver } from './show/show.resolver';
 
-export const createResolver = () => {
-  const { firestore } = createFirebase();
+import { createFirebaseDocs } from './util/firebase-docs';
+
+export const createResolver = (firestore: Firestore) => {
   const docs = createFirebaseDocs(firestore);
 
   return {
     show: createShowResolver(docs),
-    upcoming: createUpcomingResolver(docs)
+    upcoming: createUpcomingResolver(docs),
+    episode: createEpisodeResolver(docs)
   };
 };

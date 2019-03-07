@@ -1,3 +1,4 @@
+import { AuthenticationError } from 'apollo-server-lambda';
 import { Context } from '../context';
 
 export const resolvers = {
@@ -9,6 +10,19 @@ export const resolvers = {
       'upcomingEpisode',
       (root, args, context) => {
         return context.firebaseResolver.upcoming.getUpcomingEpisode(
+          args.showId
+        );
+      }
+    ),
+    nextEpisodeToWatch: qr<{ showId: string }>(
+      'nextEpisodeToWatch',
+      (root, args, context) => {
+        const uid = context.uid;
+        if (!uid) {
+          throw new AuthenticationError('must authenticate');
+        }
+        return context.firebaseResolver.episode.getNextEpisodeToWatch(
+          uid,
           args.showId
         );
       }

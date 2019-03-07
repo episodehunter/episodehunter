@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'develop';
+
 const { createServer } = require('http');
 const url = require('url');
 const { graphqlHandler } = require('./dist/handler');

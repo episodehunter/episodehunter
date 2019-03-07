@@ -1,10 +1,10 @@
-import admin, { AppOptions } from "firebase-admin";
-import { config } from "../../../config";
+import admin, { AppOptions } from 'firebase-admin';
+import { config } from '../config';
 
 export const createFirebase = () => {
   const fbConfig: AppOptions = {
     projectId: config.firebase.projectId
-  }
+  };
   if (config.firebase.serviceAccount) {
     fbConfig.credential = admin.credential.cert(config.firebase.serviceAccount);
   }
@@ -15,4 +15,4 @@ export const createFirebase = () => {
   const auth = app.auth();
 
   return { firestore, auth };
-}
+};
