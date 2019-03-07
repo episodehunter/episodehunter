@@ -1,0 +1,36 @@
+service: dragonstone
+
+custom:
+  stage: "${opt:stage, self:provider.stage}"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: prod
+  region: us-east-1
+  timeout: 20
+  versionFunctions: false
+  environment: ${file(env.yml):${self:custom.stage}}
+
+package:
+  include:
+    - node_modules/**
+    - dist
+  exclude:
+    - .vscode/**
+    - src/**
+    - now.json
+    - .serverless/**
+    - package-lock.json
+    - package.json
+    - "*.js.map"
+    - env.yml
+
+functions:
+  graphql:
+    handler: handler.graphqlHandler
+    events:
+    - http:
+        path: graphql
+        method: post
+        cors: true

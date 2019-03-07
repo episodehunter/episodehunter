@@ -1,24 +1,34 @@
-function createProductionConfig() {
+interface Config {
+  firebase: {
+    serviceAccount?: any,
+    projectId: string
+  }
+}
+
+function createProductionConfig(): Config {
   if (!process.env.FIREBASE_KEY) {
     throw new Error('FIREBASE_KEY is missing!');
   }
-  const firebaseKey = JSON.parse(Buffer.from(process.env.FIREBASE_KEY, 'base64').toString());
+  const serviceAccount = JSON.parse(Buffer.from(process.env.FIREBASE_KEY, 'base64').toString());
   return {
-    firebaseKey
+    firebase: {
+      serviceAccount,
+      projectId: 'newagent-dc3d1'
+    }
   }
 }
 
-function createDevelopConfig() {
+function createDevelopConfig(): Config {
   return {
-    firebaseKey: { projectId: 'newagent-dc3d1' }
+    firebase: { projectId: 'newagent-dc3d1' }
   }
 }
 
-function createConfig() {
+function createConfig(): Config {
   if (process.env.NODE_ENV === 'develop') {
     return createDevelopConfig();
   }
   return createProductionConfig();
 }
 
-export const config = createConfig();
+export const config: Config = createConfig();

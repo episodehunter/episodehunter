@@ -12,14 +12,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "^2.4.8",
+    "apollo-server-lambda": "^2.4.8",
     "firebase-admin": "^7.0.0",
     "graphql": "^14.1.1",
     "graphql-import": "^0.7.1",
     "typescript": "^3.3.3333"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.20",
     "@types/graphql": "^14.0.7",
-    "@types/node": "^11.10.4"
+    "@types/node": "^11.10.4",
+    "aws-lambda": "^0.1.2"
+  },
+  "prettier": {
+    "singleQuote": true
   }
 }
