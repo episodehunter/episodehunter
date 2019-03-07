@@ -2,18 +2,18 @@ import { gql } from 'apollo-server-lambda';
 
 export const show = gql`
   type Show {
-    airs: ShowAirs!,
-    ended: Boolean!,
-    genre: [String]!,
-    ids: ShowIds!,
-    language: String,
-    lastupdated: Int!,
-    name: String!,
-    network: String,
-    numberOfFollowers: Int!,
-    overview: String!,
-    runtime: Int!,
-    seasons: [Int]!,
+    airs: ShowAirs!
+    ended: Boolean!
+    genre: [String]!
+    ids: ShowIds!
+    language: String
+    lastupdated: Int!
+    name: String!
+    network: String
+    numberOfFollowers: Int!
+    overview: String!
+    runtime: Int!
+    seasons: [Int]!
     totalNumberOfEpisodes: Int!
   }
 
@@ -25,31 +25,31 @@ export const show = gql`
   }
 
   type ShowIds {
-    id: String!,
-    imdb: String,
+    id: String!
+    imdb: String
     tvdb: Int!
   }
 `;
 
 export interface Show {
   airs: {
-    first?: string,
-    time?: string
-  },
-  ended: boolean,
-  genre: string[],
+    first?: string;
+    time?: string;
+  };
+  ended: boolean;
+  genre: string[];
   ids: {
-    id: string,
-    imdb?: string,
-    tvdb: number
-  },
-  language?: string,
-  lastupdated: number,
-  name: string,
-  network?: string,
-  numberOfFollowers: number,
-  overview: string,
-  runtime: number,
-  seasons: number[],
-  totalNumberOfEpisodes: number
+    id: string;
+    imdb?: string;
+    tvdb: number;
+  };
+  language?: string;
+  lastupdated: number;
+  name: string;
+  network?: string;
+  numberOfFollowers: number;
+  overview: string;
+  runtime: number;
+  seasons: number[];
+  totalNumberOfEpisodes: number;
 }

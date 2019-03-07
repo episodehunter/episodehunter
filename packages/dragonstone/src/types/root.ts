@@ -1,5 +1,6 @@
 import { gql } from 'apollo-server-lambda';
 import { show } from './show';
+import { episode } from './episode';
 
 export const root = gql`
   schema {
@@ -8,7 +9,10 @@ export const root = gql`
 
   type RootQuery {
     show(id: String!): Show
+    upcomingEpisode(showId: String!): [Episode]!
+    nextEpisodeToWatch(showId: String!): Episode
   }
 
   ${show}
+  ${episode}
 `;
