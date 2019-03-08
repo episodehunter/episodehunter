@@ -1,13 +1,10 @@
 import { PublicTypes } from '../../../public';
 import { Docs } from '../util/firebase-docs';
-import { mapEpisode } from './episode.mapper';
+import { mapEpisode, mapEpisodes } from './episode.mapper';
 import { Episode } from './episode.type';
 
 export const createEpisodeResolver = (docs: Docs) => ({
-  async getNextEpisodeToWatch(
-    userId: string,
-    showId: string
-  ): Promise<PublicTypes.Episode | null> {
+  async getNextEpisodeToWatch(userId: string, showId: string): Promise<PublicTypes.Episode | null> {
     const highestWatchedEpisode = await docs
       .showsWatchHistoryCollection(userId)
       .where('showId', '==', Number(showId))
@@ -38,6 +35,15 @@ export const createEpisodeResolver = (docs: Docs) => ({
         } else {
           return null;
         }
+      });
+  },
+  getSeason(showId: string, season: number): Promise<PublicTypes.Episode[]> {
+    return docs
+      .episodesCollection(showId)
+      .where('season', '==', season)
+      .get()
+      .then(querySnapshot => {
+        return mapEpisodes(querySnapshot.docs.map(d => d.data() as Episode).filter(Boolean));
       });
   }
 });

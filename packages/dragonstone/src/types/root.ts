@@ -9,6 +9,7 @@ export const root = gql`
 
   type RootQuery {
     show(id: String!): Show
+    season(showId: String!, season: Int!): [Episode]!
     upcomingEpisode(showId: String!): [Episode]!
     nextEpisodeToWatch(showId: String!): Episode
   }
