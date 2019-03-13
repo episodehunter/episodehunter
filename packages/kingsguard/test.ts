@@ -1,28 +1,14 @@
 import { spy } from 'simple-spy'
-import { guardImp, assertRequiredConfigImp } from './guard'
+import { createGuard } from './guard'
 
 jest.useFakeTimers()
-
-const loggerInstallSpy = spy(() => null)
-const loggerCaptureExceptionSpy = spy(() => null)
-
-class Logger {
-  constructor(public dns, public pro) {}
-  install = loggerInstallSpy
-  captureException = loggerCaptureExceptionSpy
-}
-
-const envVars = {
-  EH_RAVEN_DSN: 'DNS',
-  EH_RAVEN_PROJECT: 'PRO'
-}
 
 const context = {
   functionName: 'test',
   getRemainingTimeInMillis: spy(() => 10000)
 }
 
-const callback = (error, result) => {
+const callback = (error: any, result: any) => {
   if (error) {
     throw error
   }
@@ -30,31 +16,36 @@ const callback = (error, result) => {
 
 beforeEach(() => {
   context.getRemainingTimeInMillis.reset()
-  loggerInstallSpy.reset()
-  loggerCaptureExceptionSpy.reset()
 })
 
 test('Set up logger', async () => {
   // Arrange
-  const guard = guardImp(Logger, envVars)
-  const fun = (event, logger, context) => {}
+  const setupLogger = spy(() => () => {})
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const fun = (event: any, logger: any, context: any) => {}
   const awsFun = guard(fun)
 
   // Act
   await awsFun(null, context as any, callback)
 
   // Assert
-  expect(loggerInstallSpy.callCount).toBe(1)
-  expect(loggerInstallSpy.args[0][0]).toBe(context)
+  expect(setupLogger.callCount).toBe(1)
+  expect(setupLogger.args[0][0]).toBe('logdnaKey')
+  expect(setupLogger.args[0][1]).toBe('dns')
 })
 
 test('Pass args to lambda', async () => {
   // Arrange
-  const guard = guardImp(Logger, envVars)
+  expect.assertions(3)
+  const setupLogger = spy(() => () => ({
+    log: () => {},
+    captureException: () => {}
+  }))
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const mockEvenet = { id: 1 }
-  const fun = (event, logger, cnx) => {
+  const fun = (event: any, logger: any, cnx: any) => {
     expect(event).toBe(mockEvenet)
-    expect(typeof logger.install).toBe('function')
+    expect(typeof logger.log).toBe('function')
     expect(cnx).toBe(context)
   }
   const awsFun = guard(fun)
@@ -65,13 +56,17 @@ test('Pass args to lambda', async () => {
 
 test('Pass the result to the callback', async () => {
   // Arrange
-  const guard = guardImp(Logger, envVars)
+  expect.assertions(1)
+  const setupLogger = spy(() => () => {
+    log: () => {}
+  })
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const mockEvenet = { id: 1 }
   const myResult = { id: 1 }
-  const myCallback = (error, result) => {
+  const myCallback = (error: any, result: any) => {
     expect(result).toBe(myResult)
   }
-  const fun = (event, logger, cnx) => {
+  const fun = (event: any, logger: any, cnx: any) => {
     return myResult
   }
   const awsFun = guard(fun)
@@ -82,22 +77,27 @@ test('Pass the result to the callback', async () => {
 
 test('Capture exception on failure', async () => {
   // Arrange
-  const guard = guardImp(Logger, envVars)
+  expect.assertions(4)
+  const captureException = spy(() => null)
+  const setupLogger = () => () => ({
+    captureException
+  })
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const mockEvenet = { id: 1 }
   const myError = new Error('Random error')
-  const myCallback = (error, result) => {
+  const myCallback = (error: any, result: any) => {
     expect(error).toBe(myError)
     expect(result).toBe(undefined)
   }
-  const fun = (event, logger, cnx) => {
+  const fun = (event: any, logger: any, cnx: any) => {
     throw myError
   }
   const awsFun = guard(fun)
 
   // Act
   await awsFun(mockEvenet, context as any, myCallback)
-  expect(loggerCaptureExceptionSpy.callCount).toBe(1)
-  expect(loggerCaptureExceptionSpy.args[0][0]).toBe(myError)
+  expect(captureException.callCount).toBe(1)
+  expect(captureException.args[0][0]).toBe(myError)
 })
 
 test('Capture a timeout error before timeout', async () => {
@@ -108,8 +108,12 @@ test('Capture a timeout error before timeout', async () => {
     functionName: 'test',
     getRemainingTimeInMillis: spy(() => timeoutTime)
   }
-  const guard = guardImp(Logger, envVars)
-  const fun = (event, logger, cnx) => {
+  const captureException = spy(() => null)
+  const setupLogger = () => () => ({
+    captureException
+  })
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const fun = (event: any, logger: any, cnx: any) => {
     return new Promise(resolve => {
       setTimeout(resolve, timeoutTime + 1)
     })
@@ -117,36 +121,57 @@ test('Capture a timeout error before timeout', async () => {
   const awsFun = guard(fun)
 
   // Act
-  const waitForFun = awsFun(null, myContext as any, callback)
+  awsFun(null, myContext as any, callback)
 
   // Assert
   expect((setTimeout as any).mock.calls.length).toBe(2)
   expect((setTimeout as any).mock.calls[0][1]).toBe(timeoutTime - 500)
-  expect(loggerCaptureExceptionSpy.callCount).toBe(0)
+  expect(captureException.callCount).toBe(0)
 
   jest.runTimersToTime(9500)
 
-  expect(loggerCaptureExceptionSpy.callCount).toBe(1)
-  expect(loggerCaptureExceptionSpy.args[0][0].message.includes('Timeout')).toBe(true)
+  expect(captureException.callCount).toBe(1)
+  expect(captureException.args[0][0].message.includes('Timeout')).toBe(true)
 })
 
-test('Throw error for missing env vars', () => {
+test('Extract request stack from header', async () => {
   // Arrange
-  const envVars = {
-    key1: 'key1'
+  const createLogger = spy(() => {})
+  const setupLogger = spy(() => createLogger)
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const fun = (event: any, logger: any, context: any) => {}
+  const awsFun = guard(fun)
+  const event = {
+    headers: {
+      'x-request-stack': 'id1,id2,id3'
+    }
   }
 
-  // Arange
-  expect(() => assertRequiredConfigImp(envVars)('key1', 'key2')).toThrow()
+  // Act
+  await awsFun(event, context as any, callback)
+
+  // Assert
+  expect(createLogger.callCount).toBe(1)
+  expect(createLogger.args[0][0]).toBe(context)
+  expect(createLogger.args[0][1]).toEqual(['id1', 'id2', 'id3'])
 })
 
-test('Do not throw error if all env exist', () => {
+test('Extract request stack from event', async () => {
   // Arrange
-  const envVars = {
-    key1: 'key1',
-    key2: 'key2'
+  const createLogger = spy(() => {})
+  const setupLogger = spy(() => createLogger)
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const fun = (event: any, logger: any, context: any) => {}
+  const awsFun = guard(fun)
+  const event = {
+    requestStack: ['id1', 'id2']
   }
 
-  // Arange
-  expect(assertRequiredConfigImp(envVars)('key1', 'key2')).toBeUndefined()
+  // Act
+  await awsFun(event, context as any, callback)
+
+  // Assert
+  expect(createLogger.callCount).toBe(1)
+  expect(createLogger.args[0][0]).toBe(context)
+  expect(createLogger.args[0][1]).toEqual(event.requestStack)
 })
