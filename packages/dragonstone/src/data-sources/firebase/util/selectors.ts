@@ -13,7 +13,6 @@ export function createSelectors(docs: Docs) {
         .limit(1)
         .get()
         .then(r => {
-          console.log('Real ' + r.size);
           if (r.size === 1 && r.docs[0].exists) {
             return r.docs[0].data() as WatchedEpisode;
           }

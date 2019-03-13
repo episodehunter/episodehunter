@@ -23,7 +23,7 @@ const RootQuery: RootQueryType = {
     return context.firebaseResolver.history.getWatchedEpisodes(context.getUid(), args.showId);
   },
   whatToWatch(root, args, context) {
-    return context.firebaseResolver.history.getWhatToWatch(context.getUid());
+    return context.firebaseResolver.history.getWhatToWatch(context.getUid(), args.showId);
   }
 };
 
