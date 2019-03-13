@@ -4,6 +4,7 @@ import { episode } from './episode';
 import { watchedEpisode } from './watched-episode';
 import { whatToWatch } from './what-to-watch';
 import { upcomingEpisode } from './upcoming-episode';
+import { title } from './title';
 
 export const root = gql`
   scalar Date
@@ -21,6 +22,7 @@ export const root = gql`
     nextEpisodeToWatch(showId: ID!): Episode
     watchedEpisodes(showId: ID!): [WatchedEpisode]
     whatToWatch(showId: ID): [WhatToWatch]
+    titles: [Title]
   }
 
   type RootMutation {
@@ -29,6 +31,7 @@ export const root = gql`
     removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): Boolean
     followShow(showId: ID!): Boolean
     unfollowShow(showId: ID!): Boolean
+    updateTitles: Boolean
   }
 
   ${show}
@@ -36,4 +39,5 @@ export const root = gql`
   ${watchedEpisode}
   ${whatToWatch}
   ${upcomingEpisode}
+  ${title}
 `;

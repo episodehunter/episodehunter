@@ -2,7 +2,10 @@ import { Firestore, CollectionReference } from '@google-cloud/firestore';
 
 export const createFirebaseDocs = (db: Firestore) => ({
   showDoc(id: string) {
-    return db.collection('shows').doc(id);
+    return this.showCollection().doc(id);
+  },
+  showCollection() {
+    return db.collection('shows');
   },
   episodesCollection(showId: string) {
     return this.showDoc(showId).collection('episodes');
@@ -12,6 +15,9 @@ export const createFirebaseDocs = (db: Firestore) => ({
   },
   userDoc(id: string) {
     return db.collection('users').doc(id);
+  },
+  titlesDoc() {
+    return db.collection('metadata').doc('titles');
   }
 });
 

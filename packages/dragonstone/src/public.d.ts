@@ -7,6 +7,7 @@ import {
 } from './types/watched-episode';
 import { WhatToWatch as WhatToWatchType } from './types/what-to-watch';
 import { UpcomingEpisode as UpcomingEpisodeType } from './types/upcoming-episode';
+import { Title as TitleType } from './types/title';
 
 export declare namespace PublicTypes {
   interface Show extends ShowType {}
@@ -16,4 +17,5 @@ export declare namespace PublicTypes {
   interface WhatToWatch extends WhatToWatchType {}
   interface UnwatchedEpisodeInput extends UnwatchedEpisodeInputType {}
   interface WatchedEpisodeInput extends WatchedEpisodeInputType {}
+  interface Title extends TitleType {}
 }

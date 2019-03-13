@@ -6,6 +6,7 @@ import { createShowResolver } from './show/show.resolver';
 import { createFirebaseDocs } from './util/firebase-docs';
 import { createSelectors } from './util/selectors';
 import { createUserResolver } from './user/user.resolver';
+import { createTitlesResolver } from './titles/titles.resolver';
 
 export const createResolver = (firestore: Firestore) => {
   const docs = createFirebaseDocs(firestore);
@@ -16,6 +17,7 @@ export const createResolver = (firestore: Firestore) => {
     upcoming: createUpcomingResolver(docs),
     episode: createEpisodeResolver(docs, selectors),
     history: createHistoryResolver(docs, selectors),
-    user: createUserResolver(docs, selectors)
+    user: createUserResolver(docs, selectors),
+    titles: createTitlesResolver(docs)
   };
 };

@@ -19,3 +19,10 @@ export interface WatchedEpisode {
   time: Date;
   type: WatchedEnum;
 }
+
+export interface Title {
+  id: string;
+  name: string;
+  followers: number;
+  tvdbId: number;
+}

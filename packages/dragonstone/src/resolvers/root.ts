@@ -24,6 +24,9 @@ const RootQuery: RootQueryType = {
   },
   whatToWatch(root, args, context) {
     return context.firebaseResolver.history.getWhatToWatch(context.getUid(), args.showId);
+  },
+  titles(root, args, context) {
+    return context.firebaseResolver.titles.getTitles();
   }
 };
 
@@ -42,6 +45,9 @@ const RootMutation: RootMutationType = {
   },
   unfollowShow(root, args, context) {
     return context.firebaseResolver.user.unfollowShow(context.getUid(), args.showId);
+  },
+  updateTitles(root, args, context) {
+    return context.firebaseResolver.titles.updateTitles();
   }
 };
 
@@ -90,6 +96,7 @@ type RootQueryType = {
   season: (root: void, args: { showId: string; season: number }, context: Context) => Promise<PublicTypes.Episode[]>;
   watchedEpisodes: (root: void, args: { showId: string }, context: Context) => Promise<PublicTypes.WatchedEpisode[]>;
   whatToWatch: (root: void, args: { showId?: string }, context: Context) => Promise<PublicTypes.WhatToWatch[]>;
+  titles: (root: void, args: {}, context: Context) => Promise<PublicTypes.Title[]>;
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };
 
 type RootMutationType = {
@@ -110,4 +117,5 @@ type RootMutationType = {
   ) => Promise<boolean>;
   followShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
   unfollowShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
+  updateTitles: (root: void, args: {}, context: Context) => Promise<boolean>;
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };

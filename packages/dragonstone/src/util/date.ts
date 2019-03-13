@@ -9,3 +9,9 @@ export function createDateString(date: Date) {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+export function yesterDay() {
+  const day = new Date();
+  day.setDate(day.getDate() - 1);
+  return day;
+}
