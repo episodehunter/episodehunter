@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@episodehunter/kingsguard": "^3.0.1",
     "apollo-server-lambda": "^2.4.8",
     "firebase-admin": "^7.0.0",
     "graphql": "^14.1.1",

@@ -22,6 +22,17 @@ createServer((req, res) => {
       },
       headers: req.headers
     };
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type');
+    if (req.method === 'OPTIONS') {
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+
     const callback = (error, result) => {
       if (error) throw error;
       res.statusCode = result.statusCode;
@@ -33,7 +44,7 @@ createServer((req, res) => {
       res.write(result.body);
       res.end();
     };
-    graphqlHandler(event, {}, callback);
+    graphqlHandler(event, { functionName: 'dragonstone-local', getRemainingTimeInMillis: () => 10000 }, callback);
   });
 }).listen(8080, () => {
   console.log('🚀 at 8080');

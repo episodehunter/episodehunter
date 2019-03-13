@@ -2,21 +2,11 @@ import { PublicTypes } from '../../../public';
 import { Docs } from '../util/firebase-docs';
 import { mapEpisode, mapEpisodes } from './episode.mapper';
 import { Episode } from './episode.type';
+import { Selectors } from '../util/selectors';
 
-export const createEpisodeResolver = (docs: Docs) => ({
+export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
   async getNextEpisodeToWatch(userId: string, showId: string): Promise<PublicTypes.Episode | null> {
-    const highestWatchedEpisode = await docs
-      .showsWatchHistoryCollection(userId)
-      .where('showId', '==', Number(showId))
-      .orderBy('episodeNumber', 'desc')
-      .limit(1)
-      .get()
-      .then(r => {
-        if (r.size === 1) {
-          return r.docs[0].data() as Episode;
-        }
-        return null;
-      });
+    const highestWatchedEpisode = await selectors.getHighestWatchedEpisode(userId, showId);
 
     let nextEpisode = 0;
     if (highestWatchedEpisode) {

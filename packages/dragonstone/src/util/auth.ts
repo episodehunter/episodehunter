@@ -2,10 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import firebase from 'firebase-admin';
 import { config } from '../config';
 
-function getUserId(
-  auth: firebase.auth.Auth,
-  token: string | null
-): Promise<string | null> {
+function getUserId(auth: firebase.auth.Auth, token: string | null): Promise<string | null> {
   if (!token) {
     return Promise.resolve(null);
   }
@@ -22,13 +19,16 @@ export function getToken(headers: IncomingHttpHeaders): string | null {
   return null;
 }
 
-export function getUidFromHeader(
-  auth: firebase.auth.Auth,
-  headers: IncomingHttpHeaders
-) {
+export async function getUidFromHeader(auth: firebase.auth.Auth, headers: IncomingHttpHeaders) {
   const token = getToken(headers);
   if (config.develop) {
-    return Promise.resolve(isNaN(Number(token)) ? null : token);
+    if (!token) {
+      return null;
+    } else if (isNaN(Number(token))) {
+      return getUserId(auth, token);
+    } else {
+      return token;
+    }
   } else {
     return getUserId(auth, token);
   }
