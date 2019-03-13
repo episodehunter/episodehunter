@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/node';
 interface DnaLogger {
   log: (
     message: string,
-    opt: { level: 'Debug' | 'Trace' | 'Info' | 'Warn' | 'Error' | 'Fatal'; meta: any }
+    opt: { level: 'Debug' | 'Trace' | 'Info' | 'Warn' | 'Error' | 'Fatal'; meta: any; app: string }
   ) => void;
 }
 
@@ -16,7 +16,7 @@ export function setupLogger(ravenDns: string, logDnaApiKey: string) {
 }
 
 function createCreateSentryLogger(logdna: DnaLogger) {
-  return (context: Context, requestStack?: string[]) => {
+  return (context: Context, requestStack: string[] = []) => {
     const meta = {
       functionName: context.functionName,
       functionVersion: context.functionVersion,
@@ -32,7 +32,7 @@ function createCreateSentryLogger(logdna: DnaLogger) {
         message,
         data: meta
       });
-      logdna.log(message, { level: 'Info', meta });
+      logdna.log(message, { level: 'Info', meta, app: context.functionName });
     };
     const warn = (message: string) => {
       console.warn(message);
@@ -41,7 +41,7 @@ function createCreateSentryLogger(logdna: DnaLogger) {
         message,
         data: meta
       });
-      logdna.log(message, { level: 'Warn', meta });
+      logdna.log(message, { level: 'Warn', meta, app: context.functionName });
     };
     const captureBreadcrumb = (message: string, category: string, data?: object) => {
       console.log(message, category, data);
@@ -51,7 +51,7 @@ function createCreateSentryLogger(logdna: DnaLogger) {
         category,
         data: Object.assign({}, meta, data)
       });
-      logdna.log(message, { level: 'Error', meta });
+      logdna.log(message, { level: 'Error', meta, app: context.functionName });
     };
     const captureException = (error: Error & { awsRequestId?: string }) => {
       error.awsRequestId = context.awsRequestId;
@@ -59,9 +59,9 @@ function createCreateSentryLogger(logdna: DnaLogger) {
       Sentry.captureException(error);
       try {
         const logmsg = error.message + ' at ' + error.stack;
-        logdna.log(logmsg, { level: 'Fatal', meta });
+        logdna.log(logmsg, { level: 'Fatal', meta, app: context.functionName });
       } catch (error) {
-        logdna.log('Could not parse error message', { level: 'Fatal', meta });
+        logdna.log('Could not parse error message', { level: 'Fatal', meta, app: context.functionName });
       }
       DnaLogger.flushAll();
     };
