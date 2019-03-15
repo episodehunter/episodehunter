@@ -1,13 +1,21 @@
-import { PublicTypes } from '../../../public';
+import { PublicTypes, Omit } from '../../../public';
 import { Docs } from '../util/firebase-docs';
 import { mapWatchedEpisodes } from './history.mapper';
 import { WatchedEpisode, WatchedEnum } from '../types';
-import { UsermetaData } from '../types';
-import { safeMap } from '../../../util/util';
 import { Selectors } from '../util/selectors';
 
 export const createHistoryResolver = (docs: Docs, selectors: Selectors) => ({
-  async getWatchedEpisodes(userId: string, showId: string): Promise<PublicTypes.WatchedEpisode[]> {
+  async getHistoryPage(userId: string, page: number): Promise<Omit<PublicTypes.History, 'show' | 'episode'>[]> {
+    const historyPage = await docs
+      .showsWatchHistoryCollection(userId)
+      .orderBy('time', 'desc')
+      .limit(20)
+      .offset(page * 20)
+      .get()
+      .then(r => r.docs.map(d => d.data() as WatchedEpisode));
+    return historyPage.map(watchedEpisode => ({ watchedEpisode }));
+  },
+  async getWatchedEpisodesForShow(userId: string, showId: string): Promise<PublicTypes.WatchedEpisode[]> {
     const highestWatchedEpisode = await docs
       .showsWatchHistoryCollection(userId)
       .where('showId', '==', showId)

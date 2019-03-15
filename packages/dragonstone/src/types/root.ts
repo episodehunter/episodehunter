@@ -1,10 +1,11 @@
 import { gql } from 'apollo-server-lambda';
-import { show } from './show';
 import { episode } from './episode';
+import { history } from './history';
+import { show } from './show';
+import { title } from './title';
+import { upcomingEpisode } from './upcoming-episode';
 import { watchedEpisode } from './watched-episode';
 import { whatToWatch } from './what-to-watch';
-import { upcomingEpisode } from './upcoming-episode';
-import { title } from './title';
 
 export const root = gql`
   scalar Date
@@ -23,6 +24,7 @@ export const root = gql`
     watchedEpisodes(showId: ID!): [WatchedEpisode]
     whatToWatch(showId: ID): [WhatToWatch]
     titles: [Title]
+    history(page: Int!): [History]
   }
 
   type RootMutation {
@@ -40,4 +42,5 @@ export const root = gql`
   ${whatToWatch}
   ${upcomingEpisode}
   ${title}
+  ${history}
 `;

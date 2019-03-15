@@ -1,5 +1,5 @@
 import { Context } from '../context';
-import { PublicTypes } from '../public';
+import { PublicTypes, Omit } from '../public';
 import { dateType } from './date';
 import { ApolloError } from 'apollo-server-lambda';
 
@@ -20,13 +20,25 @@ const RootQuery: RootQueryType = {
     return context.firebaseResolver.episode.getSeason(args.showId, args.season);
   },
   watchedEpisodes(root, args, context) {
-    return context.firebaseResolver.history.getWatchedEpisodes(context.getUid(), args.showId);
+    return context.firebaseResolver.history.getWatchedEpisodesForShow(context.getUid(), args.showId);
   },
   whatToWatch(root, args, context) {
     return context.firebaseResolver.history.getWhatToWatch(context.getUid(), args.showId);
   },
   titles(root, args, context) {
     return context.firebaseResolver.titles.getTitles();
+  },
+  history(root, args, context) {
+    return context.firebaseResolver.history.getHistoryPage(context.getUid(), Math.max(args.page, 0));
+  }
+};
+
+const History: HistoryQueryType = {
+  show(root, args, context) {
+    return context.firebaseResolver.show.getShow(root.watchedEpisode.showId);
+  },
+  episode(root, args, context) {
+    return context.firebaseResolver.episode.getEpisode(root.watchedEpisode.showId, root.watchedEpisode.episodeNumber);
   }
 };
 
@@ -81,7 +93,8 @@ export const resolvers = {
     plexScrobble: 4
   },
   RootQuery: new Proxy(RootQuery, resolverHandler),
-  RootMutation: new Proxy(RootMutation, resolverHandler)
+  RootMutation: new Proxy(RootMutation, resolverHandler),
+  History
 };
 
 type RootQueryType = {
@@ -97,7 +110,25 @@ type RootQueryType = {
   watchedEpisodes: (root: void, args: { showId: string }, context: Context) => Promise<PublicTypes.WatchedEpisode[]>;
   whatToWatch: (root: void, args: { showId?: string }, context: Context) => Promise<PublicTypes.WhatToWatch[]>;
   titles: (root: void, args: {}, context: Context) => Promise<PublicTypes.Title[]>;
+  history: (
+    root: void,
+    args: { page: number },
+    context: Context
+  ) => Promise<Omit<PublicTypes.History, 'show' | 'episode'>[]>;
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };
+
+type HistoryQueryType = {
+  show: (
+    root: Omit<PublicTypes.History, 'show' | 'episode'>,
+    args: {},
+    context: Context
+  ) => Promise<PublicTypes.Show | null>;
+  episode: (
+    root: Omit<PublicTypes.History, 'show' | 'episode'>,
+    args: {},
+    context: Context
+  ) => Promise<PublicTypes.Episode | null>;
+};
 
 type RootMutationType = {
   checkInEpisode: (

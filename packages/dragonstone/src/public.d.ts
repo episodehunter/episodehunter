@@ -8,6 +8,7 @@ import {
 import { WhatToWatch as WhatToWatchType } from './types/what-to-watch';
 import { UpcomingEpisode as UpcomingEpisodeType } from './types/upcoming-episode';
 import { Title as TitleType } from './types/title';
+import { History as HistoryType } from './types/history';
 
 export declare namespace PublicTypes {
   interface Show extends ShowType {}
@@ -18,4 +19,7 @@ export declare namespace PublicTypes {
   interface UnwatchedEpisodeInput extends UnwatchedEpisodeInputType {}
   interface WatchedEpisodeInput extends WatchedEpisodeInputType {}
   interface Title extends TitleType {}
+  interface History extends HistoryType {}
 }
+
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

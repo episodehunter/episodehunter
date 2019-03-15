@@ -8,8 +8,12 @@ export const dateType = new GraphQLScalarType({
   parseValue(value) {
     return new Date(value);
   },
-  serialize(value) {
-    return value.getTime();
+  serialize(value: Date | { toMillis: () => number }): number {
+    if (value instanceof Date) {
+      return value.getTime();
+    } else {
+      return value.toMillis();
+    }
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.STRING || ast.kind === Kind.INT) {

@@ -27,13 +27,26 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
         }
       });
   },
-  getSeason(showId: string, season: number): Promise<PublicTypes.Episode[]> {
+  async getSeason(showId: string, season: number): Promise<PublicTypes.Episode[]> {
     return docs
       .episodesCollection(showId)
       .where('season', '==', season)
       .get()
       .then(querySnapshot => {
         return mapEpisodes(querySnapshot.docs.map(d => d.data() as Episode).filter(Boolean));
+      });
+  },
+  async getEpisode(showId: string, episodeNumber: number): Promise<Episode | null> {
+    return docs
+      .episodesCollection(showId)
+      .where('episodeNumber', '==', episodeNumber)
+      .get()
+      .then(querySnapshot => {
+        if (querySnapshot.empty) {
+          return null;
+        } else {
+          return querySnapshot.docs[0].data() as Episode;
+        }
       });
   }
 });

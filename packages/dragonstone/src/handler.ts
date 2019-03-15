@@ -30,10 +30,14 @@ const gard = createGuard(config.ravenDns, config.logdnaKey);
 exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
   event.logger = logger;
   return new Promise((resolve, reject) => {
+    const t0 = Date.now();
     handler(event, context, (error, result) => {
       if (error) {
         reject(error);
       } else {
+        if (result && result.headers) {
+          result.headers['Server-Timing'] = 'dragonstone;desc="Execution time";dur=' + (Date.now() - t0);
+        }
         resolve(result);
       }
     });
