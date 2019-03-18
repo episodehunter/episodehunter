@@ -1,9 +1,7 @@
-import { setupLogger } from '@episodehunter/logger'
+import { setupLogger, Logger } from '@episodehunter/logger'
 import { Context, Callback } from 'aws-lambda'
 
-export type Logger = ReturnType<ReturnType<typeof setupLogger>>
-
-export function createGuard(ravenDsn: string, logdnaKey: string, _setupLogger = setupLogger) {
+function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setupLogger) {
   const createLogger = _setupLogger(ravenDsn, logdnaKey)
   return function guard<T extends { requestStack?: string[]; headers?: { [key: string]: string } }>(
     fun: (event: T, logger: Logger, context: Context) => any
@@ -40,3 +38,5 @@ function extractRequestStackFromHeader(event: { headers?: { [key: string]: strin
   const requestStack = event.headers['x-request-stack'] || ''
   return requestStack.split(',')
 }
+
+export { Logger, createGuard }
