@@ -15,7 +15,7 @@
     "@episodehunter/kingsguard": "^4.0.1",
     "@episodehunter/logger": "^4.1.0",
     "apollo-server-lambda": "^2.4.8",
-    "firebase-admin": "^7.0.0",
+    "firebase-admin": "^7.1.0",
     "graphql": "^14.1.1",
     "graphql-import": "^0.7.1",
     "typescript": "^3.3.3333"
