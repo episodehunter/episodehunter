@@ -8,6 +8,7 @@ export const createContext = (firestore: Firestore) => {
     firebaseResolver: createResolver(firestore),
     logger: {} as Logger,
     uid: null as null | string,
+    usingApiKey: false,
     getUid() {
       if (!this.uid) {
         throw new AuthenticationError('must authenticate');

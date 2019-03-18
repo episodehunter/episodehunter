@@ -4,7 +4,7 @@ import { resolvers } from './resolvers/root';
 import { root as typeDefs } from './types/root';
 import { createContext } from './context';
 import { createFirebase } from './util/firebase-app';
-import { getUidFromHeader } from './util/auth';
+import { getUidFromHeader, isUsingApiKey } from './util/auth';
 import { config } from './config';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 
@@ -19,6 +19,7 @@ const server = new ApolloServer({
   },
   context: async (res: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
     context.logger = res.event.logger;
+    context.usingApiKey = isUsingApiKey(res.event.headers);
     context.uid = await getUidFromHeader(firebaseApp.auth, res.event.headers);
     return context;
   }

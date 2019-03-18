@@ -6,13 +6,14 @@
   "scripts": {
     "start": "NODE_ENV=develop node index.js",
     "build": "tsc",
-    "deploy": "tsc && now",
+    "deploy": "make deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@episodehunter/kingsguard": "^3.0.1",
+    "@episodehunter/kingsguard": "^4.0.1",
+    "@episodehunter/logger": "^4.1.0",
     "apollo-server-lambda": "^2.4.8",
     "firebase-admin": "^7.0.0",
     "graphql": "^14.1.1",
@@ -20,7 +21,7 @@
     "typescript": "^3.3.3333"
   },
   "devDependencies": {
-    "@types/aws-lambda": "8.10.20",
+    "@types/aws-lambda": "8.10.23",
     "@types/graphql": "14.0.7",
     "@types/node": "11.10.4",
     "aws-lambda": "0.1.2"

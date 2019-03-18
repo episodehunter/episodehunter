@@ -1,7 +1,7 @@
 import { Context } from '../context';
 import { PublicTypes, Omit } from '../public';
 import { dateType } from './date';
-import { ApolloError } from 'apollo-server-lambda';
+import { ApolloError, AuthenticationError } from 'apollo-server-lambda';
 
 const RootQuery: RootQueryType = {
   following(root, args, context) {
@@ -59,6 +59,9 @@ const RootMutation: RootMutationType = {
     return context.firebaseResolver.user.unfollowShow(context.getUid(), args.showId);
   },
   updateTitles(root, args, context) {
+    if (!context.usingApiKey) {
+      throw new AuthenticationError('missing api key');
+    }
     return context.firebaseResolver.titles.updateTitles();
   }
 };
