@@ -1,21 +1,21 @@
 service: scheduler
 
 custom:
-  stage: "${opt:stage, self:provider.stage}"
+  stage: '${opt:stage, self:provider.stage}'
   env: ${file(env.yml):${self:custom.stage}}
 
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs8.10
   stage: prod
   region: us-east-1
   versionFunctions: false
   environment: ${self:custom.env}
-  timeout: 10
+  timeout: 20
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "sns:Publish"
+        - 'sns:Publish'
       Resource:
         - ${self:custom.env.EH_SNS_UPDATE_SHOW}
 
@@ -31,6 +31,10 @@ package:
 
 functions:
   thetvdb:
-    handler: dist/handler.update
+    handler: dist/show-updater-handler.update
     events:
       - schedule: rate(2 hours)
+  titlesupdater:
+    handler: dist/show-updater-handler.update
+    events:
+      - schedule: rate(24 hours)

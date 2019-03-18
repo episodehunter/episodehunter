@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2018",
     "module": "commonjs",
     "outDir": "./dist",
     "strict": false,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "moduleResolution": "node",
-    "sourceMap": true
+    "sourceMap": false
   }
 }

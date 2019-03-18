@@ -1,8 +1,9 @@
-import { Context } from '@episodehunter/kingsguard';
+import { Context } from 'aws-lambda';
 import { GraphQLClient } from 'graphql-request';
+import { config } from './config';
 
-const client = new GraphQLClient(process.env.EH_RED_KEEP_URL, {
-  headers: { 'api-key': process.env.EH_RED_API_KEY }
+const client = new GraphQLClient(config.redKeepUrl, {
+  headers: { 'api-key': config.redKeepApiKey }
 });
 
 export function getExistingShows(tvdbIds: number[], context: Context) {

@@ -1,4 +1,5 @@
-const handler = require('./dist/handler');
+const showUpdater = require('./dist/show-updater-handler');
+const titlesUpdater = require('./dist/titles-updater-handler');
 
 const event = null;
 
@@ -14,4 +15,6 @@ const context = {
 };
 
 const callback = (error, result) => console.log(error, result);
-handler.update(event, context, callback);
+
+titlesUpdater.update(event, context, callback);
+// showUpdater.update(event, context, callback);

@@ -1,10 +1,10 @@
-import { guard, assertRequiredConfig, Logger, Context } from '@episodehunter/kingsguard';
+import { createGuard, Logger } from '@episodehunter/kingsguard';
 import { TheTvDbUpdatedShowId } from '@episodehunter/types/thetvdb';
-import { theTvDb } from './the-tv-db.util';
+import { Context } from 'aws-lambda';
+import { config } from './config';
 import { getExistingShows } from './red-keep.util';
 import { publishUpdateShow } from './sns';
-
-assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_API_KEY', 'THE_TV_DB_API_KEY', 'EH_SNS_UPDATE_SHOW');
+import { theTvDb } from './the-tv-db.util';
 
 function* groupIds(ids: TheTvDbUpdatedShowId[]) {
   while (ids.length > 0) {
@@ -37,7 +37,9 @@ function unixtimestamp() {
 
 const twoHours = 7200;
 
-export const update = guard(function updateInner(event, logger, context) {
+const guard = createGuard(config.sentryDns, config.logdnaKey);
+
+export const update = guard((event, logger, context) => {
   logger.log('Start a mass update of shows');
   const result = emitUpdates(logger, context);
   logger.log('We are done. Result: ' + result);

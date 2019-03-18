@@ -22,14 +22,14 @@
   "license": "MIT",
   "devDependencies": {
     "@episodehunter/types": "^1.0.1",
-    "@types/node": "^9.6.0",
-    "typescript": "^2.7.2"
+    "@types/node": "^11.11.3",
+    "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "@episodehunter/kingsguard": "^2.1.0",
-    "@episodehunter/thetvdb": "^2.1.0",
-    "aws-sdk": "^2.213.1",
-    "graphql-request": "^1.5.1"
+    "@episodehunter/kingsguard": "^3.0.1",
+    "@episodehunter/thetvdb": "^3.0.0",
+    "aws-sdk": "^2.422.0",
+    "graphql-request": "^1.8.2"
   },
   "prettier": {
     "singleQuote": true,
