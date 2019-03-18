@@ -5,7 +5,7 @@ interface Config {
   };
   engineApiKey?: string;
   logdnaKey?: string;
-  ravenDns?: string;
+  sentryDns?: string;
   dragonstoneApiKey: string;
   develop: boolean;
 }
@@ -17,8 +17,8 @@ function createProductionConfig(): Config {
     throw new Error('ENGINE_API_KEY is missing!');
   } else if (!process.env.LOGDNA_KEY) {
     throw new Error('LOGDNA_KEY is missing!');
-  } else if (!process.env.RAVEN_DNS) {
-    throw new Error('RAVEN_DNS is missing!');
+  } else if (!process.env.AWS_SENTRY_DSN) {
+    throw new Error('AWS_SENTRY_DSN is missing!');
   } else if (!process.env.DRAGONSTONE_API_KEY) {
     throw new Error('DRAGONSTONE_API_KEY is missing!');
   }
@@ -30,7 +30,7 @@ function createProductionConfig(): Config {
     },
     engineApiKey: process.env.ENGINE_API_KEY,
     logdnaKey: process.env.LOGDNA_KEY,
-    ravenDns: process.env.RAVEN_DNS,
+    sentryDns: process.env.AWS_SENTRY_DSN,
     develop: false,
     dragonstoneApiKey: process.env.DRAGONSTONE_API_KEY
   };
@@ -41,7 +41,7 @@ function createDevelopConfig(): Config {
     firebase: { projectId: 'newagent-dc3d1' },
     engineApiKey: process.env.ENGINE_API_KEY,
     logdnaKey: process.env.LOGDNA_KEY,
-    ravenDns: process.env.RAVEN_DNS,
+    sentryDns: process.env.AWS_SENTRY_DSN,
     develop: true,
     dragonstoneApiKey: 'dragonstone-api-key'
   };

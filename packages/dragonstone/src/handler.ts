@@ -26,7 +26,7 @@ const server = new ApolloServer({
 });
 
 const handler = server.createHandler();
-const gard = createGuard(config.ravenDns, config.logdnaKey);
+const gard = createGuard(config.sentryDns, config.logdnaKey);
 
 exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
   event.logger = logger;
