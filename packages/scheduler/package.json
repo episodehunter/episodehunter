@@ -23,12 +23,12 @@
   "devDependencies": {
     "@episodehunter/types": "^1.0.1",
     "@types/node": "^11.11.3",
+    "aws-sdk": "^2.422.0",
     "typescript": "^3.3.3333"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^3.0.1",
     "@episodehunter/thetvdb": "^3.0.0",
-    "aws-sdk": "^2.422.0",
     "graphql-request": "^1.8.2"
   },
   "prettier": {
