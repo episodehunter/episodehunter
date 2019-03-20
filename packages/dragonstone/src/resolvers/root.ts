@@ -16,8 +16,8 @@ const RootQuery: RootQueryType = {
   nextEpisodeToWatch(root, args, context) {
     return context.firebaseResolver.episode.getNextEpisodeToWatch(context.getUid(), args.showId);
   },
-  season(root, args, context) {
-    return context.firebaseResolver.episode.getSeason(args.showId, args.season);
+  episodes(root, args, context) {
+    return context.firebaseResolver.episode.getEpisodes(args.showId, args.season, args.episode);
   },
   watchedEpisodes(root, args, context) {
     return context.firebaseResolver.history.getWatchedEpisodesForShow(context.getUid(), args.showId);
@@ -69,19 +69,13 @@ const RootMutation: RootMutationType = {
 const resolverHandler = {
   get<R, A>(target: { [key: string]: (r: R, a: A, c: Context) => Promise<any> }, prop: string) {
     return (root: R, args: A, context: Context) => {
-      context.logger.log('Start resolver: ' + prop);
-      return target[prop](root, args, context)
-        .then(value => {
-          context.logger.log('Resolver compleat: ' + prop);
-          return value;
-        })
-        .catch(error => {
-          context.logger.warn(`Reolver (${prop}) endeds with error: ${error}`);
-          if (!(error instanceof ApolloError)) {
-            context.logger.captureException(error);
-          }
-          return Promise.reject(error);
-        });
+      return target[prop](root, args, context).catch(error => {
+        context.logger.warn(`Reolver (${prop}) endeds with error: ${error}`);
+        if (!(error instanceof ApolloError)) {
+          context.logger.captureException(error);
+        }
+        return Promise.reject(error);
+      });
     };
   }
 };
@@ -109,7 +103,11 @@ type RootQueryType = {
     context: Context
   ) => Promise<PublicTypes.UpcomingEpisode[]>;
   nextEpisodeToWatch: (root: void, args: { showId: string }, context: Context) => Promise<PublicTypes.Episode | null>;
-  season: (root: void, args: { showId: string; season: number }, context: Context) => Promise<PublicTypes.Episode[]>;
+  episodes: (
+    root: void,
+    args: { showId: string; season?: number; episode?: number },
+    context: Context
+  ) => Promise<PublicTypes.Episode[]>;
   watchedEpisodes: (root: void, args: { showId: string }, context: Context) => Promise<PublicTypes.WatchedEpisode[]>;
   whatToWatch: (root: void, args: { showId?: string }, context: Context) => Promise<PublicTypes.WhatToWatch[]>;
   titles: (root: void, args: {}, context: Context) => Promise<PublicTypes.Title[]>;

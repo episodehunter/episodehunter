@@ -22,6 +22,8 @@ export const show = gql`
     first: String
     # Air time (local time), eg. "20:00"
     time: String
+    # Day in week (0 = Monday...)
+    day: Int
   }
 
   type ShowIds {
@@ -35,6 +37,7 @@ export interface Show {
   airs: {
     first?: string;
     time?: string;
+    day?: number;
   };
   ended: boolean;
   genre: string[];

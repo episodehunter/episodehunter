@@ -6,7 +6,7 @@ export const episode = gql`
     aired: String!
     # The episode number, eg. 5
     episode: Int!
-    # The episode number, s*1000 + e
+    # The episode number, s*10000 + e
     episodeNumber: Int!
     # Unix timestamp of last update
     lastupdated: Int!
