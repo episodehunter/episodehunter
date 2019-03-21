@@ -36,10 +36,11 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
       if (error) {
         reject(error);
       } else {
-        if (result && result.headers) {
-          result.headers['Server-Timing'] = 'dragonstone;desc="Execution time";dur=' + (Date.now() - t0);
-        }
-        resolve(result);
+        const realResult = result || { headers: {} as { [key: string]: string } };
+        realResult.headers = realResult.headers || {};
+        realResult.headers['Server-Timing'] = 'dragonstone;desc="Execution time";dur=' + (Date.now() - t0);
+        realResult.headers['Access-Control-Allow-Origin'] = '*';
+        resolve(realResult);
       }
     });
   });
