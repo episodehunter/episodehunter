@@ -1,9 +1,11 @@
 import { setupLogger, Logger } from '@episodehunter/logger'
 import { Context, Callback } from 'aws-lambda'
 
+type EventType = { [key: string]: any }
+
 function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setupLogger) {
   const createLogger = _setupLogger(ravenDsn, logdnaKey)
-  return function guard<T extends { requestStack?: string[]; headers?: { [key: string]: string } }>(
+  return function guard<T extends EventType>(
     fun: (event: T, logger: Logger, context: Context) => any
   ) {
     return async (event: T, context: Context, callback: Callback) => {
