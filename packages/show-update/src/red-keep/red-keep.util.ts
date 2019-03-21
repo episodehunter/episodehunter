@@ -1,9 +1,10 @@
 import { GraphQLClient } from 'graphql-request';
 import { gql } from './gql';
 import { ShowDefinitionType } from './types/show-definition.type';
+import { config } from '../config';
 
-const client = new GraphQLClient(process.env.EH_RED_KEEP_URL, {
-  headers: { 'api-key': process.env.EH_RED_KEEP_API_KEY }
+const client = new GraphQLClient(config.ehRedKeepUrl, {
+  headers: { 'api-key': config.redKeepApiKey }
 });
 
 class RedKeepError extends Error {

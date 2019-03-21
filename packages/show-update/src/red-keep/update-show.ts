@@ -1,10 +1,10 @@
 import { Logger } from '@episodehunter/kingsguard';
 import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/thetvdb';
-import { getInformationFromTvDb } from './the-tv-db.util';
+import { getInformationFromTvDb } from '../the-tv-db.util';
 import { ShowDefinitionType } from './types/show-definition.type';
 import { EpisodeDefinitionType } from './types/episode-definition.type';
 import { updateShowRequest, addShowRequest } from './red-keep.util';
-import { InsufficientShowInformation } from './custom-erros';
+import { InsufficientShowInformation } from '../custom-erros';
 
 function safeMap<T, R>(fu: (a: T) => R): (arr: T[]) => R[] {
   return (arr: T[]) => (Array.isArray(arr) ? arr.map(fu) : []);

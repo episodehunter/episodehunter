@@ -1,7 +1,8 @@
 import { Logger } from '@episodehunter/kingsguard';
 import { TheTvDb } from '@episodehunter/thetvdb';
+import { config } from './config';
 
-const theTvDb = new TheTvDb(process.env.THE_TV_DB_API_KEY);
+const theTvDb = new TheTvDb(config.theTvDbApiKey);
 
 export const getInformationFromTvDb = (theTvDbId: number, logger: Logger) =>
   Promise.all([

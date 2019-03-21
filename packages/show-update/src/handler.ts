@@ -1,19 +1,20 @@
-import { guard, assertRequiredConfig } from '@episodehunter/kingsguard';
+import { createGuard } from '@episodehunter/kingsguard';
 import { TooManyEpisodes } from '@episodehunter/thetvdb';
 import { SNSEvent } from 'aws-lambda';
-import { updateShow, addShow } from './update-show';
+import { updateShow, addShow } from './red-keep/update-show';
 import { InsufficientShowInformation } from './custom-erros';
+import { config } from './config';
 
-assertRequiredConfig('EH_RED_KEEP_URL', 'EH_RED_KEEP_API_KEY', 'THE_TV_DB_API_KEY');
+const guard = createGuard(config.sentryDsn, config.logdnaKey);
 
-export const update = guard<SNSEvent>(function updateInner(event, logger, context) {
+export const update = guard<SNSEvent>((event, logger, context) => {
   const message = event.Records[0].Sns.Message;
   const theTvDbId = Number(message) | 0;
 
   logger.log(`Will update the show with theTvDbId: ${theTvDbId} and associated epesodes`);
 
   if (theTvDbId <= 0) {
-    throw new Error('theTvDbId is not a valid id:' + message);
+    throw new Error('theTvDbId is not a valid id: ' + message);
   }
 
   return updateShow(theTvDbId, logger, context.awsRequestId).catch((error: Error) => {
