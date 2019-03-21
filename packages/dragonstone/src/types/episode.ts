@@ -15,6 +15,16 @@ export const episode = gql`
     season: Int!
     tvdbId: Int!
   }
+
+  input EpisodeInput {
+    tvdbId: Int!
+    name: String!
+    season: Int!
+    episode: Int!
+    firstAired: String!
+    overview: String
+    lastupdated: Int!
+  }
 `;
 
 export interface Episode {
@@ -23,7 +33,17 @@ export interface Episode {
   episodeNumber: number;
   lastupdated: number;
   name: string;
-  overview: string;
+  overview?: string;
   season: number;
   tvdbId: number;
+}
+
+export interface EpisodeInput {
+  tvdbId: number;
+  name: string;
+  season: number;
+  episode: number;
+  firstAired: string;
+  overview?: string;
+  lastupdated: number;
 }

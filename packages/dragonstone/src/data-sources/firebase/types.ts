@@ -1,3 +1,5 @@
+import { PublicTypes } from '../../public';
+
 export interface UsermetaData {
   apiKey: string;
   following: number[];

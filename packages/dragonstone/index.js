@@ -44,7 +44,7 @@ createServer((req, res) => {
       res.write(result.body);
       res.end();
     };
-    graphqlHandler(event, { functionName: 'dragonstone-local', getRemainingTimeInMillis: () => 10000 }, callback);
+    graphqlHandler(event, { functionName: 'dragonstone-local', getRemainingTimeInMillis: () => 1000000 }, callback);
   });
 }).listen(8080, () => {
   console.log('🚀 at 8080');

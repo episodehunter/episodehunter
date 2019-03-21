@@ -2,6 +2,7 @@ import { Context } from '../context';
 import { PublicTypes, Omit } from '../public';
 import { dateType } from './date';
 import { ApolloError, AuthenticationError } from 'apollo-server-lambda';
+import { ShowInput } from '../types/show';
 
 const RootQuery: RootQueryType = {
   following(root, args, context) {
@@ -59,10 +60,16 @@ const RootMutation: RootMutationType = {
     return context.firebaseResolver.user.unfollowShow(context.getUid(), args.showId);
   },
   updateTitles(root, args, context) {
-    if (!context.usingApiKey) {
-      throw new AuthenticationError('missing api key');
-    }
+    context.assertApiKey();
     return context.firebaseResolver.titles.updateTitles();
+  },
+  updateShow(root, args, context) {
+    context.assertApiKey();
+    return context.firebaseResolver.show.updateShow(args.showId, args.show, context.logger);
+  },
+  addShow(root, args, context) {
+    context.assertApiKey();
+    return context.firebaseResolver.show.addShow(args.show, context.logger);
   }
 };
 
@@ -150,4 +157,11 @@ type RootMutationType = {
   followShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
   unfollowShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
   updateTitles: (root: void, args: {}, context: Context) => Promise<boolean>;
+
+  updateShow: (
+    root: void,
+    args: { showId: string; show: PublicTypes.ShowInput },
+    context: Context
+  ) => Promise<PublicTypes.Show | null>;
+  addShow: (root: void, args: { show: PublicTypes.ShowInput }, context: Context) => Promise<PublicTypes.Show>;
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };

@@ -14,6 +14,11 @@ export const createContext = (firestore: Firestore) => {
         throw new AuthenticationError('must authenticate');
       }
       return this.uid;
+    },
+    assertApiKey() {
+      if (!this.usingApiKey) {
+        throw new AuthenticationError('missing api key');
+      }
     }
   };
 };

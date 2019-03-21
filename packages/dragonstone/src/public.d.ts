@@ -1,5 +1,5 @@
-import { Show as ShowType } from './types/show';
-import { Episode as EpisodeType } from './types/episode';
+import { Show as ShowType, ShowInput as ShowInputType } from './types/show';
+import { Episode as EpisodeType, EpisodeInput as EpisodeInputType } from './types/episode';
 import {
   WatchedEpisode as WatchedEpisodeType,
   UnwatchedEpisodeInput as UnwatchedEpisodeInputType,
@@ -12,7 +12,9 @@ import { History as HistoryType } from './types/history';
 
 export declare namespace PublicTypes {
   interface Show extends ShowType {}
+  interface ShowInput extends ShowInputType {}
   interface Episode extends EpisodeType {}
+  interface EpisodeInput extends EpisodeInputType {}
   interface UpcomingEpisode extends UpcomingEpisodeType {}
   interface WatchedEpisode extends WatchedEpisodeType {}
   interface WhatToWatch extends WhatToWatchType {}

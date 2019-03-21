@@ -18,7 +18,8 @@ export const createFirebaseDocs = (db: Firestore) => ({
   },
   titlesDoc() {
     return db.collection('metadata').doc('titles');
-  }
+  },
+  db
 });
 
 export type Docs = ReturnType<typeof createFirebaseDocs>;

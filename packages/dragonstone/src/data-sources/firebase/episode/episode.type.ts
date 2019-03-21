@@ -4,7 +4,7 @@ export interface Episode {
   episodeNumber: number;
   lastupdated: number;
   name: string;
-  overview: string;
+  overview?: string;
   season: number;
   tvdbId: number;
 }

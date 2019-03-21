@@ -3,6 +3,7 @@ import { Docs } from '../util/firebase-docs';
 import { mapWatchedEpisodes } from './history.mapper';
 import { WatchedEpisode, WatchedEnum } from '../types';
 import { Selectors } from '../util/selectors';
+import { calculateEpisodeNumber } from '../../../util/util';
 
 export const createHistoryResolver = (docs: Docs, selectors: Selectors) => ({
   async getHistoryPage(userId: string, page: number): Promise<Omit<PublicTypes.History, 'show' | 'episode'>[]> {
@@ -38,7 +39,7 @@ export const createHistoryResolver = (docs: Docs, selectors: Selectors) => ({
   async checkInEpisode(userId: string, watchedEpisodeInput: PublicTypes.WatchedEpisodeInput): Promise<boolean> {
     const wh = {
       episode: watchedEpisodeInput.episode,
-      episodeNumber: watchedEpisodeInput.season * 10000 + watchedEpisodeInput.episode,
+      episodeNumber: calculateEpisodeNumber(watchedEpisodeInput.season, watchedEpisodeInput.episode),
       season: watchedEpisodeInput.season,
       showId: watchedEpisodeInput.showId,
       time: watchedEpisodeInput.time,
@@ -56,7 +57,7 @@ export const createHistoryResolver = (docs: Docs, selectors: Selectors) => ({
     userId: string,
     unwatchedEpisodeInput: PublicTypes.UnwatchedEpisodeInput
   ): Promise<boolean> {
-    const episodeNumber = unwatchedEpisodeInput.season * 10000 + unwatchedEpisodeInput.episode;
+    const episodeNumber = calculateEpisodeNumber(unwatchedEpisodeInput.season, unwatchedEpisodeInput.episode);
     return docs
       .showsWatchHistoryCollection(userId)
       .where('showId', '==', unwatchedEpisodeInput.showId)
