@@ -9,11 +9,13 @@ function getUserId(auth: firebase.auth.Auth, token: string | null): Promise<stri
   return auth
     .verifyIdToken(token)
     .then(r => r.uid || r.user_id || r.sub || null)
-    .catch(e => null);
+    .catch(e => console.log(e));
 }
 
 export function getToken(headers: IncomingHttpHeaders): string | null {
-  if (headers && headers.authorization) {
+  if (typeof headers.Authorization === 'string') {
+    return headers.Authorization.split(' ')[1];
+  } else if (typeof headers.authorization === 'string') {
     return headers.authorization.split(' ')[1];
   }
   return null;
