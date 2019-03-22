@@ -17,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@episodehunter/kingsguard": "^4.0.2",
-    "@episodehunter/logger": "^4.1.1",
+    "@episodehunter/logger": "^4.1.2",
     "apollo-server-lambda": "^2.4.8",
     "firebase-admin": "^7.1.1",
     "graphql": "^14.1.1",
