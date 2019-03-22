@@ -22,24 +22,22 @@ provider:
 
 package:
   include:
-    - dist/**
     - node_modules/**
-  exclude:
     - src/**
+  exclude:
+    - __mocks__
     - env.yml
-    - .git/**
-    - .vscode/**
 
 functions:
   thetvdb:
-    handler: dist/show-updater-handler.update
+    handler: src/show-updater-handler.update
     events:
       - schedule: rate(2 hours)
   showupdater:
-    handler: dist/dragonstone-show-updater-handler.update
+    handler: src/dragonstone-show-updater-handler.update
     events:
       - schedule: rate(2 hours)
   titlesupdater:
-    handler: dist/show-updater-handler.update
+    handler: src/show-updater-handler.update
     events:
       - schedule: rate(24 hours)
