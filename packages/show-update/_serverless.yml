@@ -25,14 +25,14 @@ package:
 
 functions:
   update:
-    handler: dist/red-keep/handler.update
+    handler: red-keep/handler.update
     events:
       - sns: ${self:custom.env.EH_SNS_UPDATE_SHOW}
   add:
-    handler: dist/red-keep/handler.add
+    handler: red-keep/handler.add
   update2:
-    handler: dist/dragonstone/handler.update
+    handler: dragonstone/handler.update
     events:
       - sns: ${self:custom.env.SNS_UPDATE_SHOW_TOPIC}
   add2:
-    handler: dist/dragonstone/handler.add
+    handler: dragonstone/handler.add
