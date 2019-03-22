@@ -57,7 +57,7 @@ export const createShowResolver = (docs: Docs) => {
       const newShow = mapShowInputToShow(showId, showInput);
       delete newShow.numberOfFollowers;
       logger.log('Start updating ' + newShow.name);
-      await batch.set(currentShowDoc.ref, newShow);
+      await batch.update(currentShowDoc.ref, newShow);
 
       const episodeCollection = await docs.episodesCollection(showId).get();
       const knownEpisodes = new Set<number>();
