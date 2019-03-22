@@ -23,7 +23,7 @@ function handleError(error: any) {
 export async function updateShowRequest(showDef: ShowInput, awsRequestId: string): Promise<Show | null> {
   const query = `
     mutation UpdateShow($showInput: ShowInput!) {
-      showUpdate(show: $showInput) {
+      updateShow(show: $showInput) {
         ids {
           id
           tvdb
@@ -34,15 +34,15 @@ export async function updateShowRequest(showDef: ShowInput, awsRequestId: string
   `;
   client.setHeader('x-request-stack', awsRequestId);
   return client
-    .request<{ showUpdate: Show }>(query, { showInput: showDef })
-    .then(result => result.showUpdate)
+    .request<{ updateShow: Show | null }>(query, { showInput: showDef })
+    .then(result => result.updateShow)
     .catch(handleError);
 }
 
 export async function addShowRequest(showDef: ShowInput, awsRequestId: string): Promise<string | null> {
   const query = `
     mutation AddShow($showInput: ShowInput!) {
-      showAdd(show: $showInput) {
+      addShow(show: $showInput) {
         ids {
           id
         }
@@ -51,7 +51,7 @@ export async function addShowRequest(showDef: ShowInput, awsRequestId: string): 
   `;
   client.setHeader('x-request-stack', awsRequestId);
   return client
-    .request<{ showAdd: Show | null }>(query, { showInput: showDef })
-    .then(result => (result.showAdd && result.showAdd.ids.id) || null)
+    .request<{ addShow: Show | null }>(query, { showInput: showDef })
+    .then(result => (result.addShow && result.addShow.ids.id) || null)
     .catch(handleError);
 }
