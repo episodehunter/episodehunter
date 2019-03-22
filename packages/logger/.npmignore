@@ -2,5 +2,8 @@
 !index.js
 !index.js.map
 index.ts
+invoke.ts
+invoke.js
+invoke.js.map
 tsconfig.json
 tslint.json

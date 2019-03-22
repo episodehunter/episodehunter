@@ -141,10 +141,7 @@ function createFakeLogger(context: Context, requestStack: string[] = []): Logger
 }
 
 function installSentry(ravenDns: string) {
-  Sentry.init({
-    dns: ravenDns,
-    environment: process.env.NODE_ENV === 'develop' ? 'develop' : 'production'
-  });
+  Sentry.init({ dsn: ravenDns });
 }
 
 function installLogdna(logDnaApiKey: string) {
