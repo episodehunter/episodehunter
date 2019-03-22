@@ -9,16 +9,20 @@
     "deploy": "make deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/episodehunter/dragonstone"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@episodehunter/kingsguard": "^4.0.1",
-    "@episodehunter/logger": "^4.1.0",
+    "@episodehunter/kingsguard": "^4.0.2",
+    "@episodehunter/logger": "^4.1.1",
     "apollo-server-lambda": "^2.4.8",
-    "firebase-admin": "^7.1.0",
+    "firebase-admin": "^7.1.1",
     "graphql": "^14.1.1",
     "graphql-import": "^0.7.1",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.4000"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.23",

@@ -1,4 +1,4 @@
-import { PublicTypes, Omit } from '../../../public';
+import { PublicTypes } from '../../../public';
 import { Show } from './show.types';
 import { Episode } from '../episode/episode.type';
 import { calculateEpisodeNumber } from '../../../util/util';
@@ -23,38 +23,56 @@ export function mapShow(show?: Show): PublicTypes.Show | null {
 }
 
 export function mapShowInputToShow(showId: string, showInput: PublicTypes.ShowInput): Show {
-  return {
-    airs: {
-      day: showInput.airsDayOfWeek,
-      first: showInput.firstAired,
-      time: showInput.airsTime
-    },
+  const show: Show = {
+    airs: {},
     ended: showInput.ended,
     genre: showInput.genre,
     ids: {
       id: showId,
-      imdb: showInput.imdbId,
       tvdb: showInput.tvdbId
     },
-    language: showInput.language,
     lastupdated: showInput.lastupdate,
     name: showInput.name,
-    network: showInput.network,
     overview: showInput.overview,
     runtime: showInput.runtime,
     numberOfFollowers: 0
   };
+  if (showInput.airsDayOfWeek) {
+    show.airs.day = showInput.airsDayOfWeek;
+  }
+  if (showInput.firstAired) {
+    show.airs.first = showInput.firstAired;
+  }
+  if (showInput.airsTime) {
+    show.airs.time = showInput.airsTime;
+  }
+  if (showInput.imdbId) {
+    show.ids.imdb = showInput.imdbId;
+  }
+  if (showInput.language) {
+    show.language = showInput.language;
+  }
+  if (showInput.network) {
+    show.network = showInput.network;
+  }
+  if (showInput.network) {
+    show.network = showInput.network;
+  }
+  return show;
 }
 
 export function mapEpisodeInputToEpisode(episodeInput: PublicTypes.EpisodeInput): Episode {
-  return {
+  const episode: Episode = {
     aired: episodeInput.firstAired,
     episode: episodeInput.episode,
     episodeNumber: calculateEpisodeNumber(episodeInput.season, episodeInput.episode),
     season: episodeInput.season,
     tvdbId: episodeInput.tvdbId,
     lastupdated: episodeInput.lastupdated,
-    name: episodeInput.name,
-    overview: episodeInput.overview
+    name: episodeInput.name
   };
+  if (episodeInput.overview) {
+    episode.overview = episodeInput.overview;
+  }
+  return episode;
 }
