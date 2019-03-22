@@ -35,7 +35,7 @@ functions:
     handler: dist/show-updater-handler.update
     events:
       - schedule: rate(2 hours)
-  thetvdb:
+  showupdater:
     handler: dist/dragonstone-show-updater-handler.update
     events:
       - schedule: rate(2 hours)
