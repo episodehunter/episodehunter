@@ -1,7 +1,7 @@
 service: show-updater
 
 custom:
-  stage: "${opt:stage, self:provider.stage}"
+  stage: '${opt:stage, self:provider.stage}'
   env: ${file(env.yml):${self:custom.stage}}
 
 provider:
@@ -25,8 +25,14 @@ package:
 
 functions:
   update:
-    handler: dist/handler.update
+    handler: dist/red-keep/handler.update
     events:
       - sns: ${self:custom.env.EH_SNS_UPDATE_SHOW}
   add:
-    handler: dist/handler.add
+    handler: dist/red-keep/handler.add
+  update2:
+    handler: dist/dragonstone/handler.update
+    events:
+      - sns: ${self:custom.env.SNS_UPDATE_SHOW_TOPIC}
+  add2:
+    handler: dist/dragonstone/handler.add

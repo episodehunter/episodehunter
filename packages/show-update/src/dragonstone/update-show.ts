@@ -1,13 +1,13 @@
-import { ShowDefinitionType } from './types/show-definition.type';
-import { EpisodeDefinitionType } from './types/episode-definition.type';
-import { updateShowRequest, addShowRequest } from './red-keep.util';
+import { ShowInput } from './types/show.type';
+import { EpisodeInput } from './types/episode.type';
+import { updateShowRequest, addShowRequest } from './dragonstone.util';
 import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/thetvdb';
 import { safeMap, safeFilter, isValidEpisode } from '../util';
-import { getInformationFromTvDb } from '../the-tv-db.util';
 import { Logger } from '@episodehunter/logger';
+import { getInformationFromTvDb } from '../the-tv-db.util';
 
-export async function updateShow(tvDbId: number, logger: Logger, awsRequestId: string) {
-  const [tShow, tEpisodes] = await getInformationFromTvDb(tvDbId, logger);
+export async function updateShow(ids: { id: string; tvdb: number }, logger: Logger, awsRequestId: string) {
+  const [tShow, tEpisodes] = await getInformationFromTvDb(ids.tvdb, logger);
   const showDef = mapTheTvShowToDefinition(tShow, tEpisodes);
   return updateShowRequest(showDef, awsRequestId);
 }
@@ -18,7 +18,7 @@ export async function addShow(tvDbId: number, logger: Logger, awsRequestId: stri
   return addShowRequest(showDef, awsRequestId);
 }
 
-function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): EpisodeDefinitionType {
+function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): EpisodeInput {
   return {
     tvdbId: tEpisodes.id,
     name: tEpisodes.episodeName || `Episode #${tEpisodes.airedSeason}.${tEpisodes.airedEpisodeNumber}`,
@@ -30,12 +30,29 @@ function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): Episode
   };
 }
 
-function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpisode[]): ShowDefinitionType {
+const dayOfWeekString = {
+  Monday: 0,
+  Tuesday: 1,
+  Wednesday: 2,
+  Thursday: 3,
+  Friday: 4,
+  Saturday: 5,
+  Sunday: 6
+};
+
+function mapDayToNumber(day?: string): number | undefined {
+  if (!day) {
+    return;
+  }
+  return dayOfWeekString[day];
+}
+
+function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpisode[]): ShowInput {
   return {
     tvdbId: tShow.id,
     imdbId: tShow.imdbId,
     name: tShow.seriesName,
-    airsDayOfWeek: tShow.airsDayOfWeek,
+    airsDayOfWeek: mapDayToNumber(tShow.airsDayOfWeek),
     airsTime: tShow.airsTime,
     firstAired: tShow.firstAired,
     genre: tShow.genre,
