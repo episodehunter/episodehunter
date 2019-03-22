@@ -11,7 +11,7 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
   const message = event.Records[0].Sns.Message;
   let ids = {
     id: '',
-    tvdb: 0
+    tvdbId: 0
   };
   try {
     ids = JSON.parse(message);
@@ -19,10 +19,10 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
     logger.log(`Could not parse show id from ` + message);
     throw error;
   }
-  if (!ids.id || !ids.tvdb) {
+  if (!ids.id || !ids.tvdbId) {
     throw new Error('theTvDbId or id is not a valid id: ' + message);
   }
-  logger.log(`Will update the show with theTvDbId: ${ids.tvdb} and associated epesodes`);
+  logger.log(`Will update the show with theTvDbId: ${ids.tvdbId} and associated epesodes`);
 
   try {
     return await updateShow(ids, logger, context.awsRequestId);

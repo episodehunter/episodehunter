@@ -6,8 +6,8 @@ import { safeMap, safeFilter, isValidEpisode } from '../util';
 import { Logger } from '@episodehunter/logger';
 import { getInformationFromTvDb } from '../the-tv-db.util';
 
-export async function updateShow(ids: { id: string; tvdb: number }, logger: Logger, awsRequestId: string) {
-  const [tShow, tEpisodes] = await getInformationFromTvDb(ids.tvdb, logger);
+export async function updateShow(ids: { id: string; tvdbId: number }, logger: Logger, awsRequestId: string) {
+  const [tShow, tEpisodes] = await getInformationFromTvDb(ids.tvdbId, logger);
   const showDef = mapTheTvShowToDefinition(tShow, tEpisodes);
   return updateShowRequest(ids.id, showDef, awsRequestId);
 }
