@@ -78,7 +78,7 @@ function createCreateSentryLogger(logdna: DnaLogger) {
       } catch (error) {
         logdna.log('Could not parse error message', { level: 'Fatal', meta, app: context.functionName });
       }
-      DnaLogger.flushAll();
+      DnaLogger.flushAll(() => null);
     };
     const eventStart = (message: string, category = 'event') => {
       const startMsg = `[START] ${message}. Remaning time ${context.getRemainingTimeInMillis()}ms`;
@@ -110,7 +110,7 @@ function createFakeLogger(context: Context, requestStack: string[] = []): Logger
     console.log(message);
   };
   const warn = (message: string) => {
-    console.warn(message);
+    console.log(message);
   };
   const captureBreadcrumb = (message: string, category: string, data?: object) => {
     console.log(message, category, data);
