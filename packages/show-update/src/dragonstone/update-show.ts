@@ -58,7 +58,7 @@ function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpis
     genre: tShow.genre,
     network: tShow.network,
     overview: tShow.overview,
-    runtime: (tShow.runtime as any | 0) || undefined,
+    runtime: (tShow.runtime as any) | 0,
     ended: tShow.status === 'Ended',
     lastupdate: tShow.lastUpdated,
     episodes: safeMap(mapTheTvShowEpisodeToDefinition)(safeFilter(isValidEpisode)(tEpisodes))

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^4.0.2",
-    "@episodehunter/logger": "^4.1.0",
+    "@episodehunter/logger": "^4.1.1",
     "@episodehunter/thetvdb": "^3.0.0",
     "graphql-request": "^1.8.2"
   },

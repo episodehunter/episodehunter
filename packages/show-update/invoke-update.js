@@ -1,9 +1,12 @@
 console.time('loading');
-const handler = require('./dist/handler');
+const handler = require('./dist/dragonstone/handler');
 console.timeEnd('loading');
 
-const data = 289574; // theTvDbId
-// const data = 121361; // theTvDbId, game of throes
+// Game of Throes
+const data = JSON.stringify({
+  id: '10',
+  tvdb: 121361
+});
 
 const event = {
   Records: [
@@ -23,7 +26,8 @@ function timeLeft() {
 
 const context = {
   functionName: 'showUpdate-local',
-  getRemainingTimeInMillis: timeLeft
+  getRemainingTimeInMillis: timeLeft,
+  awsRequestId: 22
 };
 
 const callback = (error, result) => console.log(error, result);
