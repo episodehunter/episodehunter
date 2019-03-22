@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/aws-lambda": "8.10.23",
     "@types/graphql": "14.0.7",
-    "@types/node": "11.11.4",
+    "@types/node": "11.11.5",
     "aws-lambda": "0.1.2"
   },
   "prettier": {
