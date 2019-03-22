@@ -9,7 +9,7 @@ import { getInformationFromTvDb } from '../the-tv-db.util';
 export async function updateShow(ids: { id: string; tvdb: number }, logger: Logger, awsRequestId: string) {
   const [tShow, tEpisodes] = await getInformationFromTvDb(ids.tvdb, logger);
   const showDef = mapTheTvShowToDefinition(tShow, tEpisodes);
-  return updateShowRequest(showDef, awsRequestId);
+  return updateShowRequest(ids.id, showDef, awsRequestId);
 }
 
 export async function addShow(tvDbId: number, logger: Logger, awsRequestId: string) {

@@ -20,10 +20,10 @@ function handleError(error: any) {
   return Promise.reject(error);
 }
 
-export async function updateShowRequest(showDef: ShowInput, awsRequestId: string): Promise<Show | null> {
+export async function updateShowRequest(showId: string, showDef: ShowInput, awsRequestId: string): Promise<Show | null> {
   const query = `
-    mutation UpdateShow($showInput: ShowInput!) {
-      updateShow(show: $showInput) {
+    mutation UpdateShow($showId: ID!, $showInput: ShowInput!) {
+      updateShow(showId: $showId, show: $showInput) {
         ids {
           id
           tvdb
@@ -34,7 +34,7 @@ export async function updateShowRequest(showDef: ShowInput, awsRequestId: string
   `;
   client.setHeader('x-request-stack', awsRequestId);
   return client
-    .request<{ updateShow: Show | null }>(query, { showInput: showDef })
+    .request<{ updateShow: Show | null }>(query, { showInput: showDef, showId })
     .then(result => result.updateShow)
     .catch(handleError);
 }
