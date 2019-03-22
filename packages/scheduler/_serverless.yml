@@ -18,6 +18,7 @@ provider:
         - 'sns:Publish'
       Resource:
         - ${self:custom.env.EH_SNS_UPDATE_SHOW}
+        - ${self:custom.env.SNS_UPDATE_SHOW_TOPIC}
 
 package:
   include:
@@ -32,6 +33,10 @@ package:
 functions:
   thetvdb:
     handler: dist/show-updater-handler.update
+    events:
+      - schedule: rate(2 hours)
+  thetvdb:
+    handler: dist/dragonstone-show-updater-handler.update
     events:
       - schedule: rate(2 hours)
   titlesupdater:

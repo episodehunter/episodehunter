@@ -39,9 +39,9 @@ const twoHours = 7200;
 
 const guard = createGuard(config.sentryDns, config.logdnaKey);
 
-export const update = guard((event, logger, context) => {
+export const update = guard(async (event, logger, context) => {
   logger.log('Start a mass update of shows');
-  const result = emitUpdates(logger, context);
+  const result = await emitUpdates(logger, context);
   logger.log('We are done. Result: ' + result);
   return result;
 });

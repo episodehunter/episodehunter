@@ -16,7 +16,9 @@ function assertEnv() {
 }
 
 function createConfig() {
-  assertEnv();
+  if (process.env.NODE_ENV !== 'test') {
+    assertEnv();
+  }
   return {
     sentryDns: process.env.AWS_SENTRY_DSN,
     logdnaKey: process.env.LOGDNA_KEY,
@@ -25,6 +27,7 @@ function createConfig() {
     dragonstoneUrl: process.env.DRAGONSTONE_URL,
     dragonstoneApiKey: process.env.DRAGONSTONE_API_KEY,
     updateShowQueueName: process.env.EH_SNS_UPDATE_SHOW,
+    updateShowTopic: process.env.SNS_UPDATE_SHOW_TOPIC,
     theTvDbApiKey: process.env.THE_TV_DB_API_KEY
   };
 }
