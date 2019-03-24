@@ -2,6 +2,7 @@ import { Context } from 'aws-lambda';
 import { GraphQLClient } from 'graphql-request';
 import { config } from './config';
 import { Title } from './types';
+import { Logger } from '@episodehunter/logger';
 
 const client = new GraphQLClient(config.dragonstoneUrl, {
   headers: { 'x-api-key': config.dragonstoneApiKey }
@@ -17,7 +18,7 @@ export async function updateTitles(context: Context): Promise<boolean> {
   return client.request<{ updateTitles: boolean }>(query).then(result => result.updateTitles);
 }
 
-export async function getTitles(context: Context): Promise<Title[]> {
+export async function getTitles(context: Context, logger: Logger): Promise<Title[]> {
   const query = `
     {
       titles {
@@ -27,5 +28,8 @@ export async function getTitles(context: Context): Promise<Title[]> {
     }
   `;
   client.setHeader('x-request-stack', context.awsRequestId);
-  return client.request<{ titles: Title[] }>(query).then(result => result.titles);
+  logger.log('Send a request to dragonstone for titles');
+  const result = await client.request<{ titles: Title[] }>(query)
+  logger.log('We have a result from dragonstone. ' + result.titles.length);
+  return result.titles;
 }

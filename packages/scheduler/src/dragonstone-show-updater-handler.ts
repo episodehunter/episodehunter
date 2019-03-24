@@ -21,7 +21,10 @@ const guard = createGuard(config.sentryDns, config.logdnaKey);
 export const update = guard(async (event, logger, context) => {
   logger.log('Start a mass update of shows to dragonstone');
   const twoHoursAgo = unixtimestamp() - twoHours;
-  const [titles, theTvDbUpdates] = await Promise.all([getTitles(context), theTvDb.fetchLastUpdateShowsList(twoHoursAgo)]);
+  const [titles, theTvDbUpdates] = await Promise.all([
+    getTitles(context, logger),
+    theTvDb.fetchLastUpdateShowsList(twoHoursAgo, msg => logger.log(msg))
+  ]);
   const showsToUpdate = findShowsToUpdate(titles, theTvDbUpdates);
   logger.log(`We should update ${showsToUpdate.length} shows`);
   const result = await Promise.all(showsToUpdate.map(title => publishShowUpdate(title)));
