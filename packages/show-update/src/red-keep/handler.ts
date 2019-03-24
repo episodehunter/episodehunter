@@ -1,5 +1,5 @@
 import { createGuard } from '@episodehunter/kingsguard';
-import { TooManyEpisodes } from '@episodehunter/thetvdb';
+import { TooManyEpisodes, NotFound } from '@episodehunter/thetvdb';
 import { SNSEvent } from 'aws-lambda';
 import { updateShow, addShow } from './update-show';
 import { InsufficientShowInformation } from '../custom-erros';
@@ -26,7 +26,7 @@ export const update = guard<SNSEvent>((event, logger, context) => {
   });
 });
 
-export const add = guard<{ theTvDbId: number }>(function updateAdd(event, logger, context) {
+export const add = guard<{ theTvDbId: number }>(async (event, logger, context) => {
   const theTvDbId = event.theTvDbId | 0;
 
   logger.log(`Will add the show with theTvDbId: ${theTvDbId} and associated epesodes`);
@@ -35,5 +35,15 @@ export const add = guard<{ theTvDbId: number }>(function updateAdd(event, logger
     throw new Error('theTvDbId is not a valid id:' + event.theTvDbId);
   }
 
-  return addShow(theTvDbId, logger, context.awsRequestId);
+  try {
+    return await addShow(theTvDbId, logger, context.awsRequestId);
+  } catch (error) {
+    if (error instanceof NotFound) {
+      logger.warn(`Could not found show with id: ${theTvDbId} is it a movedb id?`);
+      return {
+        error: 'not-found'
+      };
+    }
+    throw error;
+  }
 });

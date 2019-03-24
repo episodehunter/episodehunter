@@ -7,17 +7,7 @@ const client = new GraphQLClient(config.ehRedKeepUrl, {
   headers: { 'api-key': config.redKeepApiKey }
 });
 
-class RedKeepError extends Error {
-  constructor(msg: string, extra: Object) {
-    super(msg);
-    (this as any).extra = extra;
-  }
-}
-
-function handleError(error: any) {
-  if (error && error.response && error.response.errors && error.response.errors.length) {
-    return Promise.reject(new RedKeepError(error.response.errors[0].message, error.response.errors[0]));
-  }
+function handleError(error: Error) {
   return Promise.reject(error);
 }
 

@@ -9,6 +9,12 @@ compile: clean
 deploy: compile
         cd dist; serverless deploy
 
+deploy-update: compile
+        cd dist; serverless deploy --function update
+
+deploy-add: compile
+        cd dist; serverless deploy --function add
+
 package: compile
         cd dist; serverless package
 
