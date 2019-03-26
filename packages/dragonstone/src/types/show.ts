@@ -12,7 +12,7 @@ export const show = gql`
     name: String!
     network: String
     numberOfFollowers: Int!
-    overview: String!
+    overview: String
     runtime: Int!
   }
 
@@ -41,7 +41,7 @@ export const show = gql`
     genre: [String]!
     language: String
     network: String
-    overview: String!
+    overview: String
     runtime: Int!
     ended: Boolean!
     lastupdate: Int!
@@ -67,7 +67,7 @@ export interface Show {
   name: string;
   network?: string;
   numberOfFollowers: number;
-  overview: string;
+  overview?: string;
   runtime: number;
 }
 
@@ -81,7 +81,7 @@ export interface ShowInput {
   genre: string[];
   language?: string;
   network?: string;
-  overview: string;
+  overview?: string;
   runtime: number;
   ended: boolean;
   lastupdate: number;

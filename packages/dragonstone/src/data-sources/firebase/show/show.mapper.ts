@@ -33,7 +33,6 @@ export function mapShowInputToShow(showId: string, showInput: PublicTypes.ShowIn
     },
     lastupdated: showInput.lastupdate,
     name: showInput.name,
-    overview: showInput.overview,
     runtime: showInput.runtime,
     numberOfFollowers: 0
   };
@@ -55,8 +54,8 @@ export function mapShowInputToShow(showId: string, showInput: PublicTypes.ShowIn
   if (showInput.network) {
     show.network = showInput.network;
   }
-  if (showInput.network) {
-    show.network = showInput.network;
+  if (showInput.overview) {
+    show.overview = showInput.overview;
   }
   return show;
 }

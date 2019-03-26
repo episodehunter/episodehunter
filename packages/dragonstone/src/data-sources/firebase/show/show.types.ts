@@ -16,6 +16,6 @@ export interface Show {
   name: string;
   network?: string;
   numberOfFollowers: number;
-  overview: string;
+  overview?: string;
   runtime: number;
 }
