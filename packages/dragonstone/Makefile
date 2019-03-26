@@ -9,6 +9,9 @@ compile: clean
         cp _serverless.yml dist/serverless.yml;
         docker run --rm --volume ${PWD}/dist:/build amazonlinux:nodejs npm install --production;
 
+deployfunction: compile
+        cd dist; serverless deploy --function graphql
+
 deploy: compile
         cd dist; serverless deploy
 
