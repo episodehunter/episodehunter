@@ -8,7 +8,7 @@ import { getUidFromHeader, isUsingApiKey } from './util/auth';
 import { config } from './config';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { ShowInput } from './types/show';
-import { assertShowInput } from './util/validate';
+import { assertShowInput, assertShowId } from './util/validate';
 
 const firebaseApp = createFirebase();
 const context = createContext(firebaseApp.firestore);
@@ -48,12 +48,13 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
   });
 });
 
-exports.updateShowHandler = gard<{showId: string, showInput: ShowInput }>((event, logger) => {
-  assertShowInput(event.showInput)
-  return context.firebaseResolver.show.updateShow(event.showId, event.showInput, logger)
+exports.updateShowHandler = gard<{ showId: string; showInput: ShowInput }>((event, logger) => {
+  assertShowId(event.showId);
+  assertShowInput(event.showInput);
+  return context.firebaseResolver.show.updateShow(event.showId, event.showInput, logger);
 });
 
 exports.addShowHandler = gard<{ showInput: ShowInput }>((event, logger) => {
-  assertShowInput(event.showInput)
-  return context.firebaseResolver.show.addShow(event.showInput, logger)
+  assertShowInput(event.showInput);
+  return context.firebaseResolver.show.addShow(event.showInput, logger);
 });

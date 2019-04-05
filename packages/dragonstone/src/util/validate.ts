@@ -70,3 +70,9 @@ function assertEpisode(input: EpisodeInput) {
     }
   });
 }
+
+export function assertShowId(showId: string) {
+  if (typeof showId !== 'string') {
+    throw new Error(`Expected showId to be of type string but got ${typeof showId}`)
+  }
+}

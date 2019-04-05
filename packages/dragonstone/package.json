@@ -16,19 +16,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@episodehunter/kingsguard": "^4.0.2",
+    "@episodehunter/kingsguard": "^4.1.0",
     "@episodehunter/logger": "^4.1.2",
     "apollo-server-lambda": "^2.4.8",
-    "firebase-admin": "^7.1.1",
-    "graphql": "^14.1.1",
+    "firebase-admin": "^7.2.0",
+    "graphql": "^14.2.1",
     "graphql-import": "^0.7.1",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.4.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.23",
-    "@types/graphql": "14.0.7",
+    "@types/graphql": "14.2.0",
     "@types/jest": "^24.0.11",
-    "@types/node": "11.12.2",
+    "@types/node": "11.13.0",
     "aws-lambda": "0.1.2",
     "jest": "^24.7.1",
     "ts-jest": "^24.0.1"
