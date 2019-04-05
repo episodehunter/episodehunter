@@ -38,11 +38,16 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
       if (error) {
         reject(error);
       } else {
-        const realResult = result || { headers: {} as { [key: string]: string } };
-        realResult.headers = realResult.headers || {};
-        realResult.headers['Server-Timing'] = 'dragonstone;desc="Execution time";dur=' + (Date.now() - t0);
-        realResult.headers['Access-Control-Allow-Origin'] = '*';
-        resolve(realResult);
+        if (!result) {
+          return;
+        }
+        if (result.statusCode > 200) {
+          logger.captureException(new Error(`Status code is ${result.statusCode}. body: ${JSON.stringify(result.body)}`))
+        }
+        result.headers = result.headers || {};
+        result.headers['Server-Timing'] = 'dragonstone;desc="Execution time";dur=' + (Date.now() - t0);
+        result.headers['Access-Control-Allow-Origin'] = '*';
+        resolve(result);
       }
     });
   });

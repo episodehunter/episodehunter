@@ -6,8 +6,11 @@ compile: clean
         cp _serverless.yml dist/serverless.yml;
         docker run --rm --volume ${PWD}/dist:/build tjoskar/awsnode:8 npm install --production;
 
-deployfunction: compile
-        cd dist; serverless deploy --function graphql
+deployfunctions: compile
+        cd dist; serverless deploy --function graphql && serverless deploy --function addShow && serverless deploy --function updateShow;
+
+deploygraphql: compile
+        cd dist; serverless deploy --function graphql;
 
 deploy: compile
         cd dist; serverless deploy
