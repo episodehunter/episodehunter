@@ -6,5 +6,7 @@ export const config = {
   redKeepApiKey: process.env.EH_RED_KEEP_API_KEY,
   ehRedKeepUrl: process.env.EH_RED_KEEP_URL,
   theTvDbApiKey: process.env.THE_TV_DB_API_KEY,
-  snsUpdateShow: process.env.EH_SNS_UPDATE_SHOW
+  snsUpdateShow: process.env.EH_SNS_UPDATE_SHOW,
+  addShowDragonstoneFunctionName: process.env.ADD_SHOW_DRAGONSTONE_FUNCTION_NAME,
+  updateShowDragonstoneFunctionName: process.env.UPDATE_SHOW_DRAGONSTONE_FUNCTION_NAME
 };

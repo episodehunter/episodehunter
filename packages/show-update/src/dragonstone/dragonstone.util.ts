@@ -1,57 +1,34 @@
-import { GraphQLClient } from 'graphql-request';
-import { ShowInput, Show } from './types/show.type';
+import * as AWS from 'aws-sdk';
+import { Lambda } from 'aws-sdk';
 import { config } from '../config';
+import { ShowInput } from './types/show.type';
 
-const client = new GraphQLClient(config.dragonstoneUrl, {
-  headers: { 'x-api-key': config.dragonstoneApiKey }
+AWS.config.update({
+  region: 'us-east-1'
 });
 
-class DragonstoneError extends Error {
-  constructor(msg: string, extra: Object) {
-    super(msg);
-    (this as any).extra = extra;
-  }
+const lambda = new AWS.Lambda();
+
+export async function updateShowRequest(
+  showId: string,
+  showDef: ShowInput,
+  awsRequestId: string
+): Promise<Lambda.Types.InvocationResponse> {
+  return lambda
+    .invoke({
+      FunctionName: config.updateShowDragonstoneFunctionName,
+      Payload: JSON.stringify({ theTvDbIdshowId: showId, showInput: showDef, requestStack: [awsRequestId] }),
+      InvocationType: 'Event'
+    })
+    .promise();
 }
 
-function handleError(error: any) {
-  if (error && error.response && error.response.errors && error.response.errors.length) {
-    return Promise.reject(new DragonstoneError(error.response.errors[0].message, error.response.errors[0]));
-  }
-  return Promise.reject(error);
-}
-
-export async function updateShowRequest(showId: string, showDef: ShowInput, awsRequestId: string): Promise<Show | null> {
-  const query = `
-    mutation UpdateShow($showId: ID!, $showInput: ShowInput!) {
-      updateShow(showId: $showId, show: $showInput) {
-        ids {
-          id
-          tvdb
-        }
-        name
-      }
-    }
-  `;
-  client.setHeader('x-request-stack', awsRequestId);
-  return client
-    .request<{ updateShow: Show | null }>(query, { showInput: showDef, showId })
-    .then(result => result.updateShow)
-    .catch(handleError);
-}
-
-export async function addShowRequest(showDef: ShowInput, awsRequestId: string): Promise<string | null> {
-  const query = `
-    mutation AddShow($showInput: ShowInput!) {
-      addShow(show: $showInput) {
-        ids {
-          id
-        }
-      }
-    }
-  `;
-  client.setHeader('x-request-stack', awsRequestId);
-  return client
-    .request<{ addShow: Show | null }>(query, { showInput: showDef })
-    .then(result => (result.addShow && result.addShow.ids.id) || null)
-    .catch(handleError);
+export async function addShowRequest(showDef: ShowInput, awsRequestId: string): Promise<Lambda.Types.InvocationResponse> {
+  return lambda
+    .invoke({
+      FunctionName: config.addShowDragonstoneFunctionName,
+      Payload: JSON.stringify({ showInput: showDef, requestStack: [awsRequestId] }),
+      InvocationType: 'Event'
+    })
+    .promise();
 }
