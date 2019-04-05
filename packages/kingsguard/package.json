@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/kingsguard",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "Kingsguard for episodehunter",
   "main": "index.js",
   "scripts": {

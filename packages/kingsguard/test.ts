@@ -175,3 +175,21 @@ test('Extract request stack from event', async () => {
   expect(createLogger.args[0][0]).toBe(context)
   expect(createLogger.args[0][1]).toEqual(event.requestStack)
 })
+
+test('Parse JSON event', async () => {
+  // Arrange
+  const setupLogger = () => () => {}
+  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const fun = spy((event: any, logger: any, context: any) => {})
+  const awsFun = guard(fun as any)
+  const event = JSON.stringify({
+    data: 5
+  })
+
+  // Act
+  await awsFun(event, context as any, callback)
+
+  // Assert
+  expect(fun.callCount).toBe(1)
+  expect(fun.args[0][0]).toEqual({ data: 5 })
+})
