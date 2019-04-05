@@ -27,6 +27,10 @@ package:
     - env.yml
 
 functions:
+  updateShow:
+    handler: handler.updateShowHandler
+  addShow:
+    handler: handler.addShowHandler
   graphql:
     handler: handler.graphqlHandler
     events:

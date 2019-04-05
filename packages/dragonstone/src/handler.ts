@@ -7,6 +7,8 @@ import { createFirebase } from './util/firebase-app';
 import { getUidFromHeader, isUsingApiKey } from './util/auth';
 import { config } from './config';
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { ShowInput } from './types/show';
+import { assertShowInput } from './util/validate';
 
 const firebaseApp = createFirebase();
 const context = createContext(firebaseApp.firestore);
@@ -25,14 +27,14 @@ const server = new ApolloServer({
   }
 });
 
-const handler = server.createHandler();
+const apolloHandler = server.createHandler();
 const gard = createGuard(config.sentryDns, config.logdnaKey);
 
 exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
   event.logger = logger;
   return new Promise((resolve, reject) => {
     const t0 = Date.now();
-    handler(event, context, (error, result) => {
+    apolloHandler(event, context, (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -44,4 +46,14 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
       }
     });
   });
+});
+
+exports.updateShowHandler = gard<{showId: string, showInput: ShowInput }>((event, logger) => {
+  assertShowInput(event.showInput)
+  return context.firebaseResolver.show.updateShow(event.showId, event.showInput, logger)
+});
+
+exports.addShowHandler = gard<{ showInput: ShowInput }>((event, logger) => {
+  assertShowInput(event.showInput)
+  return context.firebaseResolver.show.addShow(event.showInput, logger)
 });
