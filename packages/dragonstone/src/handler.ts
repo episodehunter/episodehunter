@@ -42,7 +42,9 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
           return;
         }
         if (result.statusCode > 200) {
-          logger.captureException(new Error(`Status code is ${result.statusCode}. body: ${JSON.stringify(result.body)}`))
+          logger.captureException(
+            new Error(`Status code is ${result.statusCode}. body: ${JSON.stringify(result.body)}`)
+          );
         }
         result.headers = result.headers || {};
         result.headers['Server-Timing'] = 'dragonstone;desc="Execution time";dur=' + (Date.now() - t0);
@@ -54,8 +56,14 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
 });
 
 exports.updateShowHandler = gard<{ showId: string; showInput: ShowInput }>((event, logger) => {
-  assertShowId(event.showId);
-  assertShowInput(event.showInput);
+  try {
+    assertShowId(event.showId);
+    assertShowInput(event.showInput);
+  } catch (error) {
+    logger.log(`Show was not valid. Event: ${JSON.stringify(event)}`);
+    throw new Error(`${error.message} ${JSON.stringify(event)}`);
+  }
+
   return context.firebaseResolver.show.updateShow(event.showId, event.showInput, logger);
 });
 
