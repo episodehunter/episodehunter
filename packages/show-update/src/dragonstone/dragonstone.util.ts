@@ -17,7 +17,7 @@ export async function updateShowRequest(
   return lambda
     .invoke({
       FunctionName: config.updateShowDragonstoneFunctionName,
-      Payload: JSON.stringify({ theTvDbIdshowId: showId, showInput: showDef, requestStack: [awsRequestId] }),
+      Payload: JSON.stringify({ showId, showInput: showDef, requestStack: [awsRequestId] }),
       InvocationType: 'Event'
     })
     .promise();
