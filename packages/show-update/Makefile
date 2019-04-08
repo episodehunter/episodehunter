@@ -15,6 +15,12 @@ deploy-update: compile
 deploy-add: compile
         cd dist; serverless deploy --function add
 
+deploy-update2: compile
+        cd dist; serverless deploy --function update
+
+deploy-add2: compile
+        cd dist; serverless deploy --function add
+
 package: compile
         cd dist; serverless package
 
