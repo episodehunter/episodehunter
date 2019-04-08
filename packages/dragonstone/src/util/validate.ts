@@ -29,14 +29,17 @@ const knownEpisodeProps: { [key: string]: string[] } = {
 };
 
 export function assertShowInput(input: ShowInput) {
-  const knownKeys = Object.keys(knownShowProps)
+  const knownKeys = Object.keys(knownShowProps);
   Object.keys(input).forEach(key => {
     if (!knownKeys.includes(key)) {
       throw new TypeError(`${key} is not a valid key for a show`);
     }
-  })
+  });
   Object.entries(knownShowProps).forEach(([key, values]) => {
     const validType = values.some(type => {
+      if (type === 'undefined') {
+        return input[key as keyof ShowInput] == null; // accept null or undefined
+      }
       return typeof input[key as keyof ShowInput] === type;
     });
     if (!validType) {
@@ -53,14 +56,17 @@ export function assertShowInput(input: ShowInput) {
 }
 
 function assertEpisode(input: EpisodeInput) {
-  const knownKeys = Object.keys(knownEpisodeProps)
+  const knownKeys = Object.keys(knownEpisodeProps);
   Object.keys(input).forEach(key => {
     if (!knownKeys.includes(key)) {
       throw new TypeError(`${key} is not a valid key for a episode`);
     }
-  })
+  });
   Object.entries(knownEpisodeProps).forEach(([key, values]) => {
     const validType = values.some(type => {
+      if (type === 'undefined') {
+        return input[key as keyof EpisodeInput] == null; // accept null or undefined
+      }
       return typeof input[key as keyof EpisodeInput] === type;
     });
     if (!validType) {
@@ -73,6 +79,6 @@ function assertEpisode(input: EpisodeInput) {
 
 export function assertShowId(showId: string) {
   if (typeof showId !== 'string') {
-    throw new Error(`Expected showId to be of type string but got ${typeof showId}`)
+    throw new Error(`Expected showId to be of type string but got ${typeof showId}`);
   }
 }
