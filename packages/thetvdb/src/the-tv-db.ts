@@ -155,7 +155,7 @@ export class TheTvDb {
         method: 'GET',
         headers: { Authorization: 'Bearer ' + token },
         signal: controller.signal
-      });
+      } as any); // The current type to not accept signal
       clearTimeout(timeoutId);
       log('We got a result from ' + url)
       return result;
