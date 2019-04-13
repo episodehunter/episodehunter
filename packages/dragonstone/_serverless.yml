@@ -29,6 +29,8 @@ package:
 functions:
   updateShow:
     handler: handler.updateShowHandler
+  updateEpisodes:
+    handler: handler.updateEpisodesHandler
   addShow:
     handler: handler.addShowHandler
   graphql:

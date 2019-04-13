@@ -59,19 +59,3 @@ export function mapShowInputToShow(showId: string, showInput: PublicTypes.ShowIn
   }
   return show;
 }
-
-export function mapEpisodeInputToEpisode(episodeInput: PublicTypes.EpisodeInput): Episode {
-  const episode: Episode = {
-    aired: episodeInput.firstAired,
-    episode: episodeInput.episode,
-    episodeNumber: calculateEpisodeNumber(episodeInput.season, episodeInput.episode),
-    season: episodeInput.season,
-    tvdbId: episodeInput.tvdbId,
-    lastupdated: episodeInput.lastupdated,
-    name: episodeInput.name
-  };
-  if (episodeInput.overview) {
-    episode.overview = episodeInput.overview;
-  }
-  return episode;
-}

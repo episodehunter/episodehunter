@@ -1,5 +1,4 @@
 import { gql } from 'apollo-server-lambda';
-import { EpisodeInput } from './episode';
 
 export const show = gql`
   type Show {
@@ -29,23 +28,6 @@ export const show = gql`
     id: String!
     imdb: String
     tvdb: Int!
-  }
-
-  input ShowInput {
-    tvdbId: Int!
-    imdbId: String
-    name: String!
-    airsDayOfWeek: Int
-    airsTime: String
-    firstAired: String
-    genre: [String]!
-    language: String
-    network: String
-    overview: String
-    runtime: Int!
-    ended: Boolean!
-    lastupdate: Int!
-    episodes: [EpisodeInput]!
   }
 `;
 
@@ -85,5 +67,4 @@ export interface ShowInput {
   runtime: number;
   ended: boolean;
   lastupdate: number;
-  episodes: EpisodeInput[];
 }

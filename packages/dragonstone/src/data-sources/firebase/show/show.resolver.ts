@@ -1,11 +1,8 @@
 import { PublicTypes } from '../../../public';
 import { Docs } from '../util/firebase-docs';
-import { mapShow, mapShowInputToShow, mapEpisodeInputToEpisode } from './show.mapper';
+import { mapShow, mapShowInputToShow } from './show.mapper';
 import { Show } from './show.types';
 import { Logger } from '@episodehunter/logger';
-import { Episode } from '../../../types/episode';
-import { createBatch } from '../util/util';
-import { calculateEpisodeNumber } from '../../../util/util';
 
 const showCache = new Map<string, Promise<PublicTypes.Show | null>>();
 
@@ -53,38 +50,9 @@ export const createShowResolver = (docs: Docs) => {
         logger.log(`Show with id "${showId}" do not exist. Do not update.`);
         return null;
       }
-      const batch = createBatch(docs.db);
       const newShow = mapShowInputToShow(showId, showInput);
       delete newShow.numberOfFollowers;
-      logger.log('Start updating ' + newShow.name);
-      await batch.update(currentShowDoc.ref, newShow);
-
-      const episodeCollection = await docs.episodesCollection(showId).get();
-      const knownEpisodes = new Set<number>();
-      for (let doc of episodeCollection.docs) {
-        const currentEpisode = doc.data() as Episode;
-        const newEpisode = showInput.episodes.find(
-          e => e.season === currentEpisode.season && e.episode === currentEpisode.episode
-        );
-        knownEpisodes.add(currentEpisode.episodeNumber);
-        if (!newEpisode) {
-          await batch.delete(doc.ref);
-        } else if (currentEpisode.lastupdated < newEpisode.lastupdated) {
-          const mappedEpisode = mapEpisodeInputToEpisode(newEpisode);
-          await batch.set(doc.ref, mappedEpisode);
-        }
-      }
-      for (let episode of showInput.episodes) {
-        const episodeNumber = calculateEpisodeNumber(episode.season, episode.episode);
-        if (knownEpisodes.has(episodeNumber)) {
-          continue;
-        }
-        const mappedEpisode = mapEpisodeInputToEpisode(episode);
-        const docRef = docs.episodesCollection(showId).doc(`S${episode.season}E${episode.episode}`);
-        await batch.set(docRef, mappedEpisode);
-      }
-      await batch.commit();
-      logger.log('Done with updating of show ' + newShow.name);
+      await currentShowDoc.ref.update(newShow)
       return newShow;
     },
     async addShow(showInput: PublicTypes.ShowInput, logger: Logger): Promise<PublicTypes.Show> {
@@ -97,16 +65,9 @@ export const createShowResolver = (docs: Docs) => {
         logger.log(`Show with thetvdb ${showInput.tvdbId} do already exist`);
         return currentShowDoc.docs[0].data() as Show;
       }
-      const batch = createBatch(docs.db);
       const showId = await generateSlugShowName(showInput.name);
       const newShow = mapShowInputToShow(showId, showInput);
-      await batch.set(docs.showDoc(showId), newShow);
-      for (let episode of showInput.episodes) {
-        const mappedEpisode = mapEpisodeInputToEpisode(episode);
-        const docRef = docs.episodesCollection(showId).doc(`S${episode.season}E${episode.episode}`);
-        await batch.set(docRef, mappedEpisode);
-      }
-      await batch.commit();
+      await docs.showDoc(showId).set(newShow);
       return newShow;
     }
   };

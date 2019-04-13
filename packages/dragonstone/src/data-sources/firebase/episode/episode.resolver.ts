@@ -1,9 +1,13 @@
 import { PublicTypes } from '../../../public';
 import { Docs } from '../util/firebase-docs';
-import { mapEpisode, mapEpisodes } from './episode.mapper';
+import { mapEpisode, mapEpisodes, mapEpisodeInputToEpisode } from './episode.mapper';
 import { Episode } from './episode.type';
 import { Selectors } from '../util/selectors';
 import { Query } from '@google-cloud/firestore';
+import { EpisodeInput } from '../../../types/episode';
+import { Logger } from '@episodehunter/logger';
+import { createBatch } from '../util/util';
+import { calculateEpisodeNumber } from '../../../util/util';
 
 export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
   async getNextEpisodeToWatch(userId: string, showId: string): Promise<PublicTypes.Episode | null> {
@@ -52,5 +56,55 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
           return querySnapshot.docs[0].data() as Episode;
         }
       });
+  },
+  async updateEpisodes(
+    showId: string,
+    first: number,
+    last: number,
+    episodes: EpisodeInput[],
+    logger: Logger
+  ): Promise<boolean> {
+    const currentShowDoc = await docs.showDoc(showId).get();
+    if (!currentShowDoc.exists) {
+      logger.log(`Show with id "${showId}" do not exist. Do not update episodes.`);
+      return false;
+    }
+    const batch = createBatch(docs.db);
+    logger.log(`Start updating show with id: ${showId}. ${episodes.length} number of episodes`);
+
+    const episodeCollection = await docs
+      .episodesCollection(showId)
+      .where('episodeNumber', '>=', first)
+      .where('episodeNumber', '<=', last)
+      .get();
+    const knownEpisodes = new Set<number>();
+
+    // See if we should update or remove any existed episodes
+    for (let doc of episodeCollection.docs) {
+      const currentEpisode = doc.data() as Episode;
+      const newEpisode = episodes.find(e => e.season === currentEpisode.season && e.episode === currentEpisode.episode);
+      knownEpisodes.add(currentEpisode.episodeNumber);
+      if (!newEpisode) {
+        await batch.delete(doc.ref);
+      } else if (currentEpisode.lastupdated < newEpisode.lastupdated) {
+        const mappedEpisode = mapEpisodeInputToEpisode(newEpisode);
+        await batch.set(doc.ref, mappedEpisode);
+      }
+    }
+
+    // Check if we should add any new episodes
+    for (let episode of episodes) {
+      const episodeNumber = calculateEpisodeNumber(episode.season, episode.episode);
+      if (knownEpisodes.has(episodeNumber)) {
+        continue;
+      }
+      const mappedEpisode = mapEpisodeInputToEpisode(episode);
+      const docRef = docs.episodesCollection(showId).doc(`S${episode.season}E${episode.episode}`);
+      await batch.set(docRef, mappedEpisode);
+    }
+    await batch.commit();
+    const stat = batch.getStat();
+    logger.log(`Done with updating episodes for show with id: ${showId}. ${stat}`);
+    return true;
   }
 });

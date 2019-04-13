@@ -34,8 +34,6 @@ export const root = gql`
     followShow(showId: ID!): Boolean
     unfollowShow(showId: ID!): Boolean
     updateTitles: Boolean
-    updateShow(showId: ID!, show: ShowInput!): Show
-    addShow(show: ShowInput!): Show
   }
 
   ${show}

@@ -44,7 +44,7 @@ export function assertShowInput(input: ShowInput) {
     });
     if (!validType) {
       throw new TypeError(
-        `Expected type ${values.join(' or ')} for ${key} but got ${typeof input[key as keyof ShowInput]}`
+        `Expected type ${values.join(' or ')} for ${key} but got ${printType(input[key as keyof ShowInput])} for show`
       );
     }
   });
@@ -52,7 +52,10 @@ export function assertShowInput(input: ShowInput) {
   if (!validGenre) {
     throw new TypeError(`Genre is not a array of string: ${JSON.stringify(input.genre)}`);
   }
-  input.episodes.forEach(e => assertEpisode(e));
+}
+
+export function assertEpisodes(input: EpisodeInput[]) {
+  input.forEach(e => assertEpisode(e));
 }
 
 function assertEpisode(input: EpisodeInput) {
@@ -71,7 +74,7 @@ function assertEpisode(input: EpisodeInput) {
     });
     if (!validType) {
       throw new TypeError(
-        `Expected type ${values.join(' or ')} for ${key} but got ${typeof input[key as keyof EpisodeInput]}`
+        `Expected type ${values.join(' or ')} for ${key} but got ${printType(input[key as keyof EpisodeInput])} for episode S${input.season}E${input.episode}`
       );
     }
   });
@@ -79,6 +82,21 @@ function assertEpisode(input: EpisodeInput) {
 
 export function assertShowId(showId: string) {
   if (typeof showId !== 'string') {
-    throw new Error(`Expected showId to be of type string but got ${typeof showId}`);
+    throw new Error(`Expected showId to be of type string but got ${printType(showId)}`);
   }
+}
+
+export function assertEpisodeNumber(episodeNumber: number) {
+  if (typeof episodeNumber !== 'number') {
+    throw new Error(`Expected episodeNumber to be of type number but got ${printType(episodeNumber)}`);
+  } else if (episodeNumber < 10_000 || episodeNumber > 1_000_000) {
+    throw new Error(`Expected episodeNumber ]10000, 1000000[, but got ${episodeNumber}`);
+  }
+}
+
+function printType(obj: any): string {
+  if (obj === null) {
+    return 'null'
+  }
+  return typeof obj;
 }

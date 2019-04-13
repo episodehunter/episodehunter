@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { createGuard, Logger } from '@episodehunter/kingsguard';
 import { ApolloServer } from 'apollo-server-lambda';
 import { resolvers } from './resolvers/root';
@@ -8,7 +9,9 @@ import { getUidFromHeader, isUsingApiKey } from './util/auth';
 import { config } from './config';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { ShowInput } from './types/show';
-import { assertShowInput, assertShowId } from './util/validate';
+import { assertShowInput, assertShowId, assertEpisodes, assertEpisodeNumber } from './util/validate';
+import { EpisodeInput, EpisodeInputBatch } from './types/episode';
+import { PublicTypes } from './public';
 
 const firebaseApp = createFirebase();
 const context = createContext(firebaseApp.firestore);
@@ -67,7 +70,21 @@ exports.updateShowHandler = gard<{ showId: string; showInput: ShowInput }>((even
   return context.firebaseResolver.show.updateShow(event.showId, event.showInput, logger);
 });
 
-exports.addShowHandler = gard<{ showInput: ShowInput }>((event, logger) => {
+exports.updateEpisodesHandler = gard<EpisodeInputBatch>((event, logger) => {
+  try {
+    assertShowId(event.showId)
+    assertEpisodeNumber(event.firstEpisode)
+    assertEpisodeNumber(event.lastEpisode)
+    assertEpisodes(event.episodes)
+  } catch (error) {
+    logger.log(`Episodes batch was not valid. Event: ${JSON.stringify(event)}`);
+    throw new Error(`${error.message} ${JSON.stringify(event)}`);
+  }
+
+  return context.firebaseResolver.episode.updateEpisodes(event.showId, event.firstEpisode, event.lastEpisode, event.episodes, logger);
+});
+
+exports.addShowHandler = gard<{ showInput: ShowInput }>((event, logger): Promise<PublicTypes.Show> => {
   assertShowInput(event.showInput);
   return context.firebaseResolver.show.addShow(event.showInput, logger);
 });
