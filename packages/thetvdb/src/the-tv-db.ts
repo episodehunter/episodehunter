@@ -64,7 +64,9 @@ export class TheTvDb {
       .then(logWrapper(log, `Done, getting back`))
 
     if (response.links && response.links.last && response.links.last > 10) {
-      throw new TooManyEpisodes(`Number of episodes pages: ${response.links.last}`)
+      throw new TooManyEpisodes(
+        `Number of episodes pages: ${response.links.last}`
+      )
     }
 
     if (Array.isArray(response.data)) {
@@ -84,7 +86,10 @@ export class TheTvDb {
     lastUpdate: number,
     log = noop
   ): Promise<TheTvDbUpdatedShowId[]> {
-    return this.get('https://api.thetvdb.com/updated/query?fromTime=' + lastUpdate, log)
+    return this.get(
+      'https://api.thetvdb.com/updated/query?fromTime=' + lastUpdate,
+      log
+    )
       .then(handelHttpError)
       .then(res => res.json())
       .then(res => res.data)

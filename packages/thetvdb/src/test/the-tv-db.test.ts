@@ -1,6 +1,11 @@
 import * as url from 'url'
 import { spy } from 'simple-spy'
-import { handelHttpError, TheTvDb, getHigestRating, ensureArray } from '../the-tv-db'
+import {
+  handelHttpError,
+  TheTvDb,
+  getHigestRating,
+  ensureArray
+} from '../the-tv-db'
 import { NotFound } from '../custom-erros'
 
 describe('handelHttpError', () => {
@@ -292,19 +297,32 @@ describe('getTvDbShowEpisodes', () => {
   })
 })
 
-test('Get higest rating image', () => {
-  // Arrange
-  const episodes = [
-    { ratingsInfo: { average: 2 } },
-    { ratingsInfo: { average: 9 } },
-    { ratingsInfo: { average: 5 } }
-  ]
+describe('Get Higest Rating', () => {
+  test('Get higest rating image', () => {
+    // Arrange
+    const episodes = [
+      { ratingsInfo: { average: 2 } },
+      { ratingsInfo: { average: 9 } },
+      { ratingsInfo: { average: 5 } }
+    ]
 
-  // Act
-  const result = getHigestRating(episodes as any)
+    // Act
+    const result = getHigestRating(episodes as any)
 
-  // Assert
-  expect(result.ratingsInfo.average).toBe(9)
+    // Assert
+    expect(result.ratingsInfo.average).toBe(9)
+  })
+
+  test('Get noting if the array is empty', () => {
+    // Arrange
+    const episodes = []
+
+    // Act
+    const result = getHigestRating(episodes)
+
+    // Assert
+    expect(result).toBe(undefined)
+  })
 })
 
 describe('Episode image', () => {
@@ -369,7 +387,9 @@ describe('Episode image', () => {
     theTvDb.jwt = Promise.resolve('token')
 
     // Act and Assert
-    return expect(theTvDb.fetchEpisodeImage(episodeId)).rejects.toBeInstanceOf(NotFound)
+    return expect(theTvDb.fetchEpisodeImage(episodeId)).rejects.toBeInstanceOf(
+      NotFound
+    )
   })
 })
 
@@ -407,9 +427,13 @@ describe('Show poster', () => {
       }
     ]
     const fetch = spy((url: string) => {
-      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=poster') {
+      if (
+        url === 'https://api.thetvdb.com/series/123/images/query?keyType=poster'
+      ) {
         return Promise.resolve(res[0])
-      } else if (url === 'https://www.thetvdb.com/banners/posters/121361-2.jpg') {
+      } else if (
+        url === 'https://www.thetvdb.com/banners/posters/121361-2.jpg'
+      ) {
         return Promise.resolve(res[1])
       }
     })
@@ -438,7 +462,9 @@ describe('Show poster', () => {
       }
     ]
     const fetch = spy((url: string) => {
-      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=poster') {
+      if (
+        url === 'https://api.thetvdb.com/series/123/images/query?keyType=poster'
+      ) {
         return Promise.resolve(res[0])
       }
     })
@@ -446,7 +472,9 @@ describe('Show poster', () => {
     theTvDb.jwt = Promise.resolve('token')
 
     // Act and Assert
-    return expect(theTvDb.fetchShowPoster(showId)).rejects.toBeInstanceOf(NotFound)
+    return expect(theTvDb.fetchShowPoster(showId)).rejects.toBeInstanceOf(
+      NotFound
+    )
   })
 })
 
@@ -484,9 +512,13 @@ describe('Show fanart', () => {
       }
     ]
     const fetch = spy((url: string) => {
-      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=fanart') {
+      if (
+        url === 'https://api.thetvdb.com/series/123/images/query?keyType=fanart'
+      ) {
         return Promise.resolve(res[0])
-      } else if (url === 'https://www.thetvdb.com/banners/fanart/original/121361-2.jpg') {
+      } else if (
+        url === 'https://www.thetvdb.com/banners/fanart/original/121361-2.jpg'
+      ) {
         return Promise.resolve(res[1])
       }
     })
@@ -515,7 +547,9 @@ describe('Show fanart', () => {
       }
     ]
     const fetch = spy((url: string) => {
-      if (url === 'https://api.thetvdb.com/series/123/images/query?keyType=fanart') {
+      if (
+        url === 'https://api.thetvdb.com/series/123/images/query?keyType=fanart'
+      ) {
         return Promise.resolve(res[0])
       }
     })
@@ -523,7 +557,9 @@ describe('Show fanart', () => {
     theTvDb.jwt = Promise.resolve('token')
 
     // Act and Assert
-    return expect(theTvDb.fetchShowFanart(showId)).rejects.toBeInstanceOf(NotFound)
+    return expect(theTvDb.fetchShowFanart(showId)).rejects.toBeInstanceOf(
+      NotFound
+    )
   })
 })
 

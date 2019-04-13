@@ -51,5 +51,9 @@
       "<rootDir>/node_modules/",
       "<rootDir>/types/"
     ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
   }
 }
