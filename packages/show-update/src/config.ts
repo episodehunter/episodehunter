@@ -8,5 +8,6 @@ export const config = {
   theTvDbApiKey: process.env.THE_TV_DB_API_KEY,
   snsUpdateShow: process.env.EH_SNS_UPDATE_SHOW,
   addShowDragonstoneFunctionName: process.env.ADD_SHOW_DRAGONSTONE_FUNCTION_NAME,
-  updateShowDragonstoneFunctionName: process.env.UPDATE_SHOW_DRAGONSTONE_FUNCTION_NAME
+  updateShowDragonstoneFunctionName: process.env.UPDATE_SHOW_DRAGONSTONE_FUNCTION_NAME,
+  updateEpisodesDragonstoneFunctionName: process.env.UPDATE_EPISODES_DRAGONSTONE_FUNCTION_NAME
 };

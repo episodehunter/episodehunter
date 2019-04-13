@@ -1,66 +1,53 @@
-import { ShowInput } from './types/show.type';
-import { EpisodeInput } from './types/episode.type';
-import { updateShowRequest, addShowRequest } from './dragonstone.util';
-import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/thetvdb';
-import { safeMap, safeFilter, isValidEpisode } from '../util';
 import { Logger } from '@episodehunter/logger';
 import { getInformationFromTvDb } from '../the-tv-db.util';
+import { calculateEpisodeNumber, createPromiseBatch, sortEpisode } from '../util';
+import { addShowRequest, updateEpisodesRequest, updateShowRequest } from './dragonstone.util';
+import { mapTheTvShowToDefinition } from './mapper';
+import { EpisodeInput } from './types/episode.type';
 
 export async function updateShow(ids: { id: string; tvdbId: number }, logger: Logger, awsRequestId: string) {
-  const [tShow, tEpisodes] = await getInformationFromTvDb(ids.tvdbId, logger);
-  const showDef = mapTheTvShowToDefinition(tShow, tEpisodes);
-  return updateShowRequest(ids.id, showDef, awsRequestId);
+  const showDef = await getShow(ids.tvdbId, logger)
+  return Promise.all([
+    updateShowRequest(ids.id, showDef, awsRequestId),
+    updateEpisodes(ids.id, showDef.episodes, awsRequestId)
+  ])
 }
 
-export async function addShow(tvDbId: number, logger: Logger, awsRequestId: string) {
+export async function addShow(tvDbId: number, logger: Logger, awsRequestId: string): Promise<{ id: string }> {
+  const showDef = await getShow(tvDbId, logger)
+  const show = await addShowRequest(showDef, awsRequestId)
+  await updateEpisodes(show.id, showDef.episodes, awsRequestId)
+  return show;
+}
+
+async function getShow(tvDbId: number, logger: Logger) {
   const [tShow, tEpisodes] = await getInformationFromTvDb(tvDbId, logger);
-  const showDef = mapTheTvShowToDefinition(tShow, tEpisodes);
-  return addShowRequest(showDef, awsRequestId);
+  return mapTheTvShowToDefinition(tShow, tEpisodes);
 }
 
-function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): EpisodeInput {
-  return {
-    tvdbId: tEpisodes.id,
-    name: tEpisodes.episodeName || `Episode #${tEpisodes.airedSeason}.${tEpisodes.airedEpisodeNumber}`,
-    season: tEpisodes.airedSeason,
-    episode: tEpisodes.airedEpisodeNumber,
-    firstAired: tEpisodes.firstAired,
-    overview: tEpisodes.overview,
-    lastupdated: tEpisodes.lastUpdated
-  };
-}
-
-const dayOfWeekString = {
-  Monday: 0,
-  Tuesday: 1,
-  Wednesday: 2,
-  Thursday: 3,
-  Friday: 4,
-  Saturday: 5,
-  Sunday: 6
-};
-
-function mapDayToNumber(day?: string): number | undefined {
-  if (!day) {
-    return;
+export async function updateEpisodes(showId: string, episodes: EpisodeInput[], awsRequestId: string) {
+  let updatedEpisodes: EpisodeInput[] = [];
+  sortEpisode(episodes);
+  const pb = createPromiseBatch()
+  for (let e of episodes) {
+    if (updatedEpisodes.length >= 200) {
+      pb.add(updateEpisodesRequest(
+        showId,
+        calculateEpisodeNumber(updatedEpisodes[0]),
+        calculateEpisodeNumber(updatedEpisodes[updatedEpisodes.length - 1]),
+        updatedEpisodes,
+        awsRequestId
+      ))
+      updatedEpisodes = []
+    }
+    updatedEpisodes.push(e)
   }
-  return dayOfWeekString[day];
-}
-
-function mapTheTvShowToDefinition(tShow: TheTvDbShow, tEpisodes: TheTvDbShowEpisode[]): ShowInput {
-  return {
-    tvdbId: tShow.id,
-    imdbId: tShow.imdbId,
-    name: tShow.seriesName,
-    airsDayOfWeek: mapDayToNumber(tShow.airsDayOfWeek),
-    airsTime: tShow.airsTime,
-    firstAired: tShow.firstAired,
-    genre: tShow.genre,
-    network: tShow.network,
-    overview: tShow.overview,
-    runtime: (tShow.runtime as any) | 0,
-    ended: tShow.status === 'Ended',
-    lastupdate: tShow.lastUpdated,
-    episodes: safeMap(mapTheTvShowEpisodeToDefinition)(safeFilter(isValidEpisode)(tEpisodes))
-  };
+  pb.add(updateEpisodesRequest(
+    showId,
+    calculateEpisodeNumber(updatedEpisodes[0]),
+    calculateEpisodeNumber(updatedEpisodes[0]) * 2, // Add an empty space at the end
+    updatedEpisodes,
+    awsRequestId
+  ))
+  return await pb.compleat()
 }

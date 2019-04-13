@@ -35,7 +35,7 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
   }
 });
 
-export const add = guard<{ theTvDbId: number }>(function updateAdd(event, logger, context) {
+export const add = guard<{ theTvDbId: number }>(async (event, logger, context): Promise<string> => {
   const theTvDbId = event.theTvDbId | 0;
 
   logger.log(`Will add the show with theTvDbId: ${theTvDbId} and associated epesodes`);
@@ -44,5 +44,6 @@ export const add = guard<{ theTvDbId: number }>(function updateAdd(event, logger
     throw new Error('theTvDbId is not a valid id:' + event.theTvDbId);
   }
 
-  return addShow(theTvDbId, logger, context.awsRequestId);
+  const show = await addShow(theTvDbId, logger, context.awsRequestId);
+  return show.id;
 });

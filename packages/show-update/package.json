@@ -15,13 +15,16 @@
   "license": "MIT",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.23",
+    "@types/jest": "^24.0.11",
     "aws-sdk": "^2.436.0",
+    "jest": "^24.7.1",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.3.4000"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^4.0.2",
     "@episodehunter/logger": "^4.1.2",
-    "@episodehunter/thetvdb": "^3.0.0",
+    "@episodehunter/thetvdb": "^3.1.0",
     "graphql-request": "^1.8.2"
   },
   "prettier": {

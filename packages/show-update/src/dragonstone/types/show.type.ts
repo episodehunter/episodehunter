@@ -10,7 +10,7 @@ export type ShowInput = {
   genre: string[];
   language?: string;
   network?: string;
-  overview: string;
+  overview?: string;
   runtime: number;
   ended: boolean;
   lastupdate: number;
