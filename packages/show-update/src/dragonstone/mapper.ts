@@ -1,7 +1,7 @@
 import { TheTvDbShow, TheTvDbShowEpisode } from "@episodehunter/thetvdb";
 import { ShowInput } from "./types/show.type";
 import { EpisodeInput } from "./types/episode.type";
-import { safeMap, safeFilter } from "../util";
+import { safeMap, safeFilter, isValidEpisode } from "../util";
 
 function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): EpisodeInput {
   return {
@@ -13,10 +13,6 @@ function mapTheTvShowEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): Episode
     overview: tEpisodes.overview,
     lastupdated: tEpisodes.lastUpdated
   };
-}
-
-export function isValidEpisode(episode: TheTvDbShowEpisode): boolean {
-  return Boolean(episode.id && episode.airedEpisodeNumber && episode.airedSeason && episode.lastUpdated && episode.firstAired);
 }
 
 const dayOfWeekString = {

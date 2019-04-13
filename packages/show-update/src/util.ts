@@ -1,4 +1,4 @@
-import { TheTvDbShow } from '@episodehunter/thetvdb';
+import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/thetvdb';
 import { InsufficientShowInformation } from './custom-erros';
 
 export function assertShow(show: TheTvDbShow) {
@@ -26,6 +26,10 @@ export function createPromiseBatch() {
       return Promise.all(promises) as any;
     }
   }
+}
+
+export function isValidEpisode(episode: TheTvDbShowEpisode): boolean {
+  return Boolean(episode.id && episode.airedEpisodeNumber && episode.airedSeason && episode.lastUpdated && episode.firstAired);
 }
 
 export function calculateEpisodeNumber(episode: { season: number, episode: number }): number {
