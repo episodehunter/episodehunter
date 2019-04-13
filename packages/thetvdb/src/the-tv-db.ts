@@ -1,5 +1,6 @@
 import fetch, { Response } from 'node-fetch'
-import { TooManyEpisodes, NotFound } from './custom-erros'
+import { TooManyEpisodes, NotFound, Timeout } from './custom-erros'
+import AbortController from 'abort-controller';
 import {
   TheTvDbShow,
   TheTvDbShowEpisode,
@@ -143,14 +144,38 @@ export class TheTvDb {
       .then(logWrapper(log, 'Done and done'))
   }
 
-  private get(url: string, log: typeof noop): Promise<Response> {
+  private async get(url: string, log: typeof noop, timeout = 1000): Promise<Response> {
     log('Making request to ' + url)
-    return this.token.then(token =>
-      this.fetch(url, {
+    const token = await this.token;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const result = await this.fetch(url, {
         method: 'GET',
-        headers: { Authorization: 'Bearer ' + token }
-      }).then(logWrapper(log, 'We got a result from ' + url))
-    )
+        headers: { Authorization: 'Bearer ' + token },
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      log('We got a result from ' + url)
+      return result;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        log(`Did not recive any reposne within ${timeout} ms. url: ` + url)
+        if (timeout >= 3000) {
+          log(`Giving up. url: ` + url)
+          throw new Timeout(`Timeout after ${timeout} ms for url: ${url}`);
+        }
+        return this.get(url, log, timeout + 1000);
+      }
+      if (error) {
+        log(`Could not get any respone. ${error.name} ${error.message}. url: ` + url)
+      } else {
+        log(`Could not get any respone. url: ` + url)
+      }
+      throw error;
+    }
   }
 
   private fetchToken(): Promise<string> {

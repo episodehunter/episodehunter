@@ -1,7 +1,7 @@
 {
   "name": "@episodehunter/thetvdb",
   "description": "Helper lib for thetvdb api",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "scripts": {
     "test": "jest",
     "compile:watch": "tsc --watch",
@@ -13,14 +13,16 @@
     "email": "kontakta@oskarkarlsson.nu"
   },
   "dependencies": {
-    "@types/node-fetch": "^2.1.7",
+    "@types/node": "^11.13.4",
+    "@types/node-fetch": "^2.3.2",
+    "abort-controller": "^3.0.0",
     "node-fetch": "^2.3.0"
   },
   "devDependencies": {
     "@types/jest": "24.0.11",
-    "jest": "24.5.0",
+    "jest": "24.7.1",
     "simple-spy": "2.2.1",
-    "ts-jest": "24.0.0",
+    "ts-jest": "24.0.2",
     "typescript": "3.4.3"
   },
   "homepage": "https://github.com/episodehunter/thetvdb",
