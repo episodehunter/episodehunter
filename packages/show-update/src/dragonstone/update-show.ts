@@ -9,14 +9,14 @@ export async function updateShow(ids: { id: string; tvdbId: number }, logger: Lo
   const showDef = await getShow(ids.tvdbId, logger)
   return Promise.all([
     updateShowRequest(ids.id, showDef, awsRequestId),
-    updateEpisodes(ids.id, showDef.episodes, awsRequestId)
+    updateEpisodes(ids.id, showDef.episodes, awsRequestId, logger)
   ])
 }
 
 export async function addShow(tvDbId: number, logger: Logger, awsRequestId: string): Promise<{ id: string }> {
   const showDef = await getShow(tvDbId, logger)
   const show = await addShowRequest(showDef, awsRequestId)
-  await updateEpisodes(show.id, showDef.episodes, awsRequestId)
+  await updateEpisodes(show.id, showDef.episodes, awsRequestId, logger)
   return show;
 }
 
@@ -25,7 +25,7 @@ async function getShow(tvDbId: number, logger: Logger) {
   return mapTheTvShowToDefinition(tShow, tEpisodes);
 }
 
-export async function updateEpisodes(showId: string, episodes: EpisodeInput[], awsRequestId: string) {
+export async function updateEpisodes(showId: string, episodes: EpisodeInput[], awsRequestId: string, logger: Logger) {
   let updatedEpisodes: EpisodeInput[] = [];
   sortEpisode(episodes);
   const pb = createPromiseBatch()
@@ -36,18 +36,22 @@ export async function updateEpisodes(showId: string, episodes: EpisodeInput[], a
         calculateEpisodeNumber(updatedEpisodes[0]),
         calculateEpisodeNumber(updatedEpisodes[updatedEpisodes.length - 1]),
         updatedEpisodes,
-        awsRequestId
+        awsRequestId,
+        logger
       ))
       updatedEpisodes = []
     }
     updatedEpisodes.push(e)
   }
-  pb.add(updateEpisodesRequest(
-    showId,
-    calculateEpisodeNumber(updatedEpisodes[0]),
-    calculateEpisodeNumber(updatedEpisodes[0]) * 2, // Add an empty space at the end
-    updatedEpisodes,
-    awsRequestId
-  ))
+  if (updatedEpisodes.length > 0) {
+    pb.add(updateEpisodesRequest(
+      showId,
+      calculateEpisodeNumber(updatedEpisodes[0]),
+      calculateEpisodeNumber(updatedEpisodes[0]) * 2, // Add an empty space at the end
+      updatedEpisodes,
+      awsRequestId,
+      logger
+    ))
+  }
   return await pb.compleat()
 }

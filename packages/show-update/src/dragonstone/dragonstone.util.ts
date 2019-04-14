@@ -1,8 +1,10 @@
 import * as AWS from 'aws-sdk';
 import { Lambda } from 'aws-sdk';
+import { Dragonstone } from '@episodehunter/types/message';
 import { config } from '../config';
 import { ShowInput } from './types/show.type';
 import { EpisodeInput } from './types/episode.type';
+import { Logger } from '@episodehunter/logger';
 
 AWS.config.update({
   region: 'us-east-1'
@@ -15,15 +17,22 @@ export async function updateEpisodesRequest(
   firstEpisode: number,
   lastEpisode: number,
   episodes: EpisodeInput[],
-  awsRequestId: string
+  awsRequestId: string,
+  logger: Logger
 ): Promise<Lambda.Types.InvocationResponse> {
+  const event: Dragonstone.UpdateEpisodes.Event = { showId, firstEpisode, lastEpisode, episodes, requestStack: [awsRequestId] }
+  logger.log(`Sending ${episodes.length} episodes to ${config.updateEpisodesDragonstoneFunctionName}`)
   return lambda
     .invoke({
-      FunctionName: config.updateShowDragonstoneFunctionName,
-      Payload: JSON.stringify({ showId, firstEpisode, lastEpisode, episodes, requestStack: [awsRequestId] }),
+      FunctionName: config.updateEpisodesDragonstoneFunctionName,
+      Payload: JSON.stringify(event),
       InvocationType: 'Event'
     })
-    .promise();
+    .promise()
+    .catch(error => {
+      logger.log(`Could not create event to ${config.updateEpisodesDragonstoneFunctionName} with ${episodes.length} number of episodes`)
+      throw error;
+    });
 }
 
 export async function updateShowRequest(
@@ -31,26 +40,28 @@ export async function updateShowRequest(
   showDef: ShowInput,
   awsRequestId: string
 ): Promise<Lambda.Types.InvocationResponse> {
+  const event: Dragonstone.UpdateShow.Event = { showId, showInput: showDef, requestStack: [awsRequestId] }
   return lambda
     .invoke({
       FunctionName: config.updateShowDragonstoneFunctionName,
-      Payload: JSON.stringify({ showId, showInput: showDef, requestStack: [awsRequestId] }),
+      Payload: JSON.stringify(event),
       InvocationType: 'Event'
     })
     .promise();
 }
 
 export async function addShowRequest(showDef: ShowInput, awsRequestId: string): Promise<{ id: string }> {
+  const event: Dragonstone.AddShow.Event = { showInput: showDef, requestStack: [awsRequestId] }
   return lambda
     .invoke({
       FunctionName: config.addShowDragonstoneFunctionName,
-      Payload: JSON.stringify({ showInput: showDef, requestStack: [awsRequestId] })
+      Payload: JSON.stringify(event)
     })
     .promise()
     .then(requestResult => {
-      let result: any;
+      let result: Dragonstone.AddShow.Response;
       try {
-        result = JSON.parse(result.Payload.toString())
+        result = JSON.parse(requestResult.Payload.toString())
       } catch (error) {
         throw new Error(`Can not parse response from Dragonston after adding show. Result: ${requestResult}`);
       }
