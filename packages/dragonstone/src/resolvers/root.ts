@@ -62,14 +62,6 @@ const RootMutation: RootMutationType = {
   updateTitles(root, args, context) {
     context.assertApiKey();
     return context.firebaseResolver.titles.updateTitles();
-  },
-  updateShow(root, args, context) {
-    context.assertApiKey();
-    return context.firebaseResolver.show.updateShow(args.showId, args.show, context.logger);
-  },
-  addShow(root, args, context) {
-    context.assertApiKey();
-    return context.firebaseResolver.show.addShow(args.show, context.logger);
   }
 };
 
@@ -157,11 +149,4 @@ type RootMutationType = {
   followShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
   unfollowShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
   updateTitles: (root: void, args: {}, context: Context) => Promise<boolean>;
-
-  updateShow: (
-    root: void,
-    args: { showId: string; show: PublicTypes.ShowInput },
-    context: Context
-  ) => Promise<PublicTypes.Show | null>;
-  addShow: (root: void, args: { show: PublicTypes.ShowInput }, context: Context) => Promise<PublicTypes.Show>;
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };
