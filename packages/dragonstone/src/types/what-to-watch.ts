@@ -6,8 +6,3 @@ export const whatToWatch = gql`
     numberOfEpisodesToWatch: Int!
   }
 `;
-
-export interface WhatToWatch {
-  showId: string;
-  numberOfEpisodesToWatch: number;
-}

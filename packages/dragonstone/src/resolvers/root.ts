@@ -1,8 +1,7 @@
+import { Dragonstone, Omit } from '@episodehunter/types';
+import { ApolloError } from 'apollo-server-lambda';
 import { Context } from '../context';
-import { PublicTypes, Omit } from '../public';
 import { dateType } from './date';
-import { ApolloError, AuthenticationError } from 'apollo-server-lambda';
-import { ShowInput } from '../types/show';
 
 const RootQuery: RootQueryType = {
   following(root, args, context) {
@@ -95,55 +94,55 @@ export const resolvers = {
 
 type RootQueryType = {
   following: (root: void, args: {}, context: Context) => Promise<string[]>;
-  show: (root: void, args: { id: string }, context: Context) => Promise<PublicTypes.Show | null>;
+  show: (root: void, args: { id: string }, context: Context) => Promise<Dragonstone.Show | null>;
   upcomingEpisode: (
     root: void,
     args: { showIds: string[] },
     context: Context
-  ) => Promise<PublicTypes.UpcomingEpisode[]>;
-  nextEpisodeToWatch: (root: void, args: { showId: string }, context: Context) => Promise<PublicTypes.Episode | null>;
+  ) => Promise<Dragonstone.UpcomingEpisode[]>;
+  nextEpisodeToWatch: (root: void, args: { showId: string }, context: Context) => Promise<Dragonstone.Episode | null>;
   episodes: (
     root: void,
     args: { showId: string; season?: number; episode?: number },
     context: Context
-  ) => Promise<PublicTypes.Episode[]>;
-  watchedEpisodes: (root: void, args: { showId: string }, context: Context) => Promise<PublicTypes.WatchedEpisode[]>;
-  whatToWatch: (root: void, args: { showId?: string }, context: Context) => Promise<PublicTypes.WhatToWatch[]>;
-  titles: (root: void, args: {}, context: Context) => Promise<PublicTypes.Title[]>;
+  ) => Promise<Dragonstone.Episode[]>;
+  watchedEpisodes: (root: void, args: { showId: string }, context: Context) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
+  whatToWatch: (root: void, args: { showId?: string }, context: Context) => Promise<Dragonstone.WhatToWatch[]>;
+  titles: (root: void, args: {}, context: Context) => Promise<Dragonstone.Title[]>;
   history: (
     root: void,
     args: { page: number },
     context: Context
-  ) => Promise<Omit<PublicTypes.History, 'show' | 'episode'>[]>;
+  ) => Promise<Omit<Dragonstone.History, 'show' | 'episode'>[]>;
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };
 
 type HistoryQueryType = {
   show: (
-    root: Omit<PublicTypes.History, 'show' | 'episode'>,
+    root: Omit<Dragonstone.History, 'show' | 'episode'>,
     args: {},
     context: Context
-  ) => Promise<PublicTypes.Show | null>;
+  ) => Promise<Dragonstone.Show | null>;
   episode: (
-    root: Omit<PublicTypes.History, 'show' | 'episode'>,
+    root: Omit<Dragonstone.History, 'show' | 'episode'>,
     args: {},
     context: Context
-  ) => Promise<PublicTypes.Episode | null>;
+  ) => Promise<Dragonstone.Episode | null>;
 };
 
 type RootMutationType = {
   checkInEpisode: (
     root: void,
-    args: { episode: PublicTypes.WatchedEpisodeInput },
+    args: { episode: Dragonstone.WatchedEpisode.WatchedEpisodeInput },
     context: Context
   ) => Promise<boolean>;
   checkInEpisodes: (
     root: void,
-    args: { episodes: PublicTypes.WatchedEpisodeInput[] },
+    args: { episodes: Dragonstone.WatchedEpisode.WatchedEpisodeInput[] },
     context: Context
   ) => Promise<boolean>;
   removeCheckedInEpisode: (
     root: void,
-    args: { episode: PublicTypes.UnwatchedEpisodeInput },
+    args: { episode: Dragonstone.WatchedEpisode.UnwatchedEpisodeInput },
     context: Context
   ) => Promise<boolean>;
   followShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;

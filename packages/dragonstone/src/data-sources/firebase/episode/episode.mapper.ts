@@ -1,12 +1,12 @@
-import { PublicTypes } from '../../../public';
+import { Dragonstone, Message } from '@episodehunter/types';
 import { calculateEpisodeNumber } from '../../../util/util';
-import { Episode } from './episode.type';
+import { Episode } from '../types';
 
-export function mapEpisodes(episodes: Episode[]): PublicTypes.Episode[] {
-  return episodes.map(mapEpisode) as PublicTypes.Episode[];
+export function mapEpisodes(episodes: Episode[]): Dragonstone.Episode[] {
+  return episodes.map(mapEpisode) as Dragonstone.Episode[];
 }
 
-export function mapEpisode(episode?: Episode): PublicTypes.Episode | null {
+export function mapEpisode(episode?: Episode): Dragonstone.Episode | null {
   if (!episode) {
     return null;
   }
@@ -22,7 +22,7 @@ export function mapEpisode(episode?: Episode): PublicTypes.Episode | null {
   };
 }
 
-export function mapEpisodeInputToEpisode(episodeInput: PublicTypes.EpisodeInput): Episode {
+export function mapEpisodeInputToEpisode(episodeInput: Message.Dragonstone.UpdateEpisodes.EpisodeInput): Episode {
   const episode: Episode = {
     aired: episodeInput.firstAired,
     episode: episodeInput.episode,

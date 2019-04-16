@@ -1,9 +1,8 @@
-import { PublicTypes } from '../../../public';
-import { Show } from './show.types';
-import { Episode } from '../episode/episode.type';
-import { calculateEpisodeNumber } from '../../../util/util';
+import { Dragonstone, Message } from '@episodehunter/types';
+import { Show } from '../types';
 
-export function mapShow(show?: Show): PublicTypes.Show | null {
+
+export function mapShow(show?: Show): Dragonstone.Show | null {
   if (!show) {
     return null;
   }
@@ -22,7 +21,7 @@ export function mapShow(show?: Show): PublicTypes.Show | null {
   };
 }
 
-export function mapShowInputToShow(showId: string, showInput: PublicTypes.ShowInput): Show {
+export function mapShowInputToShow(showId: string, showInput: Message.Dragonstone.ShowInput): Show {
   const show: Show = {
     airs: {},
     ended: showInput.ended,

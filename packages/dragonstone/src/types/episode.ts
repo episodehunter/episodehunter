@@ -16,31 +16,3 @@ export const episode = gql`
     tvdbId: Int!
   }
 `;
-
-export interface Episode {
-  aired: string;
-  episode: number;
-  episodeNumber: number;
-  lastupdated: number;
-  name: string;
-  overview?: string;
-  season: number;
-  tvdbId: number;
-}
-
-export interface EpisodeInputBatch {
-  showId: string;
-  firstEpisode: number; // episodenumber
-  lastEpisode: number; // episodenumber
-  episodes: EpisodeInput[];
-}
-
-export interface EpisodeInput {
-  tvdbId: number;
-  name: string;
-  season: number;
-  episode: number;
-  firstAired: string;
-  overview?: string;
-  lastupdated: number;
-}

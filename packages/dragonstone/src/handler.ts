@@ -1,17 +1,14 @@
-import assert from 'assert';
 import { createGuard, Logger } from '@episodehunter/kingsguard';
+import { Dragonstone } from '@episodehunter/types/message';
 import { ApolloServer } from 'apollo-server-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
+import { config } from './config';
+import { createContext } from './context';
 import { resolvers } from './resolvers/root';
 import { root as typeDefs } from './types/root';
-import { createContext } from './context';
-import { createFirebase } from './util/firebase-app';
 import { getUidFromHeader, isUsingApiKey } from './util/auth';
-import { config } from './config';
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import { ShowInput } from './types/show';
-import { assertShowInput, assertShowId, assertEpisodes, assertEpisodeNumber } from './util/validate';
-import { EpisodeInput, EpisodeInputBatch } from './types/episode';
-import { PublicTypes } from './public';
+import { createFirebase } from './util/firebase-app';
+import { assertEpisodeNumber, assertEpisodes, assertShowId, assertShowInput } from './util/validate';
 
 const firebaseApp = createFirebase();
 const context = createContext(firebaseApp.firestore);
@@ -58,7 +55,7 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
   });
 });
 
-exports.updateShowHandler = gard<{ showId: string; showInput: ShowInput }>((event, logger) => {
+exports.updateShowHandler = gard<Dragonstone.UpdateShow.Event>((event, logger): Promise<Dragonstone.UpdateShow.Response> => {
   try {
     assertShowId(event.showId);
     assertShowInput(event.showInput);
@@ -70,7 +67,7 @@ exports.updateShowHandler = gard<{ showId: string; showInput: ShowInput }>((even
   return context.firebaseResolver.show.updateShow(event.showId, event.showInput, logger);
 });
 
-exports.updateEpisodesHandler = gard<EpisodeInputBatch>((event, logger) => {
+exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>((event, logger): Promise<Dragonstone.UpdateEpisodes.Response> => {
   try {
     assertShowId(event.showId)
     assertEpisodeNumber(event.firstEpisode)
@@ -84,7 +81,7 @@ exports.updateEpisodesHandler = gard<EpisodeInputBatch>((event, logger) => {
   return context.firebaseResolver.episode.updateEpisodes(event.showId, event.firstEpisode, event.lastEpisode, event.episodes, logger);
 });
 
-exports.addShowHandler = gard<{ showInput: ShowInput }>((event, logger): Promise<PublicTypes.Show> => {
+exports.addShowHandler = gard<Dragonstone.AddShow.Event>((event, logger): Promise<Dragonstone.AddShow.Response> => {
   assertShowInput(event.showInput);
   return context.firebaseResolver.show.addShow(event.showInput, logger);
 });

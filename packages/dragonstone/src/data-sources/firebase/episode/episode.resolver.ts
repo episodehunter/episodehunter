@@ -1,16 +1,15 @@
-import { PublicTypes } from '../../../public';
-import { Docs } from '../util/firebase-docs';
-import { mapEpisode, mapEpisodes, mapEpisodeInputToEpisode } from './episode.mapper';
-import { Episode } from './episode.type';
-import { Selectors } from '../util/selectors';
-import { Query } from '@google-cloud/firestore';
-import { EpisodeInput } from '../../../types/episode';
 import { Logger } from '@episodehunter/logger';
-import { createBatch } from '../util/util';
+import { Dragonstone, Message } from '@episodehunter/types';
+import { Query } from '@google-cloud/firestore';
 import { calculateEpisodeNumber } from '../../../util/util';
+import { Episode } from '../types';
+import { Docs } from '../util/firebase-docs';
+import { Selectors } from '../util/selectors';
+import { createBatch } from '../util/util';
+import { mapEpisode, mapEpisodeInputToEpisode, mapEpisodes } from './episode.mapper';
 
 export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
-  async getNextEpisodeToWatch(userId: string, showId: string): Promise<PublicTypes.Episode | null> {
+  async getNextEpisodeToWatch(userId: string, showId: string): Promise<Dragonstone.Episode | null> {
     const highestWatchedEpisode = await selectors.getHighestWatchedEpisode(userId, showId);
 
     let nextEpisode = 0;
@@ -32,7 +31,7 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
         }
       });
   },
-  async getEpisodes(showId: string, season?: number, episode?: number): Promise<PublicTypes.Episode[]> {
+  async getEpisodes(showId: string, season?: number, episode?: number): Promise<Dragonstone.Episode[]> {
     let query: Query = docs.episodesCollection(showId);
     if (typeof season === 'number') {
       query = query.where('season', '==', season);
@@ -61,7 +60,7 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
     showId: string,
     first: number,
     last: number,
-    episodes: EpisodeInput[],
+    episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[],
     logger: Logger
   ): Promise<boolean> {
     const currentShowDoc = await docs.showDoc(showId).get();

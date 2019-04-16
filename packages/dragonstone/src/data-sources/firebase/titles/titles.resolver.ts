@@ -1,7 +1,7 @@
-import { Docs } from '../util/firebase-docs';
+import { Dragonstone } from '@episodehunter/types';
 import { yesterDay } from '../../../util/date';
 import { Title } from '../types';
-import { PublicTypes } from '../../../public';
+import { Docs } from '../util/firebase-docs';
 
 export const createTitlesResolver = (docs: Docs) => ({
   async lastUpdate(): Promise<Date> {
@@ -13,7 +13,7 @@ export const createTitlesResolver = (docs: Docs) => ({
         return lastupdated.toDate();
       });
   },
-  async getTitles(): Promise<PublicTypes.Title[]> {
+  async getTitles(): Promise<Dragonstone.Title[]> {
     return docs
       .titlesDoc()
       .get()
@@ -24,6 +24,7 @@ export const createTitlesResolver = (docs: Docs) => ({
     if (lastUpdate > yesterDay()) {
       return false;
     }
+    const now = (Date.now() / 1000) | 0;
     const titles: Title[] = await docs
       .showCollection()
       .get()
@@ -32,7 +33,8 @@ export const createTitlesResolver = (docs: Docs) => ({
           id: d.id,
           name: d.get('name'),
           followers: d.get('numberOfFollowers') || 0,
-          tvdbId: d.get('ids.tvdb') || 0
+          tvdbId: d.get('ids.tvdb'),
+          lastupdated: Math.min(now, d.get('lastupdated'))
         }))
       );
 

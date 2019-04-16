@@ -1,12 +1,12 @@
+import { Dragonstone } from '@episodehunter/types';
 import { ValidationError } from 'apollo-server-lambda';
-import { PublicTypes } from '../../../public';
+import { daysAgoOnFormatYYYYMMDD } from '../../../util/date';
+import { Episode } from '../types';
 import { Docs } from '../util/firebase-docs';
 import { mapEpisodes } from './episode.mapper';
-import { Episode } from './episode.type';
-import { daysAgoOnFormatYYYYMMDD } from '../../../util/date';
 
 export const createUpcomingResolver = (docs: Docs) => ({
-  async getUpcomingEpisode(showIds: string[]): Promise<PublicTypes.UpcomingEpisode[]> {
+  async getUpcomingEpisode(showIds: string[]): Promise<Dragonstone.UpcomingEpisode[]> {
     if (showIds.length > 50) {
       throw new ValidationError('Exceeded maximum payload. You can ask for max 50 shows');
     }

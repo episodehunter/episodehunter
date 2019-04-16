@@ -1,5 +1,4 @@
-import { ShowInput } from '../types/show';
-import { EpisodeInput } from '../types/episode';
+import { Message } from '@episodehunter/types';
 
 const knownShowProps: { [key: string]: string[] } = {
   tvdbId: ['number'],
@@ -28,7 +27,7 @@ const knownEpisodeProps: { [key: string]: string[] } = {
   lastupdated: ['number']
 };
 
-export function assertShowInput(input: ShowInput) {
+export function assertShowInput(input: Message.Dragonstone.ShowInput) {
   const knownKeys = Object.keys(knownShowProps);
   Object.keys(input).forEach(key => {
     if (!knownKeys.includes(key)) {
@@ -38,13 +37,13 @@ export function assertShowInput(input: ShowInput) {
   Object.entries(knownShowProps).forEach(([key, values]) => {
     const validType = values.some(type => {
       if (type === 'undefined') {
-        return input[key as keyof ShowInput] == null; // accept null or undefined
+        return input[key as keyof Message.Dragonstone.ShowInput] == null; // accept null or undefined
       }
-      return typeof input[key as keyof ShowInput] === type;
+      return typeof input[key as keyof Message.Dragonstone.ShowInput] === type;
     });
     if (!validType) {
       throw new TypeError(
-        `Expected type ${values.join(' or ')} for ${key} but got ${printType(input[key as keyof ShowInput])} for show`
+        `Expected type ${values.join(' or ')} for ${key} but got ${printType(input[key as keyof Message.Dragonstone.ShowInput])} for show`
       );
     }
   });
@@ -54,11 +53,11 @@ export function assertShowInput(input: ShowInput) {
   }
 }
 
-export function assertEpisodes(input: EpisodeInput[]) {
+export function assertEpisodes(input: Message.Dragonstone.UpdateEpisodes.EpisodeInput[]) {
   input.forEach(e => assertEpisode(e));
 }
 
-function assertEpisode(input: EpisodeInput) {
+function assertEpisode(input: Message.Dragonstone.UpdateEpisodes.EpisodeInput) {
   const knownKeys = Object.keys(knownEpisodeProps);
   Object.keys(input).forEach(key => {
     if (!knownKeys.includes(key)) {
@@ -68,13 +67,13 @@ function assertEpisode(input: EpisodeInput) {
   Object.entries(knownEpisodeProps).forEach(([key, values]) => {
     const validType = values.some(type => {
       if (type === 'undefined') {
-        return input[key as keyof EpisodeInput] == null; // accept null or undefined
+        return input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput] == null; // accept null or undefined
       }
-      return typeof input[key as keyof EpisodeInput] === type;
+      return typeof input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput] === type;
     });
     if (!validType) {
       throw new TypeError(
-        `Expected type ${values.join(' or ')} for ${key} but got ${printType(input[key as keyof EpisodeInput])} for episode S${input.season}E${input.episode}`
+        `Expected type ${values.join(' or ')} for ${key} but got ${printType(input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput])} for episode S${input.season}E${input.episode}`
       );
     }
   });

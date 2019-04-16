@@ -1,11 +1,11 @@
-import { PublicTypes } from '../../../public';
+import { Dragonstone } from '@episodehunter/types';
 import { WatchedEpisode } from '../types';
 
-export function mapWatchedEpisodes(episodes: WatchedEpisode[]): PublicTypes.WatchedEpisode[] {
-  return episodes.map(mapWatchedEpisode) as PublicTypes.WatchedEpisode[];
+export function mapWatchedEpisodes(episodes: WatchedEpisode[]): Dragonstone.WatchedEpisode.WatchedEpisode[] {
+  return episodes.map(mapWatchedEpisode) as Dragonstone.WatchedEpisode.WatchedEpisode[];
 }
 
-export function mapWatchedEpisode(episode?: WatchedEpisode): PublicTypes.WatchedEpisode | null {
+export function mapWatchedEpisode(episode?: WatchedEpisode): Dragonstone.WatchedEpisode.WatchedEpisode | null {
   if (!episode) {
     return null;
   }

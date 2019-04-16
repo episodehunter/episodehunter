@@ -1,12 +1,12 @@
-import { PublicTypes } from '../../../public';
+import { Logger } from '@episodehunter/logger';
+import { Dragonstone, Message } from '@episodehunter/types';
+import { Show } from '../types';
 import { Docs } from '../util/firebase-docs';
 import { mapShow, mapShowInputToShow } from './show.mapper';
-import { Show } from './show.types';
-import { Logger } from '@episodehunter/logger';
 
-const showCache = new Map<string, Promise<PublicTypes.Show | null>>();
+const showCache = new Map<string, Promise<Dragonstone.Show | null>>();
 
-async function getShow(docs: Docs, id: string): Promise<PublicTypes.Show | null> {
+async function getShow(docs: Docs, id: string): Promise<Dragonstone.Show | null> {
   const showDoc = await docs.showDoc(id).get();
   if (showDoc.exists) {
     return mapShow(showDoc.data() as Show);
@@ -34,7 +34,7 @@ export const createShowResolver = (docs: Docs) => {
     return showNameSlug;
   };
   return {
-    async getShow(id: string): Promise<PublicTypes.Show | null> {
+    async getShow(id: string): Promise<Dragonstone.Show | null> {
       if (!showCache.has(id)) {
         showCache.set(id, getShow(docs, id));
       }
@@ -42,9 +42,9 @@ export const createShowResolver = (docs: Docs) => {
     },
     async updateShow(
       showId: string,
-      showInput: PublicTypes.ShowInput,
+      showInput: Message.Dragonstone.ShowInput,
       logger: Logger
-    ): Promise<PublicTypes.Show | null> {
+    ): Promise<Dragonstone.Show | null> {
       const currentShowDoc = await docs.showDoc(showId).get();
       if (!currentShowDoc.exists) {
         logger.log(`Show with id "${showId}" do not exist. Do not update.`);
@@ -55,7 +55,7 @@ export const createShowResolver = (docs: Docs) => {
       await currentShowDoc.ref.update(newShow)
       return newShow;
     },
-    async addShow(showInput: PublicTypes.ShowInput, logger: Logger): Promise<PublicTypes.Show> {
+    async addShow(showInput: Message.Dragonstone.ShowInput, logger: Logger): Promise<Dragonstone.Show> {
       const currentShowDoc = await docs
         .showCollection()
         .where('ids.tvdb', '==', showInput.tvdbId)

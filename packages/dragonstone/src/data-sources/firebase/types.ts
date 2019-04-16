@@ -1,5 +1,3 @@
-import { PublicTypes } from '../../public';
-
 export interface UsermetaData {
   apiKey: string;
   following: number[];
@@ -27,4 +25,37 @@ export interface Title {
   name: string;
   followers: number;
   tvdbId: number;
+}
+
+export interface Episode {
+  aired: string;
+  episode: number;
+  episodeNumber: number;
+  lastupdated: number;
+  name: string;
+  overview?: string;
+  season: number;
+  tvdbId: number;
+}
+
+export interface Show {
+  airs: {
+    first?: string;
+    time?: string;
+    day?: number;
+  };
+  ended: boolean;
+  genre: string[];
+  ids: {
+    id: string;
+    imdb?: string;
+    tvdb: number;
+  };
+  language?: string;
+  lastupdated: number;
+  name: string;
+  network?: string;
+  numberOfFollowers: number;
+  overview?: string;
+  runtime: number;
 }

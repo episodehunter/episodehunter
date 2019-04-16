@@ -1,5 +1,4 @@
 import { gql } from 'apollo-server-lambda';
-import { Episode } from './episode';
 
 export const upcomingEpisode = gql`
   type UpcomingEpisode {
@@ -7,8 +6,3 @@ export const upcomingEpisode = gql`
     showId: ID!
   }
 `;
-
-export interface UpcomingEpisode {
-  showId: string;
-  episodes: Episode[];
-}
