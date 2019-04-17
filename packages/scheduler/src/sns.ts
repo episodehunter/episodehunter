@@ -1,6 +1,6 @@
 import { SNS } from 'aws-sdk';
+import { Message } from '@episodehunter/types';
 import { config } from './config';
-import { Title } from './types';
 
 const sns = new SNS();
 
@@ -14,7 +14,7 @@ export function publishUpdateShow(theTvDbId: number): Promise<SNS.PublishRespons
   return sns.publish(params).promise();
 }
 
-export function publishShowUpdate(title: Title): Promise<SNS.PublishResponse> {
+export function publishShowUpdate(title: Message.UpdateShow.Event): Promise<SNS.PublishResponse> {
   // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#publish-property
   const params = {
     TopicArn: config.updateShowTopic,

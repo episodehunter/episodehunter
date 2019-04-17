@@ -37,7 +37,3 @@ functions:
     handler: src/dragonstone-show-updater-handler.update
     events:
       - schedule: rate(2 hours)
-  titlesupdater:
-    handler: src/show-updater-handler.update
-    events:
-      - schedule: rate(24 hours)

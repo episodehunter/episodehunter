@@ -1,5 +1,5 @@
 import { createGuard, Logger } from '@episodehunter/kingsguard';
-import { TheTvDbUpdatedShowId } from '@episodehunter/types/thetvdb';
+import { TheTvDbUpdatedShowId } from '@episodehunter/thetvdb';
 import { Context } from 'aws-lambda';
 import { config } from './config';
 import { getExistingShows } from './red-keep.util';

@@ -5,8 +5,8 @@ function assertEnv() {
     'RED_KEEP_API_KEY',
     'RED_KEEP_URL',
     'DRAGONSTONE_URL',
-    'DRAGONSTONE_API_KEY',
     'EH_SNS_UPDATE_SHOW',
+    'SNS_UPDATE_SHOW_TOPIC',
     'THE_TV_DB_API_KEY'
   ].forEach(env => {
     if (!process.env[env]) {
@@ -25,7 +25,6 @@ function createConfig() {
     redKeepApiKey: process.env.RED_KEEP_API_KEY,
     redKeepUrl: process.env.RED_KEEP_URL,
     dragonstoneUrl: process.env.DRAGONSTONE_URL,
-    dragonstoneApiKey: process.env.DRAGONSTONE_API_KEY,
     updateShowQueueName: process.env.EH_SNS_UPDATE_SHOW,
     updateShowTopic: process.env.SNS_UPDATE_SHOW_TOPIC,
     theTvDbApiKey: process.env.THE_TV_DB_API_KEY
