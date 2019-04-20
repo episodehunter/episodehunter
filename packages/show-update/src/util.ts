@@ -17,26 +17,26 @@ export function safeFilter<T>(fu: (a: T) => boolean): (arr: T[]) => T[] {
 }
 
 export function createPromiseBatch() {
-  const promises: Promise<any>[] = []
+  const promises: Promise<any>[] = [];
   return {
     add(p: Promise<any>) {
-      promises.push(p)
+      promises.push(p);
     },
     compleat<T extends any[]>(): Promise<T> {
       return Promise.all(promises) as any;
     }
-  }
+  };
 }
 
 export function isValidEpisode(episode: TheTvDbShowEpisode): boolean {
   return Boolean(episode.id && episode.airedEpisodeNumber && episode.airedSeason && episode.lastUpdated && episode.firstAired);
 }
 
-export function calculateEpisodeNumber(episode: { season: number, episode: number }): number {
+export function calculateEpisodeNumber(episode: { season: number; episode: number }): number {
   return episode.season * 10000 + episode.episode;
 }
 
-export function sortEpisode(episodes: { season: number, episode: number }[]) {
+export function sortEpisode(episodes: { season: number; episode: number }[]) {
   return episodes.sort((a, b) => {
     if (a.season > b.season) {
       return 1;
@@ -47,6 +47,12 @@ export function sortEpisode(episodes: { season: number, episode: number }[]) {
     } else if (a.episode < b.episode) {
       return -1;
     }
-    return 0
+    return 0;
   });
+}
+
+export function* groupArray<T>(arr: T[], size: number) {
+  while (arr.length > 0) {
+    yield arr.splice(0, size);
+  }
 }

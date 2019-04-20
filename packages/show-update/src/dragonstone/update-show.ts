@@ -1,57 +1,63 @@
 import { Logger } from '@episodehunter/logger';
-import { getInformationFromTvDb } from '../the-tv-db.util';
-import { calculateEpisodeNumber, createPromiseBatch, sortEpisode } from '../util';
+import { Message } from '@episodehunter/types';
+import { fetchShow, fetchShowEpisodes } from '../the-tv-db.util';
+import { calculateEpisodeNumber, createPromiseBatch, sortEpisode, groupArray } from '../util';
 import { addShowRequest, updateEpisodesRequest, updateShowRequest } from './dragonstone.util';
-import { mapTheTvShowToDefinition } from './mapper';
-import { EpisodeInput } from './types/episode.type';
+import { mapTheTvShowToDefinition, mapTheTvEpisodesToDefinition } from './mapper';
 
-export async function updateShow(ids: { id: string; tvdbId: number }, logger: Logger, awsRequestId: string) {
-  const showDef = await getShow(ids.tvdbId, logger)
-  return Promise.all([
-    updateShowRequest(ids.id, showDef, awsRequestId),
-    updateEpisodes(ids.id, showDef.episodes, awsRequestId, logger)
-  ])
+export async function updateShow(event: Message.UpdateShow.UpdateShow.Event, logger: Logger, awsRequestId: string) {
+  const updatingShow = fetchShow(event.tvdbId, logger)
+    .then(show => mapTheTvShowToDefinition(show))
+    .then(showDef => updateShowRequest(event.id, showDef, awsRequestId));
+
+  const updatingEpisodes = fetchShowEpisodes(event.tvdbId, logger)
+    .then(episodes => mapTheTvEpisodesToDefinition(episodes))
+    .then(episodes => {
+      sortEpisode(episodes);
+      return filterEpisodesToUpdate(episodes, event.lastupdated);
+    })
+    .then(episodes => updateEpisodes(event.id, episodes, awsRequestId, logger));
+
+  return Promise.all([updatingShow, updatingEpisodes]);
 }
 
-export async function addShow(tvDbId: number, logger: Logger, awsRequestId: string): Promise<{ id: string }> {
-  const showDef = await getShow(tvDbId, logger)
-  const show = await addShowRequest(showDef, awsRequestId)
-  await updateEpisodes(show.id, showDef.episodes, awsRequestId, logger)
-  return show;
+export async function addShow(
+  tvDbId: number,
+  logger: Logger,
+  awsRequestId: string
+): Promise<Message.UpdateShow.AddShow.Response> {
+  const [theTvDbShow, theTVDbEpisodes] = await Promise.all([fetchShow(tvDbId, logger), fetchShowEpisodes(tvDbId, logger)]);
+  const showDef = mapTheTvShowToDefinition(theTvDbShow);
+  const episodesDef = mapTheTvEpisodesToDefinition(theTVDbEpisodes);
+  const dragsonstoneShow = await addShowRequest(showDef, awsRequestId);
+  sortEpisode(episodesDef);
+  await updateEpisodes(dragsonstoneShow.id, episodesDef, awsRequestId, logger);
+  return dragsonstoneShow;
 }
 
-async function getShow(tvDbId: number, logger: Logger) {
-  const [tShow, tEpisodes] = await getInformationFromTvDb(tvDbId, logger);
-  return mapTheTvShowToDefinition(tShow, tEpisodes);
-}
-
-export async function updateEpisodes(showId: string, episodes: EpisodeInput[], awsRequestId: string, logger: Logger) {
-  let updatedEpisodes: EpisodeInput[] = [];
-  sortEpisode(episodes);
-  const pb = createPromiseBatch()
-  for (let e of episodes) {
-    if (updatedEpisodes.length >= 200) {
-      pb.add(updateEpisodesRequest(
+export async function updateEpisodes(
+  showId: string,
+  episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[],
+  awsRequestId: string,
+  logger: Logger
+) {
+  const pb = createPromiseBatch();
+  for (let episodeGroup of groupArray(episodes, 200)) {
+    pb.add(
+      updateEpisodesRequest(
         showId,
-        calculateEpisodeNumber(updatedEpisodes[0]),
-        calculateEpisodeNumber(updatedEpisodes[updatedEpisodes.length - 1]),
-        updatedEpisodes,
+        calculateEpisodeNumber(episodeGroup[0]),
+        calculateEpisodeNumber(episodeGroup[episodeGroup.length - 1]),
+        episodeGroup,
         awsRequestId,
         logger
-      ))
-      updatedEpisodes = []
-    }
-    updatedEpisodes.push(e)
+      )
+    );
   }
-  if (updatedEpisodes.length > 0) {
-    pb.add(updateEpisodesRequest(
-      showId,
-      calculateEpisodeNumber(updatedEpisodes[0]),
-      calculateEpisodeNumber(updatedEpisodes[0]) * 2, // Add an empty space at the end
-      updatedEpisodes,
-      awsRequestId,
-      logger
-    ))
-  }
-  return await pb.compleat()
+  return await pb.compleat();
+}
+
+function filterEpisodesToUpdate(episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[], lastupdate: Number) {
+  const firstEpisodeIndex = episodes.findIndex(episode => episode.lastupdated > lastupdate);
+  return episodes.slice(firstEpisodeIndex);
 }

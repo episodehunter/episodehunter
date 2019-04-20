@@ -1,5 +1,6 @@
 import { createGuard } from '@episodehunter/kingsguard';
 import { TooManyEpisodes } from '@episodehunter/thetvdb';
+import { Message } from '@episodehunter/types';
 import { SNSEvent } from 'aws-lambda';
 import { updateShow, addShow } from './update-show';
 import { InsufficientShowInformation } from '../custom-erros';
@@ -9,10 +10,7 @@ const guard = createGuard(config.sentryDsn, config.logdnaKey);
 
 export const update = guard<SNSEvent>(async (event, logger, context) => {
   const message = event.Records[0].Sns.Message;
-  let ids = {
-    id: '',
-    tvdbId: 0
-  };
+  let ids: Message.UpdateShow.UpdateShow.Event;
   try {
     ids = JSON.parse(message);
   } catch (error) {
@@ -35,15 +33,16 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
   }
 });
 
-export const add = guard<{ theTvDbId: number }>(async (event, logger, context): Promise<string> => {
-  const theTvDbId = event.theTvDbId | 0;
+export const add = guard<Message.UpdateShow.AddShow.Event>(
+  async (event, logger, context): Promise<Message.UpdateShow.AddShow.Response> => {
+    const theTvDbId = event.theTvDbId | 0;
 
-  logger.log(`Will add the show with theTvDbId: ${theTvDbId} and associated epesodes`);
+    logger.log(`Will add the show with theTvDbId: ${theTvDbId} and associated epesodes`);
 
-  if (theTvDbId <= 0) {
-    throw new Error('theTvDbId is not a valid id:' + event.theTvDbId);
+    if (theTvDbId <= 0) {
+      throw new Error('theTvDbId is not a valid id:' + event.theTvDbId);
+    }
+
+    return addShow(theTvDbId, logger, context.awsRequestId);
   }
-
-  const show = await addShow(theTvDbId, logger, context.awsRequestId);
-  return show.id;
-});
+);
