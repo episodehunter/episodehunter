@@ -85,3 +85,8 @@ exports.addShowHandler = gard<Dragonstone.AddShow.Event>((event, logger): Promis
   assertShowInput(event.showInput);
   return context.firebaseResolver.show.addShow(event.showInput, logger);
 });
+
+exports.updateTitles = gard((event, logger): Promise<boolean> => {
+  logger.log('Start updating titles');
+  return context.firebaseResolver.titles.updateTitles();
+});

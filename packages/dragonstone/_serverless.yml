@@ -28,12 +28,21 @@ package:
 
 functions:
   updateShow:
+    timeout: 10
     handler: handler.updateShowHandler
   updateEpisodes:
+    timeout: 10
     handler: handler.updateEpisodesHandler
   addShow:
+    timeout: 10
     handler: handler.addShowHandler
+  updateTitles:
+    timeout: 30
+    handler: handler.updateTitles
+    events:
+      - schedule: rate(24 hours)
   graphql:
+    timeout: 6
     handler: handler.graphqlHandler
     events:
     - http:
