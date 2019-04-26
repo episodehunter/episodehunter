@@ -18,6 +18,9 @@ deploy-add: compile
 deploy-dragonstone: compile
         cd dist; serverless deploy --function update2 && serverless deploy --function add2
 
+deployfunctions: compile
+        cd dist; serverless deploy --function update2 && serverless deploy --function add2 && serverless deploy --function update && serverless deploy --function add
+
 package: compile
         cd dist; serverless package
 
