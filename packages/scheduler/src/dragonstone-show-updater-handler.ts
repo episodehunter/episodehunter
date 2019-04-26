@@ -22,9 +22,9 @@ function findShowsToUpdate(titles: Title[], theTvDbIds: TheTvDbUpdatedShowId[], 
           return showMatch;
         } else {
           logger.log(
-            `The tv db says ${idAndTime.id};${showMatch.id} should update, but we have a newer version. ${
-              showMatch.lastupdated
-            } > ${idAndTime.lastUpdated} == true`
+            `The tv db says ${showMatch.id} should update, but we have a newer version. ${showMatch.lastupdated} >= ${
+              idAndTime.lastUpdated
+            } == true`
           );
           return;
         }

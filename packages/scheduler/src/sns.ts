@@ -16,9 +16,10 @@ export function publishUpdateShow(theTvDbId: number): Promise<SNS.PublishRespons
 
 export function publishShowUpdate(title: Message.UpdateShow.Event): Promise<SNS.PublishResponse> {
   // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#publish-property
+  const event: Message.UpdateShow.Event = title;
   const params = {
     TopicArn: config.updateShowTopic,
-    Message: JSON.stringify(title)
+    Message: JSON.stringify(event)
   };
   return sns.publish(params).promise();
 }
