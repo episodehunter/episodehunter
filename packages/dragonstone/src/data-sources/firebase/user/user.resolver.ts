@@ -1,10 +1,14 @@
+import firestore from '@google-cloud/firestore';
+import { FirebaseUsermetaData } from '../types';
 import { Docs } from '../util/firebase-docs';
 import { Selectors } from '../util/selectors';
-import firestore = require('@google-cloud/firestore');
 
 export const createUserResolver = (docs: Docs, selectors: Selectors) => ({
   async getFollowing(userId: string): Promise<string[]> {
     return selectors.getFollowingList(userId);
+  },
+  async getUser(userId: string): Promise<FirebaseUsermetaData> {
+    return selectors.getUsermetadata(userId)
   },
   async followShow(userId: string, showId: string): Promise<boolean> {
     return docs

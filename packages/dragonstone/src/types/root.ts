@@ -6,6 +6,7 @@ import { title } from './title';
 import { upcomingEpisode } from './upcoming-episode';
 import { watchedEpisode } from './watched-episode';
 import { whatToWatch } from './what-to-watch';
+import { user } from './user';
 
 export const root = gql`
   scalar Date
@@ -25,6 +26,7 @@ export const root = gql`
     whatToWatch(showId: ID): [WhatToWatch]
     titles: [Title]
     history(page: Int!): [History]
+    me: User
   }
 
   type RootMutation {
@@ -43,4 +45,5 @@ export const root = gql`
   ${upcomingEpisode}
   ${title}
   ${history}
+  ${user}
 `;

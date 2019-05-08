@@ -30,6 +30,9 @@ const RootQuery: RootQueryType = {
   },
   history(root, args, context) {
     return context.firebaseResolver.history.getHistoryPage(context.getUid(), Math.max(args.page, 0));
+  },
+  me(root, args, context) {
+    return context.firebaseResolver.user.getUser(context.getUid())
   }
 };
 
@@ -114,6 +117,7 @@ type RootQueryType = {
     args: { page: number },
     context: Context
   ) => Promise<Omit<Dragonstone.History, 'show' | 'episode'>[]>;
+  me: (root: void, args: {}, context: Context) => Promise<Dragonstone.User>
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };
 
 type HistoryQueryType = {
