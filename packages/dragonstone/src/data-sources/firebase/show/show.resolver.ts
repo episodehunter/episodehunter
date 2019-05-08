@@ -1,6 +1,6 @@
 import { Logger } from '@episodehunter/logger';
 import { Dragonstone, Message } from '@episodehunter/types';
-import { Show } from '../types';
+import { FirebaseShow } from '../types';
 import { Docs } from '../util/firebase-docs';
 import { mapShow, mapShowInputToShow } from './show.mapper';
 
@@ -9,7 +9,7 @@ const showCache = new Map<string, Promise<Dragonstone.Show | null>>();
 async function getShow(docs: Docs, id: string): Promise<Dragonstone.Show | null> {
   const showDoc = await docs.showDoc(id).get();
   if (showDoc.exists) {
-    return mapShow(showDoc.data() as Show);
+    return mapShow(showDoc.data() as FirebaseShow);
   }
   return null;
 }
@@ -63,7 +63,7 @@ export const createShowResolver = (docs: Docs) => {
         .get();
       if (currentShowDoc.size > 0) {
         logger.log(`Show with thetvdb ${showInput.tvdbId} do already exist`);
-        return currentShowDoc.docs[0].data() as Show;
+        return currentShowDoc.docs[0].data() as FirebaseShow;
       }
       const showId = await generateSlugShowName(showInput.name);
       const newShow = mapShowInputToShow(showId, showInput);

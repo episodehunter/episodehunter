@@ -1,8 +1,7 @@
 import { Dragonstone, Message } from '@episodehunter/types';
-import { Show } from '../types';
+import { FirebaseShow } from '../types';
 
-
-export function mapShow(show?: Show): Dragonstone.Show | null {
+export function mapShow(show?: FirebaseShow): Dragonstone.Show | null {
   if (!show) {
     return null;
   }
@@ -21,8 +20,8 @@ export function mapShow(show?: Show): Dragonstone.Show | null {
   };
 }
 
-export function mapShowInputToShow(showId: string, showInput: Message.Dragonstone.ShowInput): Show {
-  const show: Show = {
+export function mapShowInputToShow(showId: string, showInput: Message.Dragonstone.ShowInput): FirebaseShow {
+  const show: FirebaseShow = {
     airs: {},
     ended: showInput.ended,
     genre: showInput.genre,

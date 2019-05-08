@@ -2,7 +2,7 @@ import { Logger } from '@episodehunter/logger';
 import { Dragonstone, Message } from '@episodehunter/types';
 import { Query } from '@google-cloud/firestore';
 import { calculateEpisodeNumber } from '../../../util/util';
-import { Episode } from '../types';
+import { FirebaseEpisode } from '../types';
 import { Docs } from '../util/firebase-docs';
 import { Selectors } from '../util/selectors';
 import { createBatch } from '../util/util';
@@ -25,7 +25,7 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
       .get()
       .then(querySnapshot => {
         if (querySnapshot.size === 1) {
-          return mapEpisode(querySnapshot.docs[0].data() as Episode);
+          return mapEpisode(querySnapshot.docs[0].data() as FirebaseEpisode);
         } else {
           return null;
         }
@@ -40,10 +40,10 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
       query = query.where('episode', '==', season);
     }
     return query.get().then(querySnapshot => {
-      return mapEpisodes(querySnapshot.docs.map(d => d.data() as Episode).filter(Boolean));
+      return mapEpisodes(querySnapshot.docs.map(d => d.data() as FirebaseEpisode).filter(Boolean));
     });
   },
-  async getEpisode(showId: string, episodeNumber: number): Promise<Episode | null> {
+  async getEpisode(showId: string, episodeNumber: number): Promise<FirebaseEpisode | null> {
     return docs
       .episodesCollection(showId)
       .where('episodeNumber', '==', episodeNumber)
@@ -52,7 +52,7 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
         if (querySnapshot.empty) {
           return null;
         } else {
-          return querySnapshot.docs[0].data() as Episode;
+          return querySnapshot.docs[0].data() as FirebaseEpisode;
         }
       });
   },
@@ -80,7 +80,7 @@ export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
 
     // See if we should update or remove any existed episodes
     for (let doc of episodeCollection.docs) {
-      const currentEpisode = doc.data() as Episode;
+      const currentEpisode = doc.data() as FirebaseEpisode;
       const newEpisode = episodes.find(e => e.season === currentEpisode.season && e.episode === currentEpisode.episode);
       knownEpisodes.add(currentEpisode.episodeNumber);
       if (!newEpisode) {

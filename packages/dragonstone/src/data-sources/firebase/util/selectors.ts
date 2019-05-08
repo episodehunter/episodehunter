@@ -1,11 +1,12 @@
-import { Docs } from '../util/firebase-docs';
-import { WatchedEpisode, UsermetaData } from '../types';
+import { Dragonstone } from '@episodehunter/types';
 import { createDateString } from '../../../util/date';
 import { safeMap } from '../../../util/util';
+import { FirebaseUsermetaData } from '../types';
+import { Docs } from '../util/firebase-docs';
 
 export function createSelectors(docs: Docs) {
   return {
-    getHighestWatchedEpisode(userId: string, showId: string): Promise<WatchedEpisode | null> {
+    getHighestWatchedEpisode(userId: string, showId: string): Promise<Dragonstone.WatchedEpisode.WatchedEpisode | null> {
       return docs
         .showsWatchHistoryCollection(userId)
         .where('showId', '==', showId)
@@ -14,7 +15,7 @@ export function createSelectors(docs: Docs) {
         .get()
         .then(r => {
           if (r.size === 1 && r.docs[0].exists) {
-            return r.docs[0].data() as WatchedEpisode;
+            return r.docs[0].data() as Dragonstone.WatchedEpisode.WatchedEpisode;
           }
           return null;
         });
@@ -49,11 +50,11 @@ export function createSelectors(docs: Docs) {
       }
       return this.getNumberOfEpisodesAfter(showId, nextNumber);
     },
-    async getUsermetadata(userId: string): Promise<UsermetaData> {
+    async getUsermetadata(userId: string): Promise<FirebaseUsermetaData> {
       const userMetadata = await docs
         .userDoc(userId)
         .get()
-        .then(d => d.data() as UsermetaData | undefined);
+        .then(d => d.data() as FirebaseUsermetaData | undefined);
       if (!userMetadata) {
         throw new Error('userMetadata do not exist for user ' + userId);
       }

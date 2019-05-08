@@ -1,11 +1,11 @@
 import { Dragonstone } from '@episodehunter/types';
-import { WatchedEpisode } from '../types';
+import { FirebaseWatchedEpisode } from '../types';
 
-export function mapWatchedEpisodes(episodes: WatchedEpisode[]): Dragonstone.WatchedEpisode.WatchedEpisode[] {
+export function mapWatchedEpisodes(episodes: FirebaseWatchedEpisode[]): Dragonstone.WatchedEpisode.WatchedEpisode[] {
   return episodes.map(mapWatchedEpisode) as Dragonstone.WatchedEpisode.WatchedEpisode[];
 }
 
-export function mapWatchedEpisode(episode?: WatchedEpisode): Dragonstone.WatchedEpisode.WatchedEpisode | null {
+export function mapWatchedEpisode(episode?: FirebaseWatchedEpisode): Dragonstone.WatchedEpisode.WatchedEpisode | null {
   if (!episode) {
     return null;
   }

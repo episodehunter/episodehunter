@@ -1,7 +1,8 @@
 import { Omit, Dragonstone } from '@episodehunter/types';
+import { WatchedEnum } from '@episodehunter/types/dragonstone/watched-episode';
 import { Docs } from '../util/firebase-docs';
 import { mapWatchedEpisodes } from './history.mapper';
-import { WatchedEpisode, WatchedEnum } from '../types';
+import { FirebaseWatchedEpisode } from '../types';
 import { Selectors } from '../util/selectors';
 import { calculateEpisodeNumber } from '../../../util/util';
 
@@ -13,7 +14,7 @@ export const createHistoryResolver = (docs: Docs, selectors: Selectors) => ({
       .limit(20)
       .offset(page * 20)
       .get()
-      .then(r => r.docs.map(d => d.data() as WatchedEpisode));
+      .then(r => r.docs.map(d => d.data() as FirebaseWatchedEpisode));
     return historyPage.map(watchedEpisode => ({ watchedEpisode }));
   },
   async getWatchedEpisodesForShow(userId: string, showId: string): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
@@ -21,7 +22,7 @@ export const createHistoryResolver = (docs: Docs, selectors: Selectors) => ({
       .showsWatchHistoryCollection(userId)
       .where('showId', '==', showId)
       .get()
-      .then(r => r.docs.map(d => d.data() as WatchedEpisode));
+      .then(r => r.docs.map(d => d.data() as FirebaseWatchedEpisode));
     return mapWatchedEpisodes(highestWatchedEpisode);
   },
   async getWhatToWatch(userId: string, showId?: string): Promise<Dragonstone.WhatToWatch[]> {

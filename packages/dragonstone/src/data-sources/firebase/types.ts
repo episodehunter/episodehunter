@@ -1,33 +1,30 @@
-export interface UsermetaData {
-  apiKey: string;
-  following: number[];
+import { Dragonstone } from '@episodehunter/types';
+
+export interface FirebaseUsermetaData {
+  apikey: string;
+  username: string;
+  following: string[];
 }
 
-export enum WatchedEnum {
-  kodiScrobble,
-  kodiSync,
-  checkIn,
-  checkInSeason,
-  plexScrobble
-}
+export type FirebaseWatchedEnum = Dragonstone.WatchedEpisode.WatchedEnum
 
-export interface WatchedEpisode {
+export interface FirebaseWatchedEpisode {
   episode: number;
   episodeNumber: number;
   season: number;
   showId: string;
   time: Date;
-  type: WatchedEnum;
+  type: FirebaseWatchedEnum;
 }
 
-export interface Title {
+export interface FirebaseTitle {
   id: string;
   name: string;
   followers: number;
   tvdbId: number;
 }
 
-export interface Episode {
+export interface FirebaseEpisode {
   aired: string;
   episode: number;
   episodeNumber: number;
@@ -38,7 +35,7 @@ export interface Episode {
   tvdbId: number;
 }
 
-export interface Show {
+export interface FirebaseShow {
   airs: {
     first?: string;
     time?: string;

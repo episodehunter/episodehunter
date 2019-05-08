@@ -1,6 +1,6 @@
 import { Dragonstone } from '@episodehunter/types';
 import { yesterDay } from '../../../util/date';
-import { Title } from '../types';
+import { FirebaseTitle } from '../types';
 import { Docs } from '../util/firebase-docs';
 
 export const createTitlesResolver = (docs: Docs) => ({
@@ -25,7 +25,7 @@ export const createTitlesResolver = (docs: Docs) => ({
       return false;
     }
     const now = (Date.now() / 1000) | 0;
-    const titles: Title[] = await docs
+    const titles: FirebaseTitle[] = await docs
       .showCollection()
       .get()
       .then(r =>

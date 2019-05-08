@@ -1,12 +1,12 @@
 import { Dragonstone, Message } from '@episodehunter/types';
 import { calculateEpisodeNumber } from '../../../util/util';
-import { Episode } from '../types';
+import { FirebaseEpisode } from '../types';
 
-export function mapEpisodes(episodes: Episode[]): Dragonstone.Episode[] {
+export function mapEpisodes(episodes: FirebaseEpisode[]): Dragonstone.Episode[] {
   return episodes.map(mapEpisode) as Dragonstone.Episode[];
 }
 
-export function mapEpisode(episode?: Episode): Dragonstone.Episode | null {
+export function mapEpisode(episode?: FirebaseEpisode): Dragonstone.Episode | null {
   if (!episode) {
     return null;
   }
@@ -22,8 +22,8 @@ export function mapEpisode(episode?: Episode): Dragonstone.Episode | null {
   };
 }
 
-export function mapEpisodeInputToEpisode(episodeInput: Message.Dragonstone.UpdateEpisodes.EpisodeInput): Episode {
-  const episode: Episode = {
+export function mapEpisodeInputToEpisode(episodeInput: Message.Dragonstone.UpdateEpisodes.EpisodeInput): FirebaseEpisode {
+  const episode: FirebaseEpisode = {
     aired: episodeInput.firstAired,
     episode: episodeInput.episode,
     episodeNumber: calculateEpisodeNumber(episodeInput.season, episodeInput.episode),

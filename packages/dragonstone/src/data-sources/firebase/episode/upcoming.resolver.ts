@@ -1,7 +1,7 @@
 import { Dragonstone } from '@episodehunter/types';
 import { ValidationError } from 'apollo-server-lambda';
 import { daysAgoOnFormatYYYYMMDD } from '../../../util/date';
-import { Episode } from '../types';
+import { FirebaseEpisode } from '../types';
 import { Docs } from '../util/firebase-docs';
 import { mapEpisodes } from './episode.mapper';
 
@@ -21,7 +21,7 @@ export const createUpcomingResolver = (docs: Docs) => ({
           .get()
           .then(querySnapshot => ({
             showId: id,
-            episodes: mapEpisodes(querySnapshot.docs.map(d => d.data() as Episode))
+            episodes: mapEpisodes(querySnapshot.docs.map(d => d.data() as FirebaseEpisode))
           }))
       )
     );
