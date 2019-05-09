@@ -11,7 +11,7 @@ export const episode = gql`
     # Unix timestamp of last update
     lastupdated: Int!
     name: String!
-    overview: String!
+    overview: String
     season: Int!
     tvdbId: Int!
   }
