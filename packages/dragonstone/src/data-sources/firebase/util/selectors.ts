@@ -56,7 +56,13 @@ export function createSelectors(docs: Docs) {
         .get()
         .then(d => d.data() as FirebaseUsermetaData | undefined);
       if (!userMetadata) {
-        throw new Error('userMetadata do not exist for user ' + userId);
+        // userMetadata has not been created for the user yet.
+        // The user has probobly just signd up
+        return {
+          apikey: '',
+          following: [],
+          username: ''
+        }
       }
       return userMetadata;
     },
