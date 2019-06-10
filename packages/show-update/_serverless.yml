@@ -6,7 +6,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.10
   stage: prod
   region: us-east-1
   timeout: 25
@@ -17,7 +17,7 @@ provider:
       Action:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
-      Resource: "arn:aws:lambda:us-east-1:*:function:*"
+      Resource: 'arn:aws:lambda:us-east-1:*:function:*'
 
 package:
   include:

@@ -1,8 +1,11 @@
+import { Logger } from '@episodehunter/logger';
+import * as AddShow from '@episodehunter/types/message/dragonstone/add-show';
+import { ShowInput } from '@episodehunter/types/message/dragonstone/show-input';
+import * as UpdateEpisode from '@episodehunter/types/message/dragonstone/update-episodes';
+import * as UpdateShow from '@episodehunter/types/message/dragonstone/update-show';
 import * as AWS from 'aws-sdk';
 import { Lambda } from 'aws-sdk';
-import { Dragonstone } from '@episodehunter/types/message';
 import { config } from '../config';
-import { Logger } from '@episodehunter/logger';
 
 AWS.config.update({
   region: 'us-east-1'
@@ -14,11 +17,11 @@ export async function updateEpisodesRequest(
   showId: string,
   firstEpisode: number,
   lastEpisode: number,
-  episodes: Dragonstone.UpdateEpisodes.EpisodeInput[],
+  episodes: UpdateEpisode.EpisodeInput[],
   awsRequestId: string,
   logger: Logger
 ): Promise<Lambda.Types.InvocationResponse> {
-  const event: Dragonstone.UpdateEpisodes.Event = { showId, firstEpisode, lastEpisode, episodes, requestStack: [awsRequestId] };
+  const event: UpdateEpisode.Event = { showId, firstEpisode, lastEpisode, episodes, requestStack: [awsRequestId] };
   logger.log(`Sending ${episodes.length} episodes to ${config.updateEpisodesDragonstoneFunctionName}`);
   return lambda
     .invoke({
@@ -37,10 +40,10 @@ export async function updateEpisodesRequest(
 
 export async function updateShowRequest(
   showId: string,
-  showDef: Dragonstone.ShowInput,
+  showDef: ShowInput,
   awsRequestId: string
 ): Promise<Lambda.Types.InvocationResponse> {
-  const event: Dragonstone.UpdateShow.Event = { showId, showInput: showDef, requestStack: [awsRequestId] };
+  const event: UpdateShow.Event = { showId, showInput: showDef, requestStack: [awsRequestId] };
   return lambda
     .invoke({
       FunctionName: config.updateShowDragonstoneFunctionName,
@@ -50,8 +53,8 @@ export async function updateShowRequest(
     .promise();
 }
 
-export async function addShowRequest(showDef: Dragonstone.ShowInput, awsRequestId: string): Promise<{ id: string }> {
-  const event: Dragonstone.AddShow.Event = { showInput: showDef, requestStack: [awsRequestId] };
+export async function addShowRequest(showDef: ShowInput, awsRequestId: string): Promise<{ id: string }> {
+  const event: AddShow.Event = { showInput: showDef, requestStack: [awsRequestId] };
   return lambda
     .invoke({
       FunctionName: config.addShowDragonstoneFunctionName,
@@ -59,7 +62,7 @@ export async function addShowRequest(showDef: Dragonstone.ShowInput, awsRequestI
     })
     .promise()
     .then(requestResult => {
-      let result: Dragonstone.AddShow.Response;
+      let result: AddShow.Response;
       try {
         result = JSON.parse(requestResult.Payload.toString());
       } catch (error) {
