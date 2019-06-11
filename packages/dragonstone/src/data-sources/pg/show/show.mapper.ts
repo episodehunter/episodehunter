@@ -15,8 +15,8 @@ export function mapShow(show?: PgShow): Dragonstone.Show | null {
     genre: show.genre,
     ids: {
       id: show.id,
-      imdb: show.external_ids_imdb,
-      tvdb: show.external_ids_tvdb
+      imdb: show.external_id_imdb,
+      tvdb: show.external_id_tvdb
     },
     language: show.language,
     lastupdated: show.lastupdated,
@@ -37,8 +37,8 @@ export function mapShowInputToShow(
     airs_day: showInput.airsDayOfWeek || null,
     airs_first: showInput.firstAired || null,
     airs_time: showInput.airsTime || null,
-    external_ids_imdb: showInput.imdbId || null,
-    external_ids_tvdb: showInput.tvdbId,
+    external_id_imdb: showInput.imdbId || null,
+    external_id_tvdb: showInput.tvdbId,
     language: showInput.language || null,
     network: showInput.network || null,
     overview: showInput.overview || null,

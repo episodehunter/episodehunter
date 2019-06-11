@@ -1,108 +1,93 @@
 import { Logger } from '@episodehunter/logger';
-import { Dragonstone, Message } from '@episodehunter/types';
-import { Query } from '@google-cloud/firestore';
-import { calculateEpisodeNumber } from '../../../util/util';
-import { FirebaseEpisode } from '../types';
-import { Docs } from '../util/firebase-docs';
-import { Selectors } from '../util/selectors';
-import { createBatch } from '../util/util';
+import { Dragonstone, Message, ShowId } from '@episodehunter/types';
+import { Client } from 'pg';
+import { PgEpisode } from '../types';
+import { createEpisodeBatch } from '../util/pg-util';
 import { mapEpisode, mapEpisodeInputToEpisode, mapEpisodes } from './episode.mapper';
+import { calculateEpisodeNumber } from '../../../util/util';
 
-export const createEpisodeResolver = (docs: Docs, selectors: Selectors) => ({
-  async getNextEpisodeToWatch(userId: string, showId: string): Promise<Dragonstone.Episode | null> {
-    const highestWatchedEpisode = await selectors.getHighestWatchedEpisode(userId, showId);
+export const createEpisodeResolver = (client: Client) => ({
+  async getNextEpisodeToWatch(userId: number, showId: ShowId): Promise<Dragonstone.Episode | null> {
+    const dbResult = await client.query(
+      `
+      SELECT * FROM episodes AS e
+      WHERE e.show_id = $1 AND e.episodenumber > (SELECT MAX(w.episodenumber) AS episodenumber FROM tv_watched as w WHERE w.show_id = $1 AND w.user_id = $2)
+      ORDER BY e.episodenumber ASC
+      LIMIT 1;
+    `,
+      [showId, userId]
+    );
 
-    let nextEpisode = 0;
-    if (highestWatchedEpisode) {
-      nextEpisode = highestWatchedEpisode.episodeNumber;
+    if (dbResult.rowCount === 0) {
+      return null;
     }
 
-    return docs
-      .episodesCollection(showId)
-      .where('episodeNumber', '>', nextEpisode)
-      .orderBy('episodeNumber')
-      .limit(1)
-      .get()
-      .then(querySnapshot => {
-        if (querySnapshot.size === 1) {
-          return mapEpisode(querySnapshot.docs[0].data() as FirebaseEpisode);
-        } else {
-          return null;
-        }
-      });
+    return mapEpisode(dbResult.rows[0]);
   },
-  async getEpisodes(showId: string, season?: number, episode?: number): Promise<Dragonstone.Episode[]> {
-    let query: Query = docs.episodesCollection(showId);
-    if (typeof season === 'number') {
-      query = query.where('season', '==', season);
-    }
-    if (typeof episode === 'number') {
-      query = query.where('episode', '==', season);
-    }
-    return query.get().then(querySnapshot => {
-      return mapEpisodes(querySnapshot.docs.map(d => d.data() as FirebaseEpisode).filter(Boolean));
-    });
+
+  async getEpisode(showId: ShowId, episodenumber: number): Promise<Dragonstone.Episode | null> {
+    const dbResult = await client.query(`
+      SELECT * FROM episodes
+      WHERE show_id = $1 AND episodenumber = $2
+      LIMIT 1
+    `, [ showId, episodenumber ]);
+    return mapEpisode(dbResult.rows[0]);
   },
-  async getEpisode(showId: string, episodeNumber: number): Promise<FirebaseEpisode | null> {
-    return docs
-      .episodesCollection(showId)
-      .where('episodeNumber', '==', episodeNumber)
-      .get()
-      .then(querySnapshot => {
-        if (querySnapshot.empty) {
-          return null;
-        } else {
-          return querySnapshot.docs[0].data() as FirebaseEpisode;
-        }
-      });
+
+  async getSeasonEpisodes(showId: ShowId, season: number): Promise<Dragonstone.Episode[]> {
+    const start = calculateEpisodeNumber(season, 0);
+    const end = calculateEpisodeNumber(season, 9999);
+    const dbResult = await client.query(`
+      SELECT * FROM episodes
+      WHERE show_id = $1 AND episodenumber >= $2 AND episodenumber <= $3
+      LIMIT 1
+    `, [ showId, start, end ]);
+    return mapEpisodes(dbResult.rows);
   },
+
   async updateEpisodes(
-    showId: string,
+    showId: ShowId,
     first: number,
     last: number,
     episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[],
     logger: Logger
   ): Promise<boolean> {
-    const currentShowDoc = await docs.showDoc(showId).get();
-    if (!currentShowDoc.exists) {
+    const currentShowDbResult = await client.query(`SELECT id FROM shows WHERE id = $1`, [showId]);
+    if (currentShowDbResult.rowCount === 0) {
       logger.log(`Show with id "${showId}" do not exist. Do not update episodes.`);
       return false;
     }
-    const batch = createBatch(docs.db);
-    logger.log(`Start updating show with id: ${showId}. ${episodes.length} number of episodes`);
+    logger.log(`Start updating episodes for show with id: ${showId}. ${episodes.length} number of episodes`);
+    const batch = createEpisodeBatch(client);
 
-    const episodeCollection = await docs
-      .episodesCollection(showId)
-      .where('episodeNumber', '>=', first)
-      .where('episodeNumber', '<=', last)
-      .get();
+    const episodesDbResult = await client.query(
+      `SELECT * FROM episodes WHERE episodenumber >= $1 AND episodenumber <= $2`,
+      [first, last]
+    );
     const knownEpisodes = new Set<number>();
 
     // See if we should update or remove any existed episodes
-    for (let doc of episodeCollection.docs) {
-      const currentEpisode = doc.data() as FirebaseEpisode;
-      const newEpisode = episodes.find(e => e.season === currentEpisode.season && e.episode === currentEpisode.episode);
-      knownEpisodes.add(currentEpisode.episodeNumber);
+    for (let dbRow of episodesDbResult.rows) {
+      const currentEpisode = dbRow as PgEpisode;
+      const newEpisode = episodes.find(e => e.episodenumber === currentEpisode.episodenumber);
+      knownEpisodes.add(currentEpisode.episodenumber);
       if (!newEpisode) {
-        await batch.delete(doc.ref);
+        await batch.delete(showId, currentEpisode.episodenumber);
       } else if (currentEpisode.lastupdated < newEpisode.lastupdated) {
-        const mappedEpisode = mapEpisodeInputToEpisode(newEpisode);
-        await batch.set(doc.ref, mappedEpisode);
+        const mappedEpisode = mapEpisodeInputToEpisode(showId, newEpisode);
+        await batch.update(mappedEpisode);
       }
     }
 
     // Check if we should add any new episodes
     for (let episode of episodes) {
-      const episodeNumber = calculateEpisodeNumber(episode.season, episode.episode);
-      if (knownEpisodes.has(episodeNumber)) {
+      if (knownEpisodes.has(episode.episodenumber)) {
         continue;
       }
-      const mappedEpisode = mapEpisodeInputToEpisode(episode);
-      const docRef = docs.episodesCollection(showId).doc(`S${episode.season}E${episode.episode}`);
-      await batch.set(docRef, mappedEpisode);
+      const mappedEpisode = mapEpisodeInputToEpisode(showId, episode);
+      await batch.insert(mappedEpisode);
     }
-    await batch.commit();
-    const stat = batch.getStat();
+    const stat = await batch.commit();
     logger.log(`Done with updating episodes for show with id: ${showId}. ${stat}`);
     return true;
   }

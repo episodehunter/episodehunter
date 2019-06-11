@@ -1,69 +1,70 @@
-import { Dragonstone, Omit } from '@episodehunter/types';
+import { Dragonstone, Omit, ShowId } from '@episodehunter/types';
 import { ApolloError } from 'apollo-server-lambda';
 import { Context } from '../context';
-import { dateType } from './date';
+import { unixTimestampType } from './timestamp';
 
 const RootQuery: RootQueryType = {
-  following(root, args, context) {
-    return context.firebaseResolver.user.getFollowing(context.getUid());
+  async following(root, args, context) {
+    return context.pgResolver.user.getFollowing(await context.getUid());
   },
   show(root, args, context) {
-    return context.firebaseResolver.show.getShow(args.id);
+    return context.pgResolver.show.getShow(args.id);
   },
   upcomingEpisode(root, args, context) {
-    return context.firebaseResolver.upcoming.getUpcomingEpisode(args.showIds);
+    return context.pgResolver.upcoming.getUpcomingEpisode(args.showIds);
   },
-  nextEpisodeToWatch(root, args, context) {
-    return context.firebaseResolver.episode.getNextEpisodeToWatch(context.getUid(), args.showId);
+  async nextEpisodeToWatch(root, args, context) {
+    return context.pgResolver.episode.getNextEpisodeToWatch(await context.getUid(), args.showId);
   },
-  episodes(root, args, context) {
-    return context.firebaseResolver.episode.getEpisodes(args.showId, args.season, args.episode);
+  season(root, args, context) {
+    return context.pgResolver.episode.getSeasonEpisodes(args.showId, args.season);
   },
-  watchedEpisodes(root, args, context) {
-    return context.firebaseResolver.history.getWatchedEpisodesForShow(context.getUid(), args.showId);
+  async watchedEpisodes(root, args, context) {
+    return context.pgResolver.history.getWatchedEpisodesForShow(await context.getUid(), args.showId);
   },
-  whatToWatch(root, args, context) {
-    return context.firebaseResolver.history.getWhatToWatch(context.getUid(), args.showId);
+  async whatToWatch(root, args, context) {
+    return context.pgResolver.history.getNumberOfEpisodesToWatch(await context.getUid(), args.showId);
   },
   titles(root, args, context) {
-    return context.firebaseResolver.titles.getTitles();
+    return context.pgResolver.titles.getTitles();
   },
-  history(root, args, context) {
-    return context.firebaseResolver.history.getHistoryPage(context.getUid(), Math.max(args.page, 0));
+  async history(root, args, context) {
+    const result = await context.pgResolver.history.getHistoryPage(await context.getUid(), Math.max(args.page, 0))
+    return result.map(watchedEpisode => ({ watchedEpisode }));
   },
-  me(root, args, context) {
-    return context.firebaseResolver.user.getUser(context.getUid())
+  async me(root, args, context) {
+    const result = await context.pgResolver.user.getUser(await context.getUid())
+    if (!result) {
+      throw new ApolloError('User do not exist')
+    }
+    return result
   }
 };
 
 const History: HistoryQueryType = {
   show(root, args, context) {
-    return context.firebaseResolver.show.getShow(root.watchedEpisode.showId);
+    return context.pgResolver.show.getShow(root.watchedEpisode.showId);
   },
   episode(root, args, context) {
-    return context.firebaseResolver.episode.getEpisode(root.watchedEpisode.showId, root.watchedEpisode.episodeNumber);
+    return context.pgResolver.episode.getEpisode(root.watchedEpisode.showId, root.watchedEpisode.episodenumber);
   }
 };
 
 const RootMutation: RootMutationType = {
-  checkInEpisode(root, args, context) {
-    return context.firebaseResolver.history.checkInEpisode(context.getUid(), args.episode);
+  async checkInEpisode(root, args, context) {
+    return context.pgResolver.history.checkInEpisode(await context.getUid(), args.episode);
   },
-  checkInEpisodes(root, args, context) {
-    return context.firebaseResolver.history.checkInEpisodes(context.getUid(), args.episodes);
+  async checkInEpisodes(root, args, context) {
+    return context.pgResolver.history.checkInEpisodes(await context.getUid(), args.episodes);
   },
-  removeCheckedInEpisode(root, args, context) {
-    return context.firebaseResolver.history.removeCheckedInEpisode(context.getUid(), args.episode);
+  async removeCheckedInEpisode(root, args, context) {
+    return context.pgResolver.history.removeCheckedInEpisode(await context.getUid(), args.episode);
   },
-  followShow(root, args, context) {
-    return context.firebaseResolver.user.followShow(context.getUid(), args.showId);
+  async followShow(root, args, context) {
+    return context.pgResolver.user.followShow(await context.getUid(), args.showId);
   },
-  unfollowShow(root, args, context) {
-    return context.firebaseResolver.user.unfollowShow(context.getUid(), args.showId);
-  },
-  updateTitles(root, args, context) {
-    context.assertApiKey();
-    return context.firebaseResolver.titles.updateTitles();
+  async unfollowShow(root, args, context) {
+    return context.pgResolver.user.unfollowShow(await context.getUid(), args.showId);
   }
 };
 
@@ -82,7 +83,7 @@ const resolverHandler = {
 };
 
 export const resolvers = {
-  Date: dateType,
+  Timestamp: unixTimestampType,
   WatchedEnum: {
     kodiScrobble: 0,
     kodiSync: 1,
@@ -96,21 +97,21 @@ export const resolvers = {
 };
 
 type RootQueryType = {
-  following: (root: void, args: {}, context: Context) => Promise<string[]>;
-  show: (root: void, args: { id: string }, context: Context) => Promise<Dragonstone.Show | null>;
+  following: (root: void, args: {}, context: Context) => Promise<ShowId[]>;
+  show: (root: void, args: { id: ShowId }, context: Context) => Promise<Dragonstone.Show | null>;
   upcomingEpisode: (
     root: void,
-    args: { showIds: string[] },
+    args: { showIds: ShowId[] },
     context: Context
   ) => Promise<Dragonstone.UpcomingEpisode[]>;
-  nextEpisodeToWatch: (root: void, args: { showId: string }, context: Context) => Promise<Dragonstone.Episode | null>;
-  episodes: (
+  nextEpisodeToWatch: (root: void, args: { showId: ShowId }, context: Context) => Promise<Dragonstone.Episode | null>;
+  season: (
     root: void,
-    args: { showId: string; season?: number; episode?: number },
+    args: { showId: ShowId; season: number },
     context: Context
   ) => Promise<Dragonstone.Episode[]>;
-  watchedEpisodes: (root: void, args: { showId: string }, context: Context) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
-  whatToWatch: (root: void, args: { showId?: string }, context: Context) => Promise<Dragonstone.WhatToWatch[]>;
+  watchedEpisodes: (root: void, args: { showId: ShowId }, context: Context) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
+  whatToWatch: (root: void, args: { showId: ShowId }, context: Context) => Promise<Dragonstone.NumberOfEpisodesToWatch>;
   titles: (root: void, args: {}, context: Context) => Promise<Dragonstone.Title[]>;
   history: (
     root: void,
@@ -138,18 +139,17 @@ type RootMutationType = {
     root: void,
     args: { episode: Dragonstone.WatchedEpisode.WatchedEpisodeInput },
     context: Context
-  ) => Promise<boolean>;
+  ) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode | null>;
   checkInEpisodes: (
     root: void,
     args: { episodes: Dragonstone.WatchedEpisode.WatchedEpisodeInput[] },
     context: Context
-  ) => Promise<boolean>;
+  ) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
   removeCheckedInEpisode: (
     root: void,
     args: { episode: Dragonstone.WatchedEpisode.UnwatchedEpisodeInput },
     context: Context
   ) => Promise<boolean>;
-  followShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
-  unfollowShow: (root: void, args: { showId: string }, context: Context) => Promise<boolean>;
-  updateTitles: (root: void, args: {}, context: Context) => Promise<boolean>;
+  followShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
+  unfollowShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
 } & { [key: string]: (r: any, a: any, c: Context) => Promise<any> };

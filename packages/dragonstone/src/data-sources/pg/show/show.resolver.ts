@@ -46,16 +46,8 @@ export const createShowResolver = (client: Client) => {
         return mapShow(dbResult.rows[0])!
       }
       const newShow = mapShowInputToShow(showInput);
-      const dbInsertResult = await client.query(insert('shows', newShow))
+      const dbInsertResult = await client.query(insert('shows', newShow as any))
       return mapShow(dbInsertResult.rows[0])!;
     }
   };
-};
-
-const nameSlug = (name: string) => {
-  return name
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 };

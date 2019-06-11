@@ -6,8 +6,8 @@ interface Config {
   engineApiKey?: string;
   logdnaKey?: string;
   sentryDns?: string;
-  dragonstoneApiKey: string;
   develop: boolean;
+  pgConnectionUri: string;
 }
 
 function createProductionConfig(): Config {
@@ -19,9 +19,10 @@ function createProductionConfig(): Config {
     throw new Error('LOGDNA_KEY is missing!');
   } else if (!process.env.AWS_SENTRY_DSN) {
     throw new Error('AWS_SENTRY_DSN is missing!');
-  } else if (!process.env.DRAGONSTONE_API_KEY) {
-    throw new Error('DRAGONSTONE_API_KEY is missing!');
+  } else if (!process.env.PG_CONNECTION_URI) {
+    throw new Error('PG_CONNECTION_URI is missing!');
   }
+
   const serviceAccount = JSON.parse(Buffer.from(process.env.FIREBASE_KEY, 'base64').toString());
   return {
     firebase: {
@@ -32,7 +33,7 @@ function createProductionConfig(): Config {
     logdnaKey: process.env.LOGDNA_KEY,
     sentryDns: process.env.AWS_SENTRY_DSN,
     develop: false,
-    dragonstoneApiKey: process.env.DRAGONSTONE_API_KEY
+    pgConnectionUri: process.env.PG_CONNECTION_URI
   };
 }
 
@@ -43,7 +44,7 @@ function createDevelopConfig(): Config {
     logdnaKey: process.env.LOGDNA_KEY,
     sentryDns: process.env.AWS_SENTRY_DSN,
     develop: true,
-    dragonstoneApiKey: 'dragonstone-api-key'
+    pgConnectionUri: 'postgresql://user:123@localhost:3211/episodehunter-test'
   };
 }
 

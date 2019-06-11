@@ -1,29 +1,29 @@
-import firestore from '@google-cloud/firestore';
-import { FirebaseUsermetaData } from '../types';
-import { Docs } from '../util/firebase-docs';
-import { Selectors } from '../util/selectors';
+import { Dragonstone, Omit } from '@episodehunter/types';
+import { Client } from 'pg';
+import { safeMap } from '../../../util/util';
+import { PgFollowing } from '../types';
+import { insert } from '../util/pg-util';
+import { mapUser } from './user.mapper';
 
-export const createUserResolver = (docs: Docs, selectors: Selectors) => ({
-  async getFollowing(userId: string): Promise<string[]> {
-    return selectors.getFollowingList(userId);
+export const createUserResolver = (client: Client) => ({
+  async getFollowing(userId: number): Promise<number[]> {
+    const dbResult = await client.query(`SELECT * FROM following WHERE user_id = $1`, [userId]);
+    return safeMap(dbResult.rows, row => row.show_id);
   },
-  async getUser(userId: string): Promise<FirebaseUsermetaData> {
-    return selectors.getUsermetadata(userId)
+  async getUser(userId: number): Promise<Dragonstone.User | null> {
+    const dbResult = await client.query(`SELECT * FROM user WHERE id = $1 LIMIT 1`, [userId]);
+    return mapUser(dbResult.rows[0]);
   },
-  async followShow(userId: string, showId: string): Promise<boolean> {
-    return docs
-      .userDoc(userId)
-      .update({
-        following: firestore.FieldValue.arrayUnion(showId)
-      })
-      .then(() => true);
+  async followShow(userId: number, showId: number): Promise<boolean> {
+    const following: Omit<PgFollowing, 'id'> = {
+      show_id: showId,
+      user_id: userId
+    };
+    await client.query(insert('following', following));
+    return true;
   },
-  async unfollowShow(userId: string, showId: string): Promise<boolean> {
-    return docs
-      .userDoc(userId)
-      .update({
-        following: firestore.FieldValue.arrayRemove(showId)
-      })
-      .then(() => true);
+  async unfollowShow(userId: number, showId: number): Promise<boolean> {
+    await client.query(`DELETE FROM following WHERE show_id = $1 AND user_id = $2`, [showId, userId]);
+    return true;
   }
 });

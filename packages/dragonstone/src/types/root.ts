@@ -9,7 +9,7 @@ import { whatToWatch } from './what-to-watch';
 import { user } from './user';
 
 export const root = gql`
-  scalar Date
+  scalar Timestamp
 
   schema {
     query: RootQuery
@@ -17,24 +17,24 @@ export const root = gql`
   }
 
   type RootQuery {
-    following: [ID]
-    show(id: ID!): Show
-    episodes(showId: ID!, season: Int, episode: Int): [Episode]!
-    upcomingEpisode(showIds: [ID]!): [UpcomingEpisode]!
-    nextEpisodeToWatch(showId: ID!): Episode
-    watchedEpisodes(showId: ID!): [WatchedEpisode]
-    whatToWatch(showId: ID): [WhatToWatch]
-    titles: [Title]
-    history(page: Int!): [History]
+    following: [Int!]!
+    show(id: Int!): Show
+    season(showId: Int!, season: Int!): [Episode]!
+    upcomingEpisode(showIds: [Int]!): [UpcomingEpisode]!
+    nextEpisodeToWatch(showId: Int!): Episode
+    watchedEpisodes(showId: Int!): [WatchedEpisode]!
+    whatToWatch(showId: Int!): [WhatToWatch]!
+    titles: [Title]!
+    history(page: Int!): [History]!
     me: User
   }
 
   type RootMutation {
-    checkInEpisode(episode: WatchedEpisodeInput!): Boolean
-    checkInEpisodes(episodes: [WatchedEpisodeInput]!): Boolean
+    checkInEpisode(episode: WatchedEpisodeInput!): WatchedEpisode
+    checkInEpisodes(episodes: [WatchedEpisodeInput]!): [WatchedEpisode]!
     removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): Boolean
-    followShow(showId: ID!): Boolean
-    unfollowShow(showId: ID!): Boolean
+    followShow(showId: Int!): Boolean
+    unfollowShow(showId: Int!): Boolean
     updateTitles: Boolean
   }
 

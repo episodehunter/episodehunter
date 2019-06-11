@@ -14,6 +14,10 @@ deployfunctions: compile
                 serverless deploy --function updateTitles && \
                 serverless deploy --function graphql;
 
+deploy-graphql: compile
+        cd dist; \
+                serverless deploy --function graphql;
+
 deploy: compile
         cd dist; serverless deploy
 

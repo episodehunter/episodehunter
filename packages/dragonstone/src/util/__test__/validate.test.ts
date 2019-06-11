@@ -15,18 +15,7 @@ test('Valid show', () => {
     overview: 'some overview',
     runtime: 12,
     ended: true,
-    lastupdate: 12,
-    episodes: [
-      {
-        tvdbId: 123,
-        name: 'name',
-        season: 1,
-        episode: 2,
-        firstAired: '2012-01-12',
-        // overview: 'hej',
-        lastupdated: 12
-      }
-    ]
+    lastupdate: 12
   };
 
   // Act and assert
@@ -48,51 +37,7 @@ test('Show without name is not valid', () => {
     overview: 'some overview',
     runtime: 12,
     ended: true,
-    lastupdate: 12,
-    episodes: [
-      {
-        tvdbId: 123,
-        name: 'name',
-        season: 1,
-        episode: 2,
-        firstAired: '2012-01-12',
-        // overview: 'hej',
-        lastupdated: 12
-      }
-    ]
-  };
-
-  // Act and assert
-  expect(() => assertShowInput(showInput as any)).toThrow('Expected type string for name but got undefined');
-});
-
-test('Episode without name is not valid', () => {
-  // Arrange
-  const showInput = {
-    tvdbId: 123,
-    imdbId: 'tt123',
-    name: 'Some show',
-    // airsDayOfWeek: undefind
-    airsTime: '2018-02-01',
-    firstAired: '',
-    genre: ['action', 'drama'],
-    language: 'sv',
-    // network: ,
-    overview: 'some overview',
-    runtime: 12,
-    ended: true,
-    lastupdate: 12,
-    episodes: [
-      {
-        tvdbId: 123,
-        // name: 'name',
-        season: 1,
-        episode: 2,
-        firstAired: '2012-01-12',
-        // overview: 'hej',
-        lastupdated: 12
-      }
-    ]
+    lastupdate: 12
   };
 
   // Act and assert
@@ -115,18 +60,7 @@ test('Show with airs is not valid', () => {
     overview: 'some overview',
     runtime: 12,
     ended: true,
-    lastupdate: 12,
-    episodes: [
-      {
-        tvdbId: 123,
-        name: 'name',
-        season: 1,
-        episode: 2,
-        firstAired: '2012-01-12',
-        overview: 'hej',
-        lastupdated: 12
-      }
-    ]
+    lastupdate: 12
   };
 
   // Act and assert

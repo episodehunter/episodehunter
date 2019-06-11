@@ -16,3 +16,5 @@ export const createResolver = (client: Client) => {
     titles: createTitlesResolver(client)
   };
 };
+
+export type PgResolver = ReturnType<typeof createResolver>;

@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-lambda';
 
 export const title = gql`
   type Title {
-    id: ID
+    id: Int!
     name: String
     followers: Int
     tvdbId: Int

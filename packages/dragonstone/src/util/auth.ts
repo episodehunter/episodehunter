@@ -35,7 +35,3 @@ export async function getUidFromHeader(auth: firebase.auth.Auth, headers: Incomi
     return getUserId(auth, token);
   }
 }
-
-export function isUsingApiKey(headers: IncomingHttpHeaders) {
-  return headers['x-api-key'] === config.dragonstoneApiKey;
-}

@@ -6,12 +6,14 @@ import { config } from './config';
 import { createContext } from './context';
 import { resolvers } from './resolvers/root';
 import { root as typeDefs } from './types/root';
-import { getUidFromHeader, isUsingApiKey } from './util/auth';
+import { getUidFromHeader } from './util/auth';
 import { createFirebase } from './util/firebase-app';
 import { assertEpisodeNumber, assertEpisodes, assertShowId, assertShowInput } from './util/validate';
+import { createPostgresClient } from './util/pg';
 
+const client = createPostgresClient()
 const firebaseApp = createFirebase();
-const context = createContext(firebaseApp.firestore);
+const context = createContext(client);
 
 const server = new ApolloServer({
   typeDefs,
@@ -21,8 +23,7 @@ const server = new ApolloServer({
   },
   context: async (res: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
     context.logger = res.event.logger;
-    context.usingApiKey = isUsingApiKey(res.event.headers);
-    context.uid = await getUidFromHeader(firebaseApp.auth, res.event.headers);
+    context.firebaseUid = await getUidFromHeader(firebaseApp.auth, res.event.headers);
     return context;
   }
 });
@@ -31,6 +32,7 @@ const apolloHandler = server.createHandler();
 const gard = createGuard(config.sentryDns, config.logdnaKey);
 
 exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
+  context.callbackWaitsForEmptyEventLoop = false;
   event.logger = logger;
   return new Promise((resolve, reject) => {
     const t0 = Date.now();
@@ -64,7 +66,7 @@ exports.updateShowHandler = gard<Dragonstone.UpdateShow.Event>((event, logger): 
     throw new Error(`${error.message} ${JSON.stringify(event)}`);
   }
 
-  return context.firebaseResolver.show.updateShow(event.showId, event.showInput, logger);
+  return context.pgResolver.show.updateShow(event.showId, event.showInput, logger);
 });
 
 exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>((event, logger): Promise<Dragonstone.UpdateEpisodes.Response> => {
@@ -78,15 +80,10 @@ exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>((event, l
     throw new Error(`${error.message} ${JSON.stringify(event)}`);
   }
 
-  return context.firebaseResolver.episode.updateEpisodes(event.showId, event.firstEpisode, event.lastEpisode, event.episodes, logger);
+  return context.pgResolver.episode.updateEpisodes(event.showId, event.firstEpisode, event.lastEpisode, event.episodes, logger);
 });
 
 exports.addShowHandler = gard<Dragonstone.AddShow.Event>((event, logger): Promise<Dragonstone.AddShow.Response> => {
   assertShowInput(event.showInput);
-  return context.firebaseResolver.show.addShow(event.showInput, logger);
-});
-
-exports.updateTitles = gard((event, logger): Promise<boolean> => {
-  logger.log('Start updating titles');
-  return context.firebaseResolver.titles.updateTitles();
+  return context.pgResolver.show.addShow(event.showInput, logger);
 });

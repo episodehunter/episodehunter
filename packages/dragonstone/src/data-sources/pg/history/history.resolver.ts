@@ -1,72 +1,79 @@
-import { Omit, Dragonstone } from '@episodehunter/types';
-import { WatchedEnum } from '@episodehunter/types/dragonstone/watched-episode';
-import { Docs } from '../util/firebase-docs';
-import { mapWatchedEpisodes } from './history.mapper';
-import { FirebaseWatchedEpisode } from '../types';
-import { Selectors } from '../util/selectors';
-import { calculateEpisodeNumber } from '../../../util/util';
+import { Dragonstone, ShowId } from '@episodehunter/types';
+import { Client } from 'pg';
+import { dateFormat } from '../../../util/util';
+import { insert, inserts } from '../util/pg-util';
+import { mapWatchedEpisode, mapWatchedEpisodes, mapWatchedInputToWatchedEpisode } from './history.mapper';
 
-export const createHistoryResolver = (docs: Docs, selectors: Selectors) => ({
-  async getHistoryPage(userId: string, page: number): Promise<Omit<Dragonstone.History, 'show' | 'episode'>[]> {
-    const historyPage = await docs
-      .showsWatchHistoryCollection(userId)
-      .orderBy('time', 'desc')
-      .limit(20)
-      .offset(page * 20)
-      .get()
-      .then(r => r.docs.map(d => d.data() as FirebaseWatchedEpisode));
-    return historyPage.map(watchedEpisode => ({ watchedEpisode }));
-  },
-  async getWatchedEpisodesForShow(userId: string, showId: string): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
-    const highestWatchedEpisode = await docs
-      .showsWatchHistoryCollection(userId)
-      .where('showId', '==', showId)
-      .get()
-      .then(r => r.docs.map(d => d.data() as FirebaseWatchedEpisode));
-    return mapWatchedEpisodes(highestWatchedEpisode);
-  },
-  async getWhatToWatch(userId: string, showId?: string): Promise<Dragonstone.WhatToWatch[]> {
-    let showIds: string[] = showId ? [showId] : [];
-    if (!showIds.length) {
-      showIds = await selectors.getFollowingList(userId);
-    }
-    return Promise.all(
-      showIds.map(async showId => ({
-        numberOfEpisodesToWatch: await selectors.getNumberOfEpisodesToWatch(userId, showId),
-        showId
-      }))
+export const createHistoryResolver = (client: Client) => ({
+  async getHistoryPage(userId: number, page: number): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
+    const dbResult = await client.query(
+      `
+      SELECT *
+      FROM tv_watched
+      WHERE user_id = $1
+      ORDER BY time DESC LIMIT 20 OFFSET $2;
+      `,
+      [userId, (page * 20) | 0]
     );
+    return mapWatchedEpisodes(dbResult.rows);
   },
-  async checkInEpisode(userId: string, watchedEpisodeInput: Dragonstone.WatchedEpisode.WatchedEpisodeInput): Promise<boolean> {
-    const wh = {
-      episode: watchedEpisodeInput.episode,
-      episodeNumber: calculateEpisodeNumber(watchedEpisodeInput.season, watchedEpisodeInput.episode),
-      season: watchedEpisodeInput.season,
-      showId: watchedEpisodeInput.showId,
-      time: watchedEpisodeInput.time,
-      type: watchedEpisodeInput.type || WatchedEnum.checkIn
+  async getWatchedEpisodesForShow(
+    userId: number,
+    showId: ShowId
+  ): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
+    const dbResult = await client.query(
+      `
+      SELECT *
+      FROM tv_watched
+      WHERE user_id = $1 AND show_id = $2;
+      `,
+      [userId, showId]
+    );
+    return mapWatchedEpisodes(dbResult.rows);
+  },
+  async getNumberOfEpisodesToWatch(userId: number, showId: number): Promise<Dragonstone.NumberOfEpisodesToWatch> {
+    const dbResult = await client.query(
+      `
+      SELECT COUNT(*) as c
+      FROM episodes as e
+      WHERE
+        e.show_id = $1 AND
+        e.first_aired <= $2 AND
+        NOT EXISTS (SELECT 1 FROM tv_watched as w WHERE w.user_id = $3 AND w.show_id = $1 AND w.episodenumber = e.episodenumber);
+      `,
+      [showId, dateFormat(), userId]
+    );
+    return {
+      numberOfEpisodesToWatch: dbResult.rows[0].c | 0,
+      showId
     };
-    return docs
-      .showsWatchHistoryCollection(userId)
-      .add(wh)
-      .then(() => true);
   },
-  async checkInEpisodes(userId: string, watchedEpisodeInputs: Dragonstone.WatchedEpisode.WatchedEpisodeInput[]): Promise<boolean> {
-    return Promise.all(watchedEpisodeInputs.map(e => this.checkInEpisode(userId, e))).then(() => true);
+  async checkInEpisode(
+    userId: number,
+    watchedEpisodeInput: Dragonstone.WatchedEpisode.WatchedEpisodeInput
+  ): Promise<Dragonstone.WatchedEpisode.WatchedEpisode | null> {
+    const wh = mapWatchedInputToWatchedEpisode(watchedEpisodeInput, userId);
+    const dbResult = await client.query(insert('tv_watched', wh as any));
+    if (dbResult.rowCount === 1) {
+      return mapWatchedEpisode(dbResult.rows[0]);
+    } else {
+      return null;
+    }
   },
+  async checkInEpisodes(
+    userId: number,
+    watchedEpisodeInputs: Dragonstone.WatchedEpisode.WatchedEpisodeInput[]
+  ): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
+    const wh = watchedEpisodeInputs.map(w => mapWatchedInputToWatchedEpisode(w, userId))
+    const dbResult = await client.query(inserts('tv_watched', wh as any[]));
+    return mapWatchedEpisodes(dbResult.rows);
+  },
+
   async removeCheckedInEpisode(
-    userId: string,
+    userId: number,
     unwatchedEpisodeInput: Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
   ): Promise<boolean> {
-    const episodeNumber = calculateEpisodeNumber(unwatchedEpisodeInput.season, unwatchedEpisodeInput.episode);
-    return docs
-      .showsWatchHistoryCollection(userId)
-      .where('showId', '==', unwatchedEpisodeInput.showId)
-      .where('episodeNumber', '==', episodeNumber)
-      .get()
-      .then(result => {
-        return result.docs.filter(d => d.exists).map(d => d.ref.delete());
-      })
-      .then(() => true);
+    await client.query(`DELETE FROM tv_watched WHERE episodenumber = $1 AND show_id = $2 AND user_id = $3`, [unwatchedEpisodeInput.episodenumber, unwatchedEpisodeInput.showId, userId]);
+    return true;
   }
 });

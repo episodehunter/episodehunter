@@ -2,11 +2,9 @@ import { gql } from 'apollo-server-lambda';
 
 export const watchedEpisode = gql`
   type WatchedEpisode {
-    episode: Int!
-    episodeNumber: Int!
-    season: Int!
-    showId: ID!
-    time: Date!
+    episodenumber: Int!
+    showId: Int!
+    time: Timestamp!
     type: WatchedEnum!
   }
 
@@ -19,16 +17,14 @@ export const watchedEpisode = gql`
   }
 
   input UnwatchedEpisodeInput {
-    showId: ID!
-    season: Int!
-    episode: Int!
+    showId: Int!
+    episodenumber: Int!
   }
 
   input WatchedEpisodeInput {
-    showId: ID!
-    season: Int!
-    episode: Int!
-    time: Date!
+    showId: Int!
+    episodenumber: Int!
+    time: Timestamp!
     type: WatchedEnum
   }
 `;

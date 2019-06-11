@@ -1,29 +1,31 @@
 import { Dragonstone } from '@episodehunter/types';
 import { ValidationError } from 'apollo-server-lambda';
+import { Client } from 'pg';
 import { daysAgoOnFormatYYYYMMDD } from '../../../util/date';
-import { FirebaseEpisode } from '../types';
-import { Docs } from '../util/firebase-docs';
-import { mapEpisodes } from './episode.mapper';
+import { PgEpisode } from '../types';
+import { mapEpisode } from './episode.mapper';
 
-export const createUpcomingResolver = (docs: Docs) => ({
-  async getUpcomingEpisode(showIds: string[]): Promise<Dragonstone.UpcomingEpisode[]> {
+export const createUpcomingResolver = (client: Client) => ({
+  async getUpcomingEpisode(showIds: number[]): Promise<Dragonstone.UpcomingEpisode[]> {
     if (showIds.length > 50) {
       throw new ValidationError('Exceeded maximum payload. You can ask for max 50 shows');
     }
-    const uniqIds = Array.from(new Set(showIds));
-    return Promise.all(
-      uniqIds.map(id =>
-        docs
-          .episodesCollection(id)
-          .where('aired', '>=', daysAgoOnFormatYYYYMMDD(3, new Date()))
-          .orderBy('aired')
-          .limit(3)
-          .get()
-          .then(querySnapshot => ({
-            showId: id,
-            episodes: mapEpisodes(querySnapshot.docs.map(d => d.data() as FirebaseEpisode))
-          }))
-      )
+    const uniqIds = Array.from(new Set(showIds.map(Number).filter(Boolean)));
+    const day = daysAgoOnFormatYYYYMMDD(3, new Date());
+    const dbResult = await client.query(
+      `SELECT * FROM episodes WHERE show_id IN (${uniqIds.join(
+        ', '
+      )}) AND first_aired >= $1 ORDER BY episodenumber LIMIT 3`,
+      [day]
     );
+    const group: { [key: number]: Dragonstone.UpcomingEpisode } = {};
+    for (let dbEpisode of dbResult.rows as PgEpisode[]) {
+      group[dbEpisode.show_id] = group[dbEpisode.show_id] || {
+        showId: dbEpisode.show_id,
+        episodes: []
+      };
+      group[dbEpisode.show_id].episodes.push(mapEpisode(dbEpisode));
+    }
+    return Object.values(group);
   }
 });

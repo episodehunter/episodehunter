@@ -25,7 +25,7 @@ export const show = gql`
   }
 
   type ShowIds {
-    id: String!
+    id: Int!
     imdb: String
     tvdb: Int!
   }

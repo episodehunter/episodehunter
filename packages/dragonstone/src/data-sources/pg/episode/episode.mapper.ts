@@ -1,39 +1,32 @@
 import { Dragonstone, Message } from '@episodehunter/types';
-import { calculateEpisodeNumber } from '../../../util/util';
-import { FirebaseEpisode } from '../types';
+import { PgEpisode } from '../types';
 
-export function mapEpisodes(episodes: FirebaseEpisode[]): Dragonstone.Episode[] {
-  return episodes.map(mapEpisode) as Dragonstone.Episode[];
+export function mapEpisodes(episodes: PgEpisode[]): Dragonstone.Episode[] {
+  return episodes.map(mapEpisode).filter(Boolean) as Dragonstone.Episode[];
 }
 
-export function mapEpisode(episode?: FirebaseEpisode): Dragonstone.Episode | null {
+export function mapEpisode(episode: PgEpisode): Dragonstone.Episode
+export function mapEpisode(episode?: PgEpisode): Dragonstone.Episode | null {
   if (!episode) {
     return null;
   }
   return {
-    aired: episode.aired || '',
-    episode: Number(episode.episode),
-    episodeNumber: Number(episode.episodeNumber),
-    lastupdated: Number(episode.lastupdated),
+    aired: episode.first_aird,
+    episodenumber: episode.episodenumber,
+    lastupdated: episode.lastupdated,
     name: episode.name,
-    overview: episode.overview,
-    season: Number(episode.season),
-    tvdbId: Number(episode.tvdbId)
+    overview: episode.overview || undefined,
   };
 }
 
-export function mapEpisodeInputToEpisode(episodeInput: Message.Dragonstone.UpdateEpisodes.EpisodeInput): FirebaseEpisode {
-  const episode: FirebaseEpisode = {
-    aired: episodeInput.firstAired,
-    episode: episodeInput.episode,
-    episodeNumber: calculateEpisodeNumber(episodeInput.season, episodeInput.episode),
-    season: episodeInput.season,
-    tvdbId: episodeInput.tvdbId,
+export function mapEpisodeInputToEpisode(showId: number, episodeInput: Message.Dragonstone.UpdateEpisodes.EpisodeInput): PgEpisode {
+  const episode: PgEpisode = {
+    first_aird: episodeInput.firstAired,
+    episodenumber: episodeInput.episodenumber,
+    overview: episodeInput.overview || null,
     lastupdated: episodeInput.lastupdated,
-    name: episodeInput.name
+    name: episodeInput.name,
+    show_id: showId
   };
-  if (episodeInput.overview) {
-    episode.overview = episodeInput.overview;
-  }
   return episode;
 }

@@ -1,24 +1,22 @@
-import { Firestore } from '@google-cloud/firestore';
-import { createResolver } from './data-sources/firebase';
+import { createResolver } from './data-sources/pg';
 import { AuthenticationError } from 'apollo-server-lambda';
 import { Logger } from '@episodehunter/kingsguard';
+import { Client } from 'pg';
 
-export const createContext = (firestore: Firestore) => {
+export const createContext = (client: Client) => {
   return {
-    firebaseResolver: createResolver(firestore),
+    pgResolver: createResolver(client),
     logger: {} as Logger,
-    uid: null as null | string,
-    usingApiKey: false,
-    getUid() {
-      if (!this.uid) {
+    firebaseUid: null as null | string,
+    async getUid(): Promise<number> {
+      if (!this.firebaseUid) {
         throw new AuthenticationError('must authenticate');
       }
-      return this.uid;
-    },
-    assertApiKey() {
-      if (!this.usingApiKey) {
-        throw new AuthenticationError('missing api key');
+      const dbResult = await client.query(`SELECT id FROM users WHERE firebase_id = $1 LIMIT 1`, [this.firebaseUid])
+      if (dbResult.rowCount === 0) {
+        throw new AuthenticationError('Could not find user');
       }
+      return dbResult.rows[0].id;
     }
   };
 };
