@@ -4,25 +4,12 @@ import { Dragonstone, Message } from '@episodehunter/types';
 import { PgShow } from '../types';
 import { mapShow, mapShowInputToShow } from './show.mapper';
 import { update, insert } from '../util/pg-util';
+import { ShowLoader } from './show.loader';
 
-const showCache = new Map<number, Promise<Dragonstone.Show | null>>();
-
-async function getShow(client: Client, id: number): Promise<Dragonstone.Show | null> {
-  const dbResult = await client.query('SELECT * FROM shows WHERE id=$1', [ id ])
-  const dbShow: PgShow = dbResult.rows[0];
-  if (dbShow) {
-    return mapShow(dbShow);
-  }
-  return null;
-}
-
-export const createShowResolver = (client: Client) => {
+export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
   return {
     async getShow(id: number): Promise<Dragonstone.Show | null> {
-      if (!showCache.has(id)) {
-        showCache.set(id, getShow(client, id));
-      }
-      return showCache.get(id) || null;
+      return showLoader.load(id).then(mapShow);
     },
     async updateShow(
       showId: number,

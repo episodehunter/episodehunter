@@ -23,7 +23,8 @@ export const root = gql`
     upcomingEpisode(showIds: [Int]!): [UpcomingEpisode]!
     nextEpisodeToWatch(showId: Int!): Episode
     watchedEpisodes(showId: Int!): [WatchedEpisode]!
-    whatToWatch(showId: Int!): [WhatToWatch]!
+    whatToWatchForShow(showId: Int!): WhatToWatch!
+    whatToWatch: [WhatToWatch!]!
     titles: [Title]!
     history(page: Int!): [History]!
     me: User

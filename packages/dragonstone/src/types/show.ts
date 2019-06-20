@@ -10,7 +10,6 @@ export const show = gql`
     lastupdated: Int!
     name: String!
     network: String
-    numberOfFollowers: Int!
     overview: String
     runtime: Int!
   }

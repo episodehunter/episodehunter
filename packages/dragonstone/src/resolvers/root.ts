@@ -22,8 +22,11 @@ const RootQuery: RootQueryType = {
   async watchedEpisodes(root, args, context) {
     return context.pgResolver.history.getWatchedEpisodesForShow(await context.getUid(), args.showId);
   },
+  async whatToWatchForShow(root, args, context) {
+    return context.pgResolver.history.getNumberOfEpisodesToWatchForShow(await context.getUid(), args.showId);
+  },
   async whatToWatch(root, args, context) {
-    return context.pgResolver.history.getNumberOfEpisodesToWatch(await context.getUid(), args.showId);
+    return context.pgResolver.history.getNumberOfEpisodesToWatch(await context.getUid());
   },
   titles(root, args, context) {
     return context.pgResolver.titles.getTitles();
@@ -49,6 +52,12 @@ const History: HistoryQueryType = {
     return context.pgResolver.episode.getEpisode(root.watchedEpisode.showId, root.watchedEpisode.episodenumber);
   }
 };
+
+const WhatToWatch: WhatToWatch = {
+  show(root, args, context) {
+    return context.pgResolver.show.getShow(root.showId);
+  }
+}
 
 const RootMutation: RootMutationType = {
   async checkInEpisode(root, args, context) {
@@ -93,7 +102,8 @@ export const resolvers = {
   },
   RootQuery: new Proxy(RootQuery, resolverHandler),
   RootMutation: new Proxy(RootMutation, resolverHandler),
-  History
+  History,
+  WhatToWatch
 };
 
 type RootQueryType = {
@@ -111,7 +121,8 @@ type RootQueryType = {
     context: Context
   ) => Promise<Dragonstone.Episode[]>;
   watchedEpisodes: (root: void, args: { showId: ShowId }, context: Context) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
-  whatToWatch: (root: void, args: { showId: ShowId }, context: Context) => Promise<Dragonstone.NumberOfEpisodesToWatch>;
+  whatToWatchForShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<Omit<Dragonstone.ShowToWatch, 'show'>>;
+  whatToWatch: (root: void, args: void, context: Context) => Promise<Omit<Dragonstone.ShowToWatch, 'show'>[]>;
   titles: (root: void, args: {}, context: Context) => Promise<Dragonstone.Title[]>;
   history: (
     root: void,
@@ -132,6 +143,14 @@ type HistoryQueryType = {
     args: {},
     context: Context
   ) => Promise<Dragonstone.Episode | null>;
+};
+
+type WhatToWatch = {
+  show: (
+    root: Omit<Dragonstone.ShowToWatch, 'show'>,
+    args: {},
+    context: Context
+  ) => Promise<Dragonstone.Show | null>;
 };
 
 type RootMutationType = {

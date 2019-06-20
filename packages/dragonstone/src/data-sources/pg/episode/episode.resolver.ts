@@ -5,8 +5,9 @@ import { PgEpisode } from '../types';
 import { createEpisodeBatch } from '../util/pg-util';
 import { mapEpisode, mapEpisodeInputToEpisode, mapEpisodes } from './episode.mapper';
 import { calculateEpisodeNumber } from '../../../util/util';
+import { EpisodeLoader } from './episode.loader';
 
-export const createEpisodeResolver = (client: Client) => ({
+export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoader) => ({
   async getNextEpisodeToWatch(userId: number, showId: ShowId): Promise<Dragonstone.Episode | null> {
     const dbResult = await client.query(
       `
@@ -26,12 +27,7 @@ export const createEpisodeResolver = (client: Client) => ({
   },
 
   async getEpisode(showId: ShowId, episodenumber: number): Promise<Dragonstone.Episode | null> {
-    const dbResult = await client.query(`
-      SELECT * FROM episodes
-      WHERE show_id = $1 AND episodenumber = $2
-      LIMIT 1
-    `, [ showId, episodenumber ]);
-    return mapEpisode(dbResult.rows[0]);
+    return episodeLoader.load({ show_id: showId, episodenumber }).then(mapEpisode)
   },
 
   async getSeasonEpisodes(showId: ShowId, season: number): Promise<Dragonstone.Episode[]> {
@@ -40,7 +36,6 @@ export const createEpisodeResolver = (client: Client) => ({
     const dbResult = await client.query(`
       SELECT * FROM episodes
       WHERE show_id = $1 AND episodenumber >= $2 AND episodenumber <= $3
-      LIMIT 1
     `, [ showId, start, end ]);
     return mapEpisodes(dbResult.rows);
   },
