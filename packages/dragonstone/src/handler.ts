@@ -10,10 +10,11 @@ import { getUidFromHeader } from './util/auth';
 import { createFirebase } from './util/firebase-app';
 import { assertEpisodeNumber, assertEpisodes, assertShowId, assertShowInput } from './util/validate';
 import { createPostgresClient } from './util/pg';
+import { createResolver } from './data-sources/pg';
 
-const client = createPostgresClient()
+const client = createPostgresClient();
 const firebaseApp = createFirebase();
-const context = createContext(client);
+const pgResolver = createResolver(client);
 
 const server = new ApolloServer({
   typeDefs,
@@ -22,8 +23,8 @@ const server = new ApolloServer({
     apiKey: config.engineApiKey
   },
   context: async (res: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
-    context.logger = res.event.logger;
-    context.firebaseUid = await getUidFromHeader(firebaseApp.auth, res.event.headers);
+    const firebaseUid = await getUidFromHeader(firebaseApp.auth, res.event.headers);
+    const context = await createContext(pgResolver, res.event.logger, firebaseUid);
     return context;
   }
 });
@@ -57,33 +58,45 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
   });
 });
 
-exports.updateShowHandler = gard<Dragonstone.UpdateShow.Event>((event, logger): Promise<Dragonstone.UpdateShow.Response> => {
-  try {
-    assertShowId(event.showId);
+exports.updateShowHandler = gard<Dragonstone.UpdateShow.Event>(
+  (event, logger): Promise<Dragonstone.UpdateShow.Response> => {
+    try {
+      assertShowId(event.showId);
+      assertShowInput(event.showInput);
+    } catch (error) {
+      logger.log(`Show was not valid. Event: ${JSON.stringify(event)}`);
+      throw new Error(`${error.message} ${JSON.stringify(event)}`);
+    }
+
+    return pgResolver.show.updateShow(event.showId, event.showInput, logger);
+  }
+);
+
+exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>(
+  (event, logger): Promise<Dragonstone.UpdateEpisodes.Response> => {
+    try {
+      assertShowId(event.showId);
+      assertEpisodeNumber(event.firstEpisode);
+      assertEpisodeNumber(event.lastEpisode);
+      assertEpisodes(event.episodes);
+    } catch (error) {
+      logger.log(`Episodes batch was not valid. Event: ${JSON.stringify(event)}`);
+      throw new Error(`${error.message} ${JSON.stringify(event)}`);
+    }
+
+    return pgResolver.episode.updateEpisodes(
+      event.showId,
+      event.firstEpisode,
+      event.lastEpisode,
+      event.episodes,
+      logger
+    );
+  }
+);
+
+exports.addShowHandler = gard<Dragonstone.AddShow.Event>(
+  (event, logger): Promise<Dragonstone.AddShow.Response> => {
     assertShowInput(event.showInput);
-  } catch (error) {
-    logger.log(`Show was not valid. Event: ${JSON.stringify(event)}`);
-    throw new Error(`${error.message} ${JSON.stringify(event)}`);
+    return pgResolver.show.addShow(event.showInput, logger);
   }
-
-  return context.pgResolver.show.updateShow(event.showId, event.showInput, logger);
-});
-
-exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>((event, logger): Promise<Dragonstone.UpdateEpisodes.Response> => {
-  try {
-    assertShowId(event.showId)
-    assertEpisodeNumber(event.firstEpisode)
-    assertEpisodeNumber(event.lastEpisode)
-    assertEpisodes(event.episodes)
-  } catch (error) {
-    logger.log(`Episodes batch was not valid. Event: ${JSON.stringify(event)}`);
-    throw new Error(`${error.message} ${JSON.stringify(event)}`);
-  }
-
-  return context.pgResolver.episode.updateEpisodes(event.showId, event.firstEpisode, event.lastEpisode, event.episodes, logger);
-});
-
-exports.addShowHandler = gard<Dragonstone.AddShow.Event>((event, logger): Promise<Dragonstone.AddShow.Response> => {
-  assertShowInput(event.showInput);
-  return context.pgResolver.show.addShow(event.showInput, logger);
-});
+);

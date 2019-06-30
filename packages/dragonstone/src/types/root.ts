@@ -7,6 +7,7 @@ import { upcomingEpisode } from './upcoming-episode';
 import { watchedEpisode } from './watched-episode';
 import { whatToWatch } from './what-to-watch';
 import { user } from './user';
+import { following } from './following';
 
 export const root = gql`
   scalar Timestamp
@@ -17,14 +18,16 @@ export const root = gql`
   }
 
   type RootQuery {
-    following: [Int!]!
     show(id: Int!): Show
     season(showId: Int!, season: Int!): [Episode]!
+    following: [Following!]!
+
     upcomingEpisode(showIds: [Int]!): [UpcomingEpisode]!
     nextEpisodeToWatch(showId: Int!): Episode
     watchedEpisodes(showId: Int!): [WatchedEpisode]!
     whatToWatchForShow(showId: Int!): WhatToWatch!
     whatToWatch: [WhatToWatch!]!
+
     titles: [Title]!
     history(page: Int!): [History]!
     me: User
@@ -47,4 +50,5 @@ export const root = gql`
   ${title}
   ${history}
   ${user}
+  ${following}
 `;

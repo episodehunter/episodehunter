@@ -1,11 +1,12 @@
-import { Dragonstone } from '@episodehunter/types';
+import { Dragonstone, ShowId } from '@episodehunter/types';
 import { ValidationError } from 'apollo-server-lambda';
 import { Client } from 'pg';
 import { daysAgoOnFormatYYYYMMDD } from '../../../util/date';
 import { PgEpisode } from '../types';
 import { mapEpisode } from './episode.mapper';
+import { UpcomingLoader } from './upcoming.loader';
 
-export const createUpcomingResolver = (client: Client) => ({
+export const createUpcomingResolver = (client: Client, upcomingLoader: UpcomingLoader) => ({
   async getUpcomingEpisode(showIds: number[]): Promise<Dragonstone.UpcomingEpisode[]> {
     if (showIds.length > 50) {
       throw new ValidationError('Exceeded maximum payload. You can ask for max 50 shows');
@@ -27,5 +28,9 @@ export const createUpcomingResolver = (client: Client) => ({
       group[dbEpisode.show_id].episodes.push(mapEpisode(dbEpisode));
     }
     return Object.values(group);
+  },
+
+  async getUpcomingEpisode2(showId: ShowId): Promise<Dragonstone.Episode> {
+    return upcomingLoader.load(showId).then(r => mapEpisode(r));
   }
 });
