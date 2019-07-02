@@ -10,5 +10,6 @@ export const following = gql`
 
   type NextToWatch {
     numberOfEpisodesToWatch: Int!
+    episode: Episode
   }
 `;

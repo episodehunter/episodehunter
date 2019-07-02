@@ -1,4 +1,4 @@
-import { Dragonstone } from "@episodehunter/types";
+import { Dragonstone } from '@episodehunter/types';
 
 // import { Dragonstone } from '@episodehunter/types';
 
@@ -31,7 +31,7 @@ export interface PgEpisode {
   show_id: number;
   name: string;
   episodenumber: number;
-  first_aird: string;
+  first_aired: string;
   overview: string | null;
   lastupdated: number;
 }

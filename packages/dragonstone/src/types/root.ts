@@ -22,11 +22,11 @@ export const root = gql`
     season(showId: Int!, season: Int!): [Episode]!
     following: [Following!]!
 
-    upcomingEpisode(showIds: [Int]!): [UpcomingEpisode]!
-    nextEpisodeToWatch(showId: Int!): Episode
-    watchedEpisodes(showId: Int!): [WatchedEpisode]!
-    whatToWatchForShow(showId: Int!): WhatToWatch!
-    whatToWatch: [WhatToWatch!]!
+    # upcomingEpisode(showIds: [Int]!): [UpcomingEpisode]!
+    # nextEpisodeToWatch(showId: Int!): Episode
+    # watchedEpisodes(showId: Int!): [WatchedEpisode]!
+    # whatToWatchForShow(showId: Int!): WhatToWatch!
+    # whatToWatch: [WhatToWatch!]!
 
     titles: [Title]!
     history(page: Int!): [History]!
@@ -39,7 +39,7 @@ export const root = gql`
     removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): Boolean
     followShow(showId: Int!): Boolean
     unfollowShow(showId: Int!): Boolean
-    updateTitles: Boolean
+    # updateTitles: Boolean
   }
 
   ${show}

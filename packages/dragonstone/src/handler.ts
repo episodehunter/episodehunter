@@ -16,11 +16,19 @@ const client = createPostgresClient();
 const firebaseApp = createFirebase();
 const pgResolver = createResolver(client);
 
+let dangerousLogger: Logger;
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   engine: {
     apiKey: config.engineApiKey
+  },
+  formatError(error) {
+    if (dangerousLogger) {
+      dangerousLogger.captureException(error);
+    }
+    return error;
   },
   context: async (res: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
     const firebaseUid = await getUidFromHeader(firebaseApp.auth, res.event.headers);
@@ -35,6 +43,7 @@ const gard = createGuard(config.sentryDns, config.logdnaKey);
 exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   event.logger = logger;
+  dangerousLogger = logger;
   return new Promise((resolve, reject) => {
     const t0 = Date.now();
     apolloHandler(event, context, (error, result) => {

@@ -7,12 +7,8 @@ interface Key {
   userId: number;
 }
 
-export interface NumberOfEpisodesToWatch {
-  numberOfEpisodesToWatch: number;
-}
-
 export function createNumberOfEpisodesToWatchLoader(client: Client): NumberOfEpisodesToWatchLoader {
-  const getBatch = async (keys: Key[]): Promise<NumberOfEpisodesToWatch[]> => {
+  const getBatch = async (keys: Key[]): Promise<number[]> => {
     const userId = keys[0].userId | 0;
     const uniqIds = Array.from(new Set(keys.map(key => Number(key.showId)).filter(Boolean)));
     const day = dateFormat();
@@ -31,16 +27,16 @@ export function createNumberOfEpisodesToWatchLoader(client: Client): NumberOfEpi
     return keys.map(key => {
       const match = dbRerult.rows.find(row => row.show_id === key.showId);
       if (match) {
-        return { numberOfEpisodesToWatch: match.c };
+        return match.c;
       } else {
-        return { numberOfEpisodesToWatch: 0 };
+        return 0;
       }
     });
   };
 
-  return new DataLoader<Key, NumberOfEpisodesToWatch>(getBatch, {
+  return new DataLoader<Key, number>(getBatch, {
     cache: false
   });
 }
 
-export type NumberOfEpisodesToWatchLoader = DataLoader<Key, NumberOfEpisodesToWatch>;
+export type NumberOfEpisodesToWatchLoader = DataLoader<Key, number>;

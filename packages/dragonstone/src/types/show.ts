@@ -12,6 +12,11 @@ export const show = gql`
     network: String
     overview: String
     runtime: Int!
+
+    upcomingEpisode: Episode
+    justAirdEpisode: Episode
+    nextToWatch: NextToWatch!
+    followers: Int!
   }
 
   type ShowAirs {

@@ -1,13 +1,14 @@
-import { Dragonstone, ShowId, Omit } from '@episodehunter/types';
+import { Dragonstone, ShowId } from '@episodehunter/types';
 import { Client } from 'pg';
-import { dateFormat } from '../../../util/util';
 import { insert, inserts } from '../util/pg-util';
 import { mapWatchedEpisode, mapWatchedEpisodes, mapWatchedInputToWatchedEpisode } from './history.mapper';
-import { NumberOfEpisodesToWatchLoader, NumberOfEpisodesToWatch } from './number-of-episodes-to-watch.loader';
+import { HistoryLoader } from './hitsory.loader';
+import { NumberOfEpisodesToWatchLoader } from './number-of-episodes-to-watch.loader';
 
 export const createHistoryResolver = (
   client: Client,
-  numberOfEpisodesToWatchLoader: NumberOfEpisodesToWatchLoader
+  numberOfEpisodesToWatchLoader: NumberOfEpisodesToWatchLoader,
+  historyLoader: HistoryLoader
 ) => ({
   async getHistoryPage(userId: number, page: number): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
     const dbResult = await client.query(
@@ -35,45 +36,38 @@ export const createHistoryResolver = (
     );
     return mapWatchedEpisodes(dbResult.rows);
   },
-  async getNumberOfEpisodesToWatchForShow(
+  async getWatchHistoryForEpisode(
     userId: number,
-    showId: number
-  ): Promise<Omit<Dragonstone.ShowToWatch, 'show'>> {
-    const dbResult = await client.query(
-      `
-      SELECT COUNT(*) as c
-      FROM episodes as e
-      WHERE
-        e.show_id = $1 AND
-        e.first_aired <= $2 AND
-        NOT EXISTS (SELECT 1 FROM tv_watched as w WHERE w.user_id = $3 AND w.show_id = $1 AND w.episodenumber = e.episodenumber);
-      `,
-      [showId, dateFormat(), userId]
-    );
-    return {
-      numberOfEpisodesToWatch: dbResult.rows[0].c | 0,
-      showId
-    };
+    showId: ShowId,
+    episodenumber: number
+  ): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
+    return historyLoader
+      .load({
+        episodenumber,
+        showId,
+        userId
+      })
+      .then(r => mapWatchedEpisodes(r));
   },
-  async getNumberOfEpisodesToWatchForShow2(userId: number, showId: number): Promise<NumberOfEpisodesToWatch> {
+  async getNumberOfEpisodesToWatchForShow(userId: number, showId: number): Promise<number> {
     return numberOfEpisodesToWatchLoader.load({ userId, showId });
   },
-  async getNumberOfEpisodesToWatch(userId: number): Promise<Omit<Dragonstone.ShowToWatch, 'show'>[]> {
-    const dbResult = await client.query(
-      `
-      SELECT COUNT(*) as c, e.show_id
-      FROM following as f
-      LEFT JOIN episodes as e ON e.first_aired <= $1 AND f.show_id = e.show_id
-      WHERE user_id = $2 AND NOT EXISTS (SELECT 1 FROM tv_watched as w WHERE w.user_id = $2 AND w.show_id = f.show_id AND w.episodenumber = e.episodenumber)
-      GROUP BY e.show_id
-      `,
-      [dateFormat(), userId]
-    );
-    return dbResult.rows.map(row => ({
-      numberOfEpisodesToWatch: row.c | 0,
-      showId: row.show_id | 0
-    }));
-  },
+  // async getNumberOfEpisodesToWatch(userId: number): Promise<Omit<Dragonstone.ShowToWatch, 'show'>[]> {
+  //   const dbResult = await client.query(
+  //     `
+  //     SELECT COUNT(*) as c, e.show_id
+  //     FROM following as f
+  //     LEFT JOIN episodes as e ON e.first_aired <= $1 AND f.show_id = e.show_id
+  //     WHERE user_id = $2 AND NOT EXISTS (SELECT 1 FROM tv_watched as w WHERE w.user_id = $2 AND w.show_id = f.show_id AND w.episodenumber = e.episodenumber)
+  //     GROUP BY e.show_id
+  //     `,
+  //     [dateFormat(), userId]
+  //   );
+  //   return dbResult.rows.map(row => ({
+  //     numberOfEpisodesToWatch: row.c | 0,
+  //     showId: row.show_id | 0
+  //   }));
+  // },
   async checkInEpisode(
     userId: number,
     watchedEpisodeInput: Dragonstone.WatchedEpisode.WatchedEpisodeInput

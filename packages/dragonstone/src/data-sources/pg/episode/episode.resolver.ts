@@ -27,16 +27,19 @@ export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoad
   },
 
   async getEpisode(showId: ShowId, episodenumber: number): Promise<Dragonstone.Episode | null> {
-    return episodeLoader.load({ show_id: showId, episodenumber }).then(mapEpisode)
+    return episodeLoader.load({ show_id: showId, episodenumber }).then(e => mapEpisode(e));
   },
 
   async getSeasonEpisodes(showId: ShowId, season: number): Promise<Dragonstone.Episode[]> {
     const start = calculateEpisodeNumber(season, 0);
     const end = calculateEpisodeNumber(season, 9999);
-    const dbResult = await client.query(`
+    const dbResult = await client.query(
+      `
       SELECT * FROM episodes
       WHERE show_id = $1 AND episodenumber >= $2 AND episodenumber <= $3
-    `, [ showId, start, end ]);
+    `,
+      [showId, start, end]
+    );
     return mapEpisodes(dbResult.rows);
   },
 

@@ -6,30 +6,24 @@ import { Following as FollowingType, NextToWatch } from './type';
 import { History } from '@episodehunter/types/dragonstone';
 
 const RootQuery: RootQueryType = {
-  async following(root, args, context) {
-    return context.pgResolver.user.getFollowing(context.getUid());
-  },
   show(root, args, context) {
     return context.pgResolver.show.getShow(args.id);
-  },
-  upcomingEpisode(root, args, context) {
-    return context.pgResolver.upcoming.getUpcomingEpisode(args.showIds);
-  },
-  async nextEpisodeToWatch(root, args, context) {
-    return context.pgResolver.episode.getNextEpisodeToWatch(context.getUid(), args.showId);
   },
   season(root, args, context) {
     return context.pgResolver.episode.getSeasonEpisodes(args.showId, args.season);
   },
-  async watchedEpisodes(root, args, context) {
-    return context.pgResolver.history.getWatchedEpisodesForShow(context.getUid(), args.showId);
+  following(root, args, context) {
+    return context.pgResolver.user.getFollowing(context.getUid());
   },
-  async whatToWatchForShow(root, args, context) {
-    return context.pgResolver.history.getNumberOfEpisodesToWatchForShow(context.getUid(), args.showId);
-  },
-  async whatToWatch(root, args, context) {
-    return context.pgResolver.history.getNumberOfEpisodesToWatch(context.getUid());
-  },
+  // async nextEpisodeToWatch(root, args, context) {
+  //   return context.pgResolver.episode.getNextEpisodeToWatch(context.getUid(), args.showId);
+  // },
+  // async watchedEpisodes(root, args, context) {
+  //   return context.pgResolver.history.getWatchedEpisodesForShow(context.getUid(), args.showId);
+  // },
+  // async whatToWatch(root, args, context) {
+  //   return context.pgResolver.history.getNumberOfEpisodesToWatch(context.getUid());
+  // },
   titles(root, args, context) {
     return context.pgResolver.titles.getTitles();
   },
@@ -66,27 +60,59 @@ const Following: FollowingQueryType = {
     return context.pgResolver.show.getShow(root.showId);
   },
   upcomingEpisode(root, args, context) {
-    return context.pgResolver.upcoming.getUpcomingEpisode2(root.showId);
+    return context.pgResolver.upcoming.getUpcomingEpisode(root.showId);
+  }
+  // nextToWatch(root, args, context) {
+  //   return context.pgResolver.history.getNumberOfEpisodesToWatchForShow(context.getUid(), root.showId);
+  // }
+};
+
+const Show = {
+  upcomingEpisode(root: any, args: any, context: Context) {
+    return context.pgResolver.upcoming.getUpcomingEpisode(root.ids.id);
   },
-  async nextToWatch(root, args, context) {
-    return context.pgResolver.history.getNumberOfEpisodesToWatchForShow2(context.getUid(), root.showId);
+  nextToWatch(root: any, args: any, context: Context) {
+    return {
+      showId: root.ids.id
+    };
+  },
+  justAirdEpisode(root: any, args: any, context: Context) {
+    return context.pgResolver.upcoming.getJustAirdEpisode(root.ids.id);
+  },
+  followers(root: any, args: any, context: Context) {
+    return context.pgResolver.show.getNumberOfFollowers(root.ids.id);
+  }
+};
+
+const NextToWatch = {
+  numberOfEpisodesToWatch(root: any, args: any, context: Context) {
+    return context.pgResolver.history.getNumberOfEpisodesToWatchForShow(context.getUid(), root.showId);
+  },
+  episode(root: any, args: any, context: Context) {
+    return context.pgResolver.episode.getNextEpisodeToWatch(context.getUid(), root.showId);
+  }
+};
+
+const Episode = {
+  watched(root: any, args: any, context: Context) {
+    return context.pgResolver.history.getWatchHistoryForEpisode(context.getUid(), root.showId, root.episodenumber);
   }
 };
 
 const RootMutation: RootMutationType = {
-  async checkInEpisode(root, args, context) {
+  checkInEpisode(root, args, context) {
     return context.pgResolver.history.checkInEpisode(context.getUid(), args.episode);
   },
-  async checkInEpisodes(root, args, context) {
+  checkInEpisodes(root, args, context) {
     return context.pgResolver.history.checkInEpisodes(context.getUid(), args.episodes);
   },
-  async removeCheckedInEpisode(root, args, context) {
+  removeCheckedInEpisode(root, args, context) {
     return context.pgResolver.history.removeCheckedInEpisode(context.getUid(), args.episode);
   },
-  async followShow(root, args, context) {
+  followShow(root, args, context) {
     return context.pgResolver.user.followShow(context.getUid(), args.showId);
   },
-  async unfollowShow(root, args, context) {
+  unfollowShow(root, args, context) {
     return context.pgResolver.user.unfollowShow(context.getUid(), args.showId);
   }
 };
@@ -96,9 +122,7 @@ const resolverHandler = {
     return (root: R, args: A, context: Context) => {
       return target[prop](root, args, context).catch(error => {
         context.logger.warn(`Reolver (${prop}) endeds with error: ${error}`);
-        if (!(error instanceof ApolloError)) {
-          context.logger.captureException(error);
-        }
+        context.logger.captureException(error);
         return Promise.reject(error);
       });
     };
@@ -118,30 +142,23 @@ export const resolvers = {
   RootMutation: new Proxy(RootMutation, resolverHandler),
   History,
   WhatToWatch,
-  Following
+  Following,
+  Show,
+  NextToWatch,
+  Episode
 };
 
 interface RootQueryType {
-  following: (root: void, args: {}, context: Context) => Promise<Pick<FollowingType, 'showId'>[]>;
   show: (root: void, args: { id: ShowId }, context: Context) => Promise<Dragonstone.Show | null>;
-  upcomingEpisode: (
-    root: void,
-    args: { showIds: ShowId[] },
-    context: Context
-  ) => Promise<Dragonstone.UpcomingEpisode[]>;
-  nextEpisodeToWatch: (root: void, args: { showId: ShowId }, context: Context) => Promise<Dragonstone.Episode | null>;
   season: (root: void, args: { showId: ShowId; season: number }, context: Context) => Promise<Dragonstone.Episode[]>;
-  watchedEpisodes: (
-    root: void,
-    args: { showId: ShowId },
-    context: Context
-  ) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
-  whatToWatchForShow: (
-    root: void,
-    args: { showId: ShowId },
-    context: Context
-  ) => Promise<Omit<Dragonstone.ShowToWatch, 'show'>>;
-  whatToWatch: (root: void, args: void, context: Context) => Promise<Omit<Dragonstone.ShowToWatch, 'show'>[]>;
+  following: (root: void, args: {}, context: Context) => Promise<Pick<FollowingType, 'showId'>[]>;
+  // nextEpisodeToWatch: (root: void, args: { showId: ShowId }, context: Context) => Promise<Dragonstone.Episode | null>;
+  // watchedEpisodes: (
+  //   root: void,
+  //   args: { showId: ShowId },
+  //   context: Context
+  // ) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
+  // whatToWatch: (root: void, args: void, context: Context) => Promise<Omit<Dragonstone.ShowToWatch, 'show'>[]>;
   titles: (root: void, args: {}, context: Context) => Promise<Dragonstone.Title[]>;
   history: (
     root: void,
@@ -176,8 +193,12 @@ interface WhatToWatch {
 
 interface FollowingQueryType {
   show: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<Dragonstone.Show | null>;
-  upcomingEpisode: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<Dragonstone.Episode>;
-  nextToWatch: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<NextToWatch>;
+  upcomingEpisode: (
+    root: Pick<FollowingType, 'showId'>,
+    args: {},
+    context: Context
+  ) => Promise<Dragonstone.Episode | null>;
+  // nextToWatch: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<NextToWatch>;
 
   [key: string]: (r: any, a: any, c: Context) => Promise<any>;
 }
