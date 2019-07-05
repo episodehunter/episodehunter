@@ -6,6 +6,7 @@ import { createEpisodeBatch } from '../util/pg-util';
 import { mapEpisode, mapEpisodeInputToEpisode, mapEpisodes } from './episode.mapper';
 import { calculateEpisodeNumber } from '../../../util/util';
 import { EpisodeLoader } from './episode.loader';
+import { createDateString } from '../../../util/date';
 
 export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoader) => ({
   async getNextEpisodeToWatch(userId: number, showId: ShowId): Promise<Dragonstone.Episode | null> {
@@ -41,6 +42,29 @@ export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoad
       [showId, start, end]
     );
     return mapEpisodes(dbResult.rows);
+  },
+
+  async getSeasons(showId: ShowId): Promise<number[]> {
+    const dbResult = await client.query(
+      `
+      SELECT DISTINCT episodenumber / 10000 as season
+      FROM episodes WHERE show_id = $1;
+    `,
+      [showId]
+    );
+    return dbResult.rows.map(row => row.season);
+  },
+
+  async getNumberOfAiredEpisodes(showId: ShowId): Promise<number> {
+    const dbResult = await client.query(
+      `
+        SELECT COUNT(*) AS c
+        FROM episodes
+        WHERE show_id = $1 AND first_aired <= $2;
+      `,
+      [showId, createDateString(new Date())]
+    );
+    return dbResult.rows[0].c;
   },
 
   async updateEpisodes(

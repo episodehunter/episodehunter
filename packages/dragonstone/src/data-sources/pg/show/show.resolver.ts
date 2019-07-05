@@ -15,6 +15,13 @@ export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
       const dbResult = await client.query(`SELECT COUNT(*) as c FROM "following" WHERE show_id = $1;`, [showId]);
       return dbResult.rows[0].c;
     },
+    async isFollowingShow(showId: ShowId, userId: number): Promise<boolean> {
+      const dbResult = await client.query(`SELECT * FROM following WHERE user_id = $1 AND show_id = $2 LIMIT 1;`, [
+        userId,
+        showId
+      ]);
+      return dbResult.rowCount > 0;
+    },
     async updateShow(
       showId: number,
       showInput: Message.Dragonstone.ShowInput,

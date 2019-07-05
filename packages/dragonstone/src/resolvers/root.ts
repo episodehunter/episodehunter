@@ -81,6 +81,15 @@ const Show = {
   },
   followers(root: any, args: any, context: Context) {
     return context.pgResolver.show.getNumberOfFollowers(root.ids.id);
+  },
+  isFollowing(root: any, args: any, context: Context) {
+    return context.pgResolver.show.isFollowingShow(root.ids.id, context.getUid());
+  },
+  seasons(root: any, args: any, context: Context) {
+    return context.pgResolver.episode.getSeasons(root.ids.id);
+  },
+  numberOfAiredEpisodes(root: any, args: any, context: Context) {
+    return context.pgResolver.episode.getNumberOfAiredEpisodes(root.ids.id);
   }
 };
 

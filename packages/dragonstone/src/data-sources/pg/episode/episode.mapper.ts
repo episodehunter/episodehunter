@@ -14,7 +14,10 @@ export function mapEpisode(episode?: PgEpisode | null): Dragonstone.Episode | nu
     return null;
   }
   return {
-    showId: episode.show_id,
+    ids: {
+      showId: episode.show_id,
+      tvdb: episode.external_id_tvdb
+    },
     aired: episode.first_aired,
     episodenumber: episode.episodenumber,
     lastupdated: episode.lastupdated,
@@ -33,7 +36,8 @@ export function mapEpisodeInputToEpisode(
     overview: episodeInput.overview || null,
     lastupdated: episodeInput.lastupdated,
     name: episodeInput.name,
-    show_id: showId
+    show_id: showId,
+    external_id_tvdb: episodeInput.tvdbId
   };
   return episode;
 }

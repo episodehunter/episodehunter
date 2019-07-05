@@ -2,7 +2,10 @@ import { gql } from 'apollo-server-lambda';
 
 export const episode = gql`
   type Episode {
-    showId: Int!
+    ids: {
+      showId: Int!
+      tvdb: Int!
+    }
     # Date as a sting: YYYY-MM-DD
     aired: String!
     # The episode number, s*10000 + e

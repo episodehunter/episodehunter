@@ -30,6 +30,7 @@ export interface PgTitle {
 export interface PgEpisode {
   show_id: number;
   name: string;
+  external_id_tvdb: number;
   episodenumber: number;
   first_aired: string;
   overview: string | null;

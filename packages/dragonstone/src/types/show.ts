@@ -17,6 +17,7 @@ export const show = gql`
     justAirdEpisode: Episode
     nextToWatch: NextToWatch!
     followers: Int!
+    isFollowing: Boolean!
   }
 
   type ShowAirs {
