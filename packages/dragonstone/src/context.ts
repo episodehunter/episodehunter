@@ -16,9 +16,6 @@ export const createContext = async (
   let uid = null as null | number;
   if (firebaseUid) {
     uid = await pgResolver.user.getUid(firebaseUid);
-    if (!uid) {
-      throw new AuthenticationError('Could not find user');
-    }
   }
 
   return {
@@ -28,7 +25,7 @@ export const createContext = async (
       if (!firebaseUid) {
         throw new AuthenticationError('must authenticate');
       } else if (!uid) {
-        throw new AuthenticationError('uid is null. That is not good');
+        throw new AuthenticationError('Could not find user');
       }
       return uid;
     }

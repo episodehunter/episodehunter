@@ -18,12 +18,15 @@ export function mapWatchedEpisode(episode?: PgWatchedEpisode): Dragonstone.Watch
   };
 }
 
-export function mapWatchedInputToWatchedEpisode(input: Dragonstone.WatchedEpisode.WatchedEpisodeInput, userId: number): PgWatchedEpisode {
+export function mapWatchedInputToWatchedEpisode(
+  input: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput,
+  userId: number
+): PgWatchedEpisode {
   return {
     episodenumber: input.episodenumber,
     show_id: input.showId,
     type: input.type || WatchedEnum.checkIn,
     time: input.time,
     user_id: userId
-  }
+  };
 }

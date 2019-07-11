@@ -30,9 +30,9 @@ const server = new ApolloServer({
     }
     return error;
   },
-  context: async (res: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
-    const firebaseUid = await getUidFromHeader(firebaseApp.auth, res.event.headers);
-    const context = await createContext(pgResolver, res.event.logger, firebaseUid);
+  context: async (req: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
+    const firebaseUid = await getUidFromHeader(firebaseApp.auth, req.event.headers);
+    const context = await createContext(pgResolver, req.event.logger, firebaseUid);
     return context;
   }
 });
@@ -53,7 +53,13 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
         if (!result) {
           return;
         }
-        if (result.statusCode > 200) {
+        if (/"errors":/.test(result.body)) {
+          try {
+            logger.captureException(JSON.parse(result.body));
+          } catch (error) {
+            logger.captureException(new Error(`Response containes Error ${result.body}`));
+          }
+        } else if (result.statusCode > 200) {
           logger.captureException(
             new Error(`Status code is ${result.statusCode}. body: ${JSON.stringify(result.body)}`)
           );

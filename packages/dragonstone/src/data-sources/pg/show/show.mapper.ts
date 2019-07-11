@@ -1,4 +1,4 @@
-import { Dragonstone, Message, Omit } from '@episodehunter/types';
+import { Dragonstone, Message } from '@episodehunter/types';
 import { PgShow } from '../types';
 
 export function mapShow(show?: PgShow): Dragonstone.Show | null {

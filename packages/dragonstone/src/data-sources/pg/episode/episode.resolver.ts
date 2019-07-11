@@ -52,7 +52,7 @@ export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoad
     `,
       [showId]
     );
-    return dbResult.rows.map(row => row.season);
+    return dbResult.rows.map(row => row.season).sort();
   },
 
   async getNumberOfAiredEpisodes(showId: ShowId): Promise<number> {

@@ -1,4 +1,4 @@
-import { Dragonstone, Omit, ShowId } from '@episodehunter/types';
+import { Dragonstone, ShowId } from '@episodehunter/types';
 import { ApolloError } from 'apollo-server-lambda';
 import { Context } from '../context';
 import { unixTimestampType } from './timestamp';
@@ -58,10 +58,10 @@ const WhatToWatch: WhatToWatch = {
 const Following: FollowingQueryType = {
   show(root, args, context) {
     return context.pgResolver.show.getShow(root.showId);
-  },
-  upcomingEpisode(root, args, context) {
-    return context.pgResolver.upcoming.getUpcomingEpisode(root.showId);
   }
+  // upcomingEpisode(root, args, context) {
+  //   return context.pgResolver.upcoming.getUpcomingEpisode(root.showId);
+  // }
   // nextToWatch(root, args, context) {
   //   return context.pgResolver.history.getNumberOfEpisodesToWatchForShow(context.getUid(), root.showId);
   // }
@@ -94,17 +94,51 @@ const Show = {
 };
 
 const NextToWatch = {
-  numberOfEpisodesToWatch(root: any, args: any, context: Context) {
-    return context.pgResolver.history.getNumberOfEpisodesToWatchForShow(context.getUid(), root.showId);
+  numberOfEpisodesToWatch(
+    root:
+      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
+      | Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
+      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput[]
+      | { showId: number },
+    args: any,
+    context: Context
+  ) {
+    let showId = 0;
+    if (Array.isArray(root)) {
+      showId = root[0] && root[0].showId;
+    } else if (root && root.showId) {
+      showId = root.showId;
+    }
+    if (!showId) {
+      return null;
+    }
+    return context.pgResolver.history.getNumberOfEpisodesToWatchForShow(context.getUid(), showId);
   },
-  episode(root: any, args: any, context: Context) {
-    return context.pgResolver.episode.getNextEpisodeToWatch(context.getUid(), root.showId);
+  episode(
+    root:
+      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
+      | Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
+      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput[]
+      | { showId: number },
+    args: any,
+    context: Context
+  ) {
+    let showId = 0;
+    if (Array.isArray(root)) {
+      showId = root[0] && root[0].showId;
+    } else if (root && root.showId) {
+      showId = root.showId;
+    }
+    if (!showId) {
+      return null;
+    }
+    return context.pgResolver.episode.getNextEpisodeToWatch(context.getUid(), showId);
   }
 };
 
 const Episode = {
   watched(root: any, args: any, context: Context) {
-    return context.pgResolver.history.getWatchHistoryForEpisode(context.getUid(), root.showId, root.episodenumber);
+    return context.pgResolver.history.getWatchHistoryForEpisode(context.getUid(), root.ids.showId, root.episodenumber);
   }
 };
 
@@ -126,17 +160,17 @@ const RootMutation: RootMutationType = {
   }
 };
 
-const resolverHandler = {
-  get<R, A>(target: { [key: string]: (r: R, a: A, c: Context) => Promise<any> }, prop: string) {
-    return (root: R, args: A, context: Context) => {
-      return target[prop](root, args, context).catch(error => {
-        context.logger.warn(`Reolver (${prop}) endeds with error: ${error}`);
-        context.logger.captureException(error);
-        return Promise.reject(error);
-      });
-    };
-  }
-};
+// const resolverHandler = {
+//   get<R, A>(target: { [key: string]: (r: R, a: A, c: Context) => Promise<any> }, prop: string) {
+//     return (root: R, args: A, context: Context) => {
+//       return target[prop](root, args, context).catch(error => {
+//         context.logger.warn(`Reolver (${prop}) endeds with error: ${error}`);
+//         context.logger.captureException(error);
+//         return Promise.reject(error);
+//       });
+//     };
+//   }
+// };
 
 export const resolvers = {
   Timestamp: unixTimestampType,
@@ -147,8 +181,8 @@ export const resolvers = {
     checkInSeason: 3,
     plexScrobble: 4
   },
-  RootQuery: new Proxy(RootQuery, resolverHandler),
-  RootMutation: new Proxy(RootMutation, resolverHandler),
+  RootQuery: RootQuery, //new Proxy(RootQuery, resolverHandler),
+  RootMutation: RootMutation, //new Proxy(RootMutation, resolverHandler),
   History,
   WhatToWatch,
   Following,
@@ -202,11 +236,11 @@ interface WhatToWatch {
 
 interface FollowingQueryType {
   show: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<Dragonstone.Show | null>;
-  upcomingEpisode: (
-    root: Pick<FollowingType, 'showId'>,
-    args: {},
-    context: Context
-  ) => Promise<Dragonstone.Episode | null>;
+  // upcomingEpisode: (
+  //   root: Pick<FollowingType, 'showId'>,
+  //   args: {},
+  //   context: Context
+  // ) => Promise<Dragonstone.Episode | null>;
   // nextToWatch: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<NextToWatch>;
 
   [key: string]: (r: any, a: any, c: Context) => Promise<any>;
@@ -215,19 +249,19 @@ interface FollowingQueryType {
 interface RootMutationType {
   checkInEpisode: (
     root: void,
-    args: { episode: Dragonstone.WatchedEpisode.WatchedEpisodeInput },
+    args: { episode: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput },
     context: Context
-  ) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode | null>;
+  ) => Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput>;
   checkInEpisodes: (
     root: void,
-    args: { episodes: Dragonstone.WatchedEpisode.WatchedEpisodeInput[] },
+    args: { episodes: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput[] },
     context: Context
-  ) => Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
+  ) => Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput[]>;
   removeCheckedInEpisode: (
     root: void,
     args: { episode: Dragonstone.WatchedEpisode.UnwatchedEpisodeInput },
     context: Context
-  ) => Promise<boolean>;
+  ) => Promise<Dragonstone.WatchedEpisode.UnwatchedEpisodeInput>;
   followShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
   unfollowShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
 

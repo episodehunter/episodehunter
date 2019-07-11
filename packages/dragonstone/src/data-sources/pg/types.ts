@@ -1,7 +1,3 @@
-import { Dragonstone } from '@episodehunter/types';
-
-// import { Dragonstone } from '@episodehunter/types';
-
 export interface PgShow {
   id: number;
   airs_first: string | null;
@@ -42,7 +38,7 @@ export interface PgWatchedEpisode {
   show_id: number;
   user_id: number;
   time: number;
-  type: Dragonstone.WatchedEpisode.WatchedEnum;
+  type: 0 | 1 | 2 | 3 | 4;
 }
 
 export interface PgUser {

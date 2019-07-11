@@ -13,10 +13,17 @@ export const show = gql`
     overview: String
     runtime: Int!
 
+    # Extra lookup
+    seasons: [Int]!
+    followers: Int!
+
+    # Time dependent
     upcomingEpisode: Episode
     justAirdEpisode: Episode
+    numberOfAiredEpisodes: Int!
+
+    # User specific
     nextToWatch: NextToWatch!
-    followers: Int!
     isFollowing: Boolean!
   }
 

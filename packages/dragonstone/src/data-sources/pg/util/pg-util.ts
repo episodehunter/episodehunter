@@ -40,6 +40,12 @@ export function insertAndReturn(table: string, obj: Record<string, rowValues>): 
   return query;
 }
 
+export function insertsAndReturn(table: string, obj: Record<string, rowValues>[]): QueryConfig {
+  const query = inserts(table, obj);
+  query.text += ` RETURNING *`;
+  return query;
+}
+
 export function inserts(table: string, obj: Record<string, rowValues>[]): QueryConfig {
   const columnNames = Object.keys(obj[0]);
   const rowsToInsert: rowValues[][] = [];

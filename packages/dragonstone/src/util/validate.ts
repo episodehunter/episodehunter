@@ -21,7 +21,8 @@ const knownEpisodeProps: { [key in keyof Message.Dragonstone.UpdateEpisodes.Epis
   episodenumber: ['number'],
   firstAired: ['string'],
   overview: ['string', 'undefined'],
-  lastupdated: ['number']
+  lastupdated: ['number'],
+  tvdbId: ['number']
 };
 
 export function assertShowInput(input: Message.Dragonstone.ShowInput) {
@@ -40,7 +41,9 @@ export function assertShowInput(input: Message.Dragonstone.ShowInput) {
     });
     if (!validType) {
       throw new TypeError(
-        `Expected type ${values!.join(' or ')} for ${key} but got ${printType(input[key as keyof Message.Dragonstone.ShowInput])} for show`
+        `Expected type ${values!.join(' or ')} for ${key} but got ${printType(
+          input[key as keyof Message.Dragonstone.ShowInput]
+        )} for show`
       );
     }
   });
@@ -70,7 +73,9 @@ function assertEpisode(input: Message.Dragonstone.UpdateEpisodes.EpisodeInput) {
     });
     if (!validType) {
       throw new TypeError(
-        `Expected type ${values!.join(' or ')} for ${key} but got ${printType(input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput])} for episode ${input.episodenumber}`
+        `Expected type ${values!.join(' or ')} for ${key} but got ${printType(
+          input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput]
+        )} for episode ${input.episodenumber}`
       );
     }
   });
@@ -92,7 +97,7 @@ export function assertEpisodeNumber(episodeNumber: number) {
 
 function printType(obj: any): string {
   if (obj === null) {
-    return 'null'
+    return 'null';
   }
   return typeof obj;
 }

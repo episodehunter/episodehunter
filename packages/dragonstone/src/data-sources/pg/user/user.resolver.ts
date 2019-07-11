@@ -1,4 +1,4 @@
-import { Dragonstone, Omit } from '@episodehunter/types';
+import { Dragonstone } from '@episodehunter/types';
 import { Client } from 'pg';
 import { safeMap } from '../../../util/util';
 import { PgFollowing } from '../types';
