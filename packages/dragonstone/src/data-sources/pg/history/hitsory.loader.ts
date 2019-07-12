@@ -1,4 +1,4 @@
-import DataLoader from 'dataLoader';
+import DataLoader from 'dataloader';
 import { Client } from 'pg';
 import { PgWatchedEpisode } from '../pg-types';
 

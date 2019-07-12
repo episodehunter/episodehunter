@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import DataLoader from 'dataLoader';
+import DataLoader from 'dataloader';
 import { PgShow } from '../pg-types';
 
 export function createShowLoader(client: Client): ShowLoader {
