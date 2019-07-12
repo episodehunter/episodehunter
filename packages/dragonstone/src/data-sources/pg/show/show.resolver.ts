@@ -1,7 +1,7 @@
 import { Logger } from '@episodehunter/logger';
 import { Client } from 'pg';
 import { Dragonstone, Message, ShowId } from '@episodehunter/types';
-import { PgShow } from '../types';
+import { PgShow } from '../pg-types';
 import { mapShow, mapShowInputToShow } from './show.mapper';
 import { update, insert } from '../util/pg-util';
 import { ShowLoader } from './show.loader';

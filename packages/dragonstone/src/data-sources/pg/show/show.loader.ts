@@ -1,6 +1,6 @@
 import { Client } from 'pg';
 import DataLoader from 'dataLoader';
-import { PgShow } from '../types';
+import { PgShow } from '../pg-types';
 
 export function createShowLoader(client: Client): ShowLoader {
   const getBatchShows = async (lookupKey: number[]): Promise<PgShow[]> => {
@@ -10,9 +10,7 @@ export function createShowLoader(client: Client): ShowLoader {
       WHERE id IN (${keys})
     `);
     return lookupKey.map(key => {
-      return (
-        dbResult.rows.find((row: PgShow) => row.id === key) || null
-      );
+      return dbResult.rows.find((row: PgShow) => row.id === key) || null;
     });
   };
 

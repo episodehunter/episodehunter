@@ -1,6 +1,6 @@
 import { Dragonstone } from '@episodehunter/types';
 import { WatchedEnum } from '@episodehunter/types/dragonstone/watched-episode';
-import { PgWatchedEpisode } from '../types';
+import { PgWatchedEpisode } from '../pg-types';
 
 export function mapWatchedEpisodes(episodes: PgWatchedEpisode[]): Dragonstone.WatchedEpisode.WatchedEpisode[] {
   return episodes.map(mapWatchedEpisode) as Dragonstone.WatchedEpisode.WatchedEpisode[];

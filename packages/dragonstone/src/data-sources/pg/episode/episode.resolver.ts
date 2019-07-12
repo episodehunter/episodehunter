@@ -1,12 +1,11 @@
 import { Logger } from '@episodehunter/logger';
 import { Dragonstone, Message, ShowId } from '@episodehunter/types';
 import { Client } from 'pg';
-import { PgEpisode } from '../types';
+import { PgEpisode } from '../pg-types';
 import { createEpisodeBatch } from '../util/pg-util';
 import { mapEpisode, mapEpisodeInputToEpisode, mapEpisodes } from './episode.mapper';
-import { calculateEpisodeNumber } from '../../../util/util';
+import { calculateEpisodeNumber, createDateString } from '../../../util/util';
 import { EpisodeLoader } from './episode.loader';
-import { createDateString } from '../../../util/date';
 
 export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoader) => ({
   async getNextEpisodeToWatch(userId: number, showId: ShowId): Promise<Dragonstone.Episode | null> {

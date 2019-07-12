@@ -10,9 +10,7 @@ export const createFirebase = () => {
   }
   const app = admin.initializeApp(fbConfig);
 
-  const firestore = app.firestore();
-
   const auth = app.auth();
 
-  return { firestore, auth };
+  return { auth };
 };

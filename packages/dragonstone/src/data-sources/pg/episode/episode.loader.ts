@@ -1,6 +1,6 @@
 import { Client } from 'pg';
 import DataLoader from 'dataLoader';
-import { PgEpisode } from '../types';
+import { PgEpisode } from '../pg-types';
 
 interface EpisodeKey {
   show_id: number;

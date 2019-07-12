@@ -1,8 +1,8 @@
 import { Client } from 'pg';
 import DataLoader from 'dataLoader';
-import { PgEpisode } from '../types';
+import { PgEpisode } from '../pg-types';
 import { ShowId } from '@episodehunter/types';
-import { daysAgoOnFormatYYYYMMDD } from '../../../util/date';
+import { daysAgoOnFormatYYYYMMDD } from '../../../util/util';
 
 export function createUpcomingLoader(client: Client): UpcomingLoader {
   const getBatchUpcoming = async (showIds: ShowId[]): Promise<(PgEpisode | null)[]> => {

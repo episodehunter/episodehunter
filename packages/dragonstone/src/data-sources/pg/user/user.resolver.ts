@@ -1,13 +1,13 @@
 import { Dragonstone } from '@episodehunter/types';
 import { Client } from 'pg';
 import { safeMap } from '../../../util/util';
-import { PgFollowing } from '../types';
+import { PgFollowing } from '../pg-types';
 import { insert } from '../util/pg-util';
 import { mapUser } from './user.mapper';
 import { Following } from '../../../resolvers/type';
 
 export const createUserResolver = (client: Client) => ({
-  async getFollowing(userId: number): Promise<Omit<Following, 'nextToWatch' | 'show' | 'upcommingEpisode'>[]> {
+  async getFollowing(userId: number): Promise<Pick<Following, 'showId'>[]> {
     const dbResult = await client.query(`SELECT * FROM following WHERE user_id = $1`, [userId]);
     return safeMap(dbResult.rows, row => ({
       showId: row.show_id

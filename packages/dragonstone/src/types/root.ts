@@ -1,13 +1,12 @@
 import { gql } from 'apollo-server-lambda';
 import { episode } from './episode';
+import { following } from './following';
 import { history } from './history';
+import { nextToWatch } from './next-to-watch';
 import { show } from './show';
 import { title } from './title';
-import { upcomingEpisode } from './upcoming-episode';
-import { watchedEpisode } from './watched-episode';
-import { whatToWatch } from './what-to-watch';
 import { user } from './user';
-import { following } from './following';
+import { watchedEpisode } from './watched-episode';
 
 export const root = gql`
   scalar Timestamp
@@ -21,13 +20,6 @@ export const root = gql`
     show(id: Int!): Show
     season(showId: Int!, season: Int!): [Episode]!
     following: [Following!]!
-
-    # upcomingEpisode(showIds: [Int]!): [UpcomingEpisode]!
-    # nextEpisodeToWatch(showId: Int!): Episode
-    # watchedEpisodes(showId: Int!): [WatchedEpisode]!
-    # whatToWatchForShow(showId: Int!): WhatToWatch!
-    # whatToWatch: [WhatToWatch!]!
-
     titles: [Title]!
     history(page: Int!): [History]!
     me: User
@@ -39,16 +31,14 @@ export const root = gql`
     removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): NextToWatch!
     followShow(showId: Int!): Boolean
     unfollowShow(showId: Int!): Boolean
-    # updateTitles: Boolean
   }
 
   ${show}
   ${episode}
   ${watchedEpisode}
-  ${whatToWatch}
-  ${upcomingEpisode}
   ${title}
   ${history}
   ${user}
   ${following}
+  ${nextToWatch}
 `;

@@ -44,7 +44,7 @@ function createDevelopConfig(): Config {
     logdnaKey: process.env.LOGDNA_KEY,
     sentryDns: process.env.AWS_SENTRY_DSN,
     develop: true,
-    pgConnectionUri: 'postgresql://user:123@localhost:3211/episodehunter-test'
+    pgConnectionUri: process.env.PG_CONNECTION_URI || 'postgresql://user:123@localhost:3211/episodehunter-test'
   };
 }
 

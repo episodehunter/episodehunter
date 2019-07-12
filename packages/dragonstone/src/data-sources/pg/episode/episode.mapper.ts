@@ -1,5 +1,5 @@
 import { Dragonstone, Message } from '@episodehunter/types';
-import { PgEpisode } from '../types';
+import { PgEpisode } from '../pg-types';
 
 export function mapEpisodes(episodes: (PgEpisode | null)[]): Dragonstone.Episode[] {
   return episodes.filter(Boolean).map(e => mapEpisode(e)) as any;

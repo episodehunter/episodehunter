@@ -1,5 +1,5 @@
-import { PgTitle } from "../types";
-import { Dragonstone } from "@episodehunter/types";
+import { PgTitle } from '../pg-types';
+import { Dragonstone } from '@episodehunter/types';
 
 export function mapTitles(titles: PgTitle[]): Dragonstone.Title[] {
   return titles.map(pgTitle => ({
@@ -8,5 +8,5 @@ export function mapTitles(titles: PgTitle[]): Dragonstone.Title[] {
     followers: pgTitle.followers,
     tvdbId: pgTitle.external_ids_tvdb,
     lastupdated: pgTitle.lastupdated
-  }))
+  }));
 }

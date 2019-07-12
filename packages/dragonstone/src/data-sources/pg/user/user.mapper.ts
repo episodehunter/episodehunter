@@ -1,5 +1,5 @@
-import { PgUser } from "../types";
-import { Dragonstone } from "@episodehunter/types";
+import { PgUser } from '../pg-types';
+import { Dragonstone } from '@episodehunter/types';
 
 export function mapUser(user?: PgUser): Dragonstone.User | null {
   if (!user) {
@@ -8,5 +8,5 @@ export function mapUser(user?: PgUser): Dragonstone.User | null {
   return {
     apikey: user.api_key,
     username: user.name
-  }
+  };
 }

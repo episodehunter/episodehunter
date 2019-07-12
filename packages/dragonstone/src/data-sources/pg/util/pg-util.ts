@@ -1,5 +1,5 @@
 import { QueryConfig, Client } from 'pg';
-import { PgEpisode } from '../types';
+import { PgEpisode } from '../pg-types';
 
 export function update(table: string, id: number, obj: any): QueryConfig {
   const baseText = `UPDATE ${table} SET `;

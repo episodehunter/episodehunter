@@ -5,9 +5,4 @@ export const following = gql`
     showId: Int!
     show: Show!
   }
-
-  type NextToWatch {
-    numberOfEpisodesToWatch: Int!
-    episode: Episode
-  }
 `;
