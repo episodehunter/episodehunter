@@ -77,10 +77,6 @@ export interface HistoryQueryType extends IndexResolver {
   ) => Promise<Dragonstone.Episode | null>;
 }
 
-export interface WhatToWatch extends IndexResolver {
-  show: (root: Omit<Dragonstone.ShowToWatch, 'show'>, args: {}, context: Context) => Promise<Dragonstone.Show | null>;
-}
-
 export interface FollowingQueryType extends IndexResolver {
   show: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<Dragonstone.Show | null>;
 }

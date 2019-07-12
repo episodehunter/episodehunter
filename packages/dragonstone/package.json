@@ -18,24 +18,24 @@
   "dependencies": {
     "@episodehunter/kingsguard": "^4.1.0",
     "@episodehunter/logger": "^4.1.2",
-    "apollo-server-lambda": "^2.4.8",
+    "apollo-server-lambda": "^2.6.9",
     "dataloader": "^1.4.0",
-    "firebase-admin": "^7.2.0",
-    "graphql": "^14.2.1",
+    "firebase-admin": "^8.2.0",
+    "graphql": "^14.4.2",
     "graphql-import": "^0.7.1",
     "pg": "^7.11.0",
     "tslib": "^1.10.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.3"
   },
   "devDependencies": {
     "@episodehunter/types": "github:episodehunter/types",
-    "@types/aws-lambda": "8.10.24",
-    "@types/graphql": "14.2.0",
-    "@types/jest": "24.0.11",
-    "@types/node": "11.13.8",
+    "@types/aws-lambda": "8.10.28",
+    "@types/graphql": "14.2.2",
+    "@types/jest": "24.0.15",
+    "@types/node": "12.6.2",
     "@types/pg": "^7.4.14",
     "aws-lambda": "0.1.2",
-    "jest": "24.7.1",
+    "jest": "24.8.0",
     "ts-jest": "24.0.2"
   },
   "prettier": {
