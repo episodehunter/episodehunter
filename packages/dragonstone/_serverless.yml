@@ -9,21 +9,17 @@ provider:
   stage: prod
   region: us-east-1
   timeout: 20
-  versionFunctions: false
+  versionFunctions: true
   environment: ${file(env.yml):${self:custom.stage}}
 
 package:
   include:
     - node_modules/**
-    - dist
   exclude:
-    - .vscode/**
-    - src/**
-    - now.json
     - .serverless/**
     - package-lock.json
     - package.json
-    - "*.js.map"
+    - '*.js.map'
     - env.yml
 
 functions:
