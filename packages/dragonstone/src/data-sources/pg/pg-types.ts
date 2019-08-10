@@ -18,7 +18,7 @@ export interface PgShow {
 export interface PgTitle {
   id: number;
   name: string;
-  external_ids_tvdb: number;
+  external_id_tvdb: number;
   lastupdated: number;
   followers: number;
 }

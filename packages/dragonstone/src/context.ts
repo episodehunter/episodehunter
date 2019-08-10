@@ -6,6 +6,7 @@ export interface Context {
   pgResolver: PgResolver;
   logger: Logger;
   getUid(): number;
+  getFirebaseUid(): string;
 }
 
 export const createContext = async (
@@ -18,13 +19,20 @@ export const createContext = async (
     uid = await pgResolver.user.getUid(firebaseUid);
   }
 
+  const getFirebaseUid = () => {
+    if (!firebaseUid) {
+      throw new AuthenticationError('must authenticate');
+    }
+    return firebaseUid;
+  }
+
   return {
     pgResolver,
     logger: logger,
+    getFirebaseUid,
     getUid(): number {
-      if (!firebaseUid) {
-        throw new AuthenticationError('must authenticate');
-      } else if (!uid) {
+      getFirebaseUid();
+      if (!uid) {
         throw new AuthenticationError('Could not find user');
       }
       return uid;

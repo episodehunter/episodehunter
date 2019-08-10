@@ -5,4 +5,8 @@ export const user = gql`
     apikey: String!
     username: String!
   }
+
+  input UserInput {
+    username: String!
+  }
 `;

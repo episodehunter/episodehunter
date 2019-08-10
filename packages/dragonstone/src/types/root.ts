@@ -31,6 +31,7 @@ export const root = gql`
     removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): NextToWatch!
     followShow(showId: Int!): Boolean
     unfollowShow(showId: Int!): Boolean
+    createUser(metadata: UserInput!): Boolean
   }
 
   ${show}

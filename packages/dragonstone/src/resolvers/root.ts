@@ -127,6 +127,9 @@ const RootMutation: RootMutationType = {
   },
   unfollowShow(root, args, context) {
     return context.pgResolver.user.unfollowShow(context.getUid(), args.showId);
+  },
+  createUser(root, args, context) {
+    return context.pgResolver.user.createUser(context.getFirebaseUid(), args.metadata);
   }
 };
 

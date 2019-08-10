@@ -6,7 +6,7 @@ export function mapTitles(titles: PgTitle[]): Dragonstone.Title[] {
     id: pgTitle.id,
     name: pgTitle.name,
     followers: pgTitle.followers,
-    tvdbId: pgTitle.external_ids_tvdb,
+    tvdbId: pgTitle.external_id_tvdb,
     lastupdated: pgTitle.lastupdated
   }));
 }

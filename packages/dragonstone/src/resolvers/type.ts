@@ -99,4 +99,5 @@ export interface RootMutationType extends IndexResolver {
   ) => Promise<Dragonstone.WatchedEpisode.UnwatchedEpisodeInput>;
   followShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
   unfollowShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
+  createUser: (root: void, args: { metadata: Dragonstone.UserInput }, context: Context) => Promise<boolean>;
 }

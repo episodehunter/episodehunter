@@ -22,7 +22,6 @@
     "dataloader": "^1.4.0",
     "firebase-admin": "^8.2.0",
     "graphql": "^14.4.2",
-    "graphql-import": "^0.7.1",
     "pg": "^7.11.0",
     "tslib": "^1.10.0",
     "typescript": "^3.5.3"
