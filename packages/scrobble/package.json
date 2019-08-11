@@ -5,7 +5,8 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "prepare": "tsc",
+    "build": "tsc",
+    "prepare": "npm run build",
     "start": "tsc -w",
     "test": "jest"
   },

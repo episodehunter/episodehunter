@@ -2,8 +2,10 @@
   "name": "dragonstone",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
+    "prepare": "npm run build",
     "start": "NODE_ENV=develop node index.js",
     "build": "tsc",
     "deploy": "make deploy",
@@ -11,10 +13,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/episodehunter/dragonstone"
+    "url": "https://github.com/episodehunter/episodehunter"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
   "dependencies": {
     "@episodehunter/kingsguard": "^4.1.0",
     "@episodehunter/logger": "^4.1.2",
@@ -27,7 +29,7 @@
     "typescript": "^3.5.3"
   },
   "devDependencies": {
-    "@episodehunter/types": "github:episodehunter/types",
+    "@episodehunter/types": "2.0.0",
     "@types/aws-lambda": "8.10.28",
     "@types/graphql": "14.2.2",
     "@types/jest": "24.0.15",

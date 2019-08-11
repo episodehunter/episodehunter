@@ -36,7 +36,7 @@ export const createUserResolver = (client: Client) => ({
     const getUserId = () => client.query(`SELECT id FROM users WHERE firebase_id = $1 LIMIT 1`, [firebaseUid]);
     let dbResult = await getUserId();
     if (dbResult.rowCount === 0) {
-      this.createUser(firebaseUid, { username: "Batman" });
+      this.createUser(firebaseUid, { username: 'Batman' });
       dbResult = await getUserId();
       if (dbResult.rowCount === 0) {
         return null;
@@ -46,7 +46,10 @@ export const createUserResolver = (client: Client) => ({
   },
   async createUser(firebaseUid: string, metadata: Dragonstone.UserInput): Promise<boolean> {
     const apiKey = generateApiKey();
-    await client.query(`INSERT INTO users (firebase_id, name, api_key) VALUES ($1, $2, $3) ON CONFLICT (firebase_id) DO NOTHING`, [firebaseUid, metadata.username, apiKey]);
+    await client.query(
+      `INSERT INTO users (firebase_id, name, api_key) VALUES ($1, $2, $3) ON CONFLICT (firebase_id) DO NOTHING`,
+      [firebaseUid, metadata.username, apiKey]
+    );
     return true;
   }
 });
@@ -54,7 +57,7 @@ export const createUserResolver = (client: Client) => ({
 function generateApiKey() {
   const validChars = 'ABCDEFGHKMNPRSTUVWXY3456789';
   return Array.from<string>({ length: 5 }).reduce(key => {
-    key += validChars[(Math.floor(Math.random() * Math.floor(validChars.length)))]
+    key += validChars[Math.floor(Math.random() * Math.floor(validChars.length))];
     return key;
-  }, '')
+  }, '');
 }
