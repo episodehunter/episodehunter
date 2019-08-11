@@ -1,0 +1,30 @@
+{
+  "name": "@episodehunter/utils",
+  "version": "1.0.0",
+  "description": "Util functions for episodehunter",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepare": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episodehunter/episodehunter.git"
+  },
+  "keywords": [
+    "types",
+    "episodehunter"
+  ],
+  "bugs": {
+    "url": "https://github.com/episodehunter/episodehunter/issues"
+  },
+  "homepage": "https://github.com/episodehunter/episodehunter/packages/utils#readme",
+  "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {},
+  "prettier": {
+    "singleQuote": true
+  }
+}

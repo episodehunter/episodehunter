@@ -1,0 +1,13 @@
+# IDE
+.vscode
+
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+environment_*.yml
+dist
+env.yml

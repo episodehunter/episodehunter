@@ -1,0 +1,31 @@
+{
+  "name": "@episodehunter/types",
+  "version": "2.0.0",
+  "description": "Types for episodehunter",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episodehunter/episodehunter.git"
+  },
+  "keywords": [
+    "types",
+    "episodehunter"
+  ],
+  "bugs": {
+    "url": "https://github.com/episodehunter/episodehunter/issues"
+  },
+  "homepage": "https://github.com/episodehunter/episodehunter/packages/types#readme",
+  "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {},
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 130
+  }
+}

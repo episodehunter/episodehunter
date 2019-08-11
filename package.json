@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Mono repo for episodehunter",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/episodehunter/episodehunter/issues"
   },
-  "homepage": "https://github.com/episodehunter/episodehunter#readme"
+  "homepage": "https://github.com/episodehunter/episodehunter#readme",
+  "devDependencies": {
+    "lerna": "^3.16.4"
+  }
 }

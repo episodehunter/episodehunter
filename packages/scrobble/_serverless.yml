@@ -1,0 +1,44 @@
+service: scrobble
+
+custom:
+  stage: "${opt:stage, self:provider.stage}"
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: prod
+  region: us-east-1
+  timeout: 60
+  versionFunctions: false
+  environment: ${file(env.yml):${self:custom.stage}}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: "arn:aws:lambda:us-east-1:*:function:*"
+
+package:
+  include:
+    - node_modules/**
+  exclude:
+    - test/**
+    - env.yml
+    - .serverless/**
+    - package-lock.json
+    - package.json
+    - "*.js.map"
+
+functions:
+  plex:
+    handler: handler.plex
+    events:
+      - http:
+          path: plex
+          method: post
+  kodi:
+    handler: handler.kodi
+    events:
+      - http:
+          path: kodi
+          method: post
