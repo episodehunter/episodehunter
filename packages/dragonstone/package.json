@@ -1,6 +1,6 @@
 {
   "name": "dragonstone",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -29,7 +29,7 @@
     "typescript": "^3.5.3"
   },
   "devDependencies": {
-    "@episodehunter/types": "2.0.0",
+    "@episodehunter/types": "^2.1.0",
     "@types/aws-lambda": "8.10.28",
     "@types/graphql": "14.2.2",
     "@types/jest": "24.0.15",

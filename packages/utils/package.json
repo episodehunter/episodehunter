@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Util functions for episodehunter",
   "main": "dist/index.js",
   "scripts": {
@@ -24,7 +24,6 @@
   "devDependencies": {
     "typescript": "^3.5.3"
   },
-  "dependencies": {},
   "prettier": {
     "singleQuote": true
   }
