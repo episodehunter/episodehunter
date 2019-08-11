@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Scheduler for episodehunter",
   "main": "dist/index.js",
+  "private": true,
   "scripts": {
-    "start": "tsc -w",
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
     "test": "jest"
   },
   "repository": {
@@ -22,19 +25,20 @@
   "author": "tjoskar <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@episodehunter/types": "github:episodehunter/types",
-    "@types/aws-lambda": "^8.10.23",
-    "@types/jest": "^24.0.11",
-    "@types/node": "^11.11.3",
-    "aws-sdk": "^2.422.0",
-    "jest": "^24.5.0",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.3333"
+    "@episodehunter/types": "2.1.0",
+    "@types/aws-lambda": "^8.10.31",
+    "@types/jest": "^24.0.17",
+    "@types/node": "^12.7.1",
+    "aws-sdk": "^2.507.0",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3"
   },
   "dependencies": {
-    "@episodehunter/kingsguard": "^4.0.2",
+    "@episodehunter/kingsguard": "^4.1.0",
     "@episodehunter/logger": "^4.1.2",
-    "@episodehunter/thetvdb": "^3.0.0",
+    "@episodehunter/thetvdb": "^3.1.0",
+    "@episodehunter/utils": "^1.0.1",
     "graphql-request": "^1.8.2"
   },
   "prettier": {

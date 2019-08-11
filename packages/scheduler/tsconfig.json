@@ -3,10 +3,10 @@
     "target": "es2018",
     "module": "commonjs",
     "outDir": "./dist",
-    "strict": false,
-    "noImplicitAny": true,
+    "strict": true,
     "noUnusedLocals": true,
     "moduleResolution": "node",
     "sourceMap": false
-  }
+  },
+  "include": ["src"]
 }

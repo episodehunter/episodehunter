@@ -1,14 +1,5 @@
 function assertEnv() {
-  [
-    'AWS_SENTRY_DSN',
-    'LOGDNA_KEY',
-    'RED_KEEP_API_KEY',
-    'RED_KEEP_URL',
-    'DRAGONSTONE_URL',
-    'EH_SNS_UPDATE_SHOW',
-    'SNS_UPDATE_SHOW_TOPIC',
-    'THE_TV_DB_API_KEY'
-  ].forEach(env => {
+  ['AWS_SENTRY_DSN', 'LOGDNA_KEY', 'DRAGONSTONE_URL', 'EH_SNS_UPDATE_SHOW', 'THE_TV_DB_API_KEY'].forEach(env => {
     if (!process.env[env]) {
       throw new Error('Can not read process.env.' + env);
     }
@@ -20,14 +11,11 @@ function createConfig() {
     assertEnv();
   }
   return {
-    sentryDns: process.env.AWS_SENTRY_DSN,
-    logdnaKey: process.env.LOGDNA_KEY,
-    redKeepApiKey: process.env.RED_KEEP_API_KEY,
-    redKeepUrl: process.env.RED_KEEP_URL,
-    dragonstoneUrl: process.env.DRAGONSTONE_URL,
-    updateShowQueueName: process.env.EH_SNS_UPDATE_SHOW,
-    updateShowTopic: process.env.SNS_UPDATE_SHOW_TOPIC,
-    theTvDbApiKey: process.env.THE_TV_DB_API_KEY
+    sentryDns: process.env.AWS_SENTRY_DSN!,
+    logdnaKey: process.env.LOGDNA_KEY!,
+    dragonstoneUrl: process.env.DRAGONSTONE_URL!,
+    updateShowQueueName: process.env.EH_SNS_UPDATE_SHOW!,
+    theTvDbApiKey: process.env.THE_TV_DB_API_KEY!
   };
 }
 

@@ -5,3 +5,7 @@ export const publish = jest.fn<any, any>(() => ({
 export class SNS {
   publish = publish;
 }
+
+export const config = {
+  update() {}
+};

@@ -5,16 +5,24 @@ export class GraphQLClient {
     return Promise.resolve({
       titles: [
         {
-          id: 'game-of-thones',
-          tvdbId: 1
+          id: 100,
+          tvdbId: 1,
+          lastupdated: 1000000000
         },
         {
-          id: 'dexter',
-          tvdbId: 2
+          id: 102,
+          tvdbId: 2,
+          lastupdated: 1000000001
         },
         {
-          id: 'some-other-show',
-          tvdbId: 4
+          id: 104,
+          tvdbId: 4,
+          lastupdated: 1000000002
+        },
+        {
+          id: 105,
+          tvdbId: 5,
+          lastupdated: 1000000002
         }
       ]
     });

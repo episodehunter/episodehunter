@@ -6,7 +6,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: prod
   region: us-east-1
   versionFunctions: false
@@ -18,22 +18,15 @@ provider:
         - 'sns:Publish'
       Resource:
         - ${self:custom.env.EH_SNS_UPDATE_SHOW}
-        - ${self:custom.env.SNS_UPDATE_SHOW_TOPIC}
 
 package:
   include:
     - node_modules/**
-    - src/**
   exclude:
-    - __mocks__
     - env.yml
 
 functions:
-  thetvdb:
-    handler: src/show-updater-handler.update
-    events:
-      - schedule: rate(2 hours)
   showupdater:
-    handler: src/dragonstone-show-updater-handler.update
+    handler: handler.update
     events:
       - schedule: rate(2 hours)
