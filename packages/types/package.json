@@ -27,5 +27,6 @@
   "prettier": {
     "singleQuote": true,
     "printWidth": 130
-  }
+  },
+  "gitHead": "bb6c459cb823c856d674ae25c036647d07f2252c"
 }
