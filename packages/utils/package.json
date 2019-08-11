@@ -22,7 +22,7 @@
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^3.5.3"
+    "typescript": "3.5.3"
   },
   "prettier": {
     "singleQuote": true
