@@ -1,3 +1,4 @@
+import { Logger } from '@episodehunter/logger';
 import { Dragonstone, ShowId } from '@episodehunter/types';
 import { Client } from 'pg';
 import { insert, inserts } from '../util/pg-util';
@@ -46,6 +47,22 @@ export const createHistoryResolver = (
     watchedEpisodeInput: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
   ): Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput> {
     const wh = mapWatchedInputToWatchedEpisode(watchedEpisodeInput, userId);
+    await client.query(insert('tv_watched', wh as any));
+    return watchedEpisodeInput;
+  },
+
+  async checkInEpisodeWithApiKey(
+    apiKey: string,
+    username: string,
+    watchedEpisodeInput: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput,
+    logger: Logger
+  ): Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput | null> {
+    const userResult = await client.query(`SELECT id FROM users WHERE name = $1 AND api_key = $2 LIMIT 1`, [ username, apiKey ])
+    if (userResult.rowCount === 0) {
+      logger.warn(`Could not find user with apiKey: ${apiKey} and username ${username}`)
+      return null;
+    }
+    const wh = mapWatchedInputToWatchedEpisode(watchedEpisodeInput, userResult.rows[0].id);
     await client.query(insert('tv_watched', wh as any));
     return watchedEpisodeInput;
   },

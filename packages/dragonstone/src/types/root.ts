@@ -26,8 +26,8 @@ export const root = gql`
   }
 
   type RootMutation {
-    checkInEpisode(episode: WatchedEpisodeInput!): NextToWatch!
-    checkInEpisodes(episodes: [WatchedEpisodeInput]!): NextToWatch!
+    checkInEpisode(episode: WatchedEpisodeInput!, apiKey: String, username: String): NextToWatch
+    checkInEpisodes(episodes: [WatchedEpisodeInput]!): [NextToWatch]!
     removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): NextToWatch!
     followShow(showId: Int!): Boolean
     unfollowShow(showId: Int!): Boolean

@@ -84,9 +84,9 @@ export interface FollowingQueryType extends IndexResolver {
 export interface RootMutationType extends IndexResolver {
   checkInEpisode: (
     root: void,
-    args: { episode: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput },
+    args: { episode: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput, apiKey?: string, username?: string },
     context: Context
-  ) => Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput>;
+  ) => Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput | null>;
   checkInEpisodes: (
     root: void,
     args: { episodes: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput[] },

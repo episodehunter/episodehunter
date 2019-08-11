@@ -114,6 +114,9 @@ const Episode: EpisodeQuerryType = {
 
 const RootMutation: RootMutationType = {
   checkInEpisode(root, args, context) {
+    if (args.apiKey && args.username) {
+      return context.pgResolver.history.checkInEpisodeWithApiKey(args.apiKey, args.username, args.episode, context.logger);
+    }
     return context.pgResolver.history.checkInEpisode(context.getUid(), args.episode);
   },
   checkInEpisodes(root, args, context) {
