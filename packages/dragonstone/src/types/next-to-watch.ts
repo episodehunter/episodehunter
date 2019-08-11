@@ -4,5 +4,6 @@ export const nextToWatch = gql`
   type NextToWatch {
     numberOfEpisodesToWatch: Int!
     episode: Episode
+    madeMutation: Boolean!
   }
 `;

@@ -41,6 +41,13 @@ export interface NextToWatchQuerryType extends IndexResolver {
     args: void,
     context: Context
   ): Promise<Dragonstone.Episode | null>;
+  madeMutation(root:
+    | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
+    | Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
+    | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput[]
+    | { showId: number },
+  args: void,
+  context: Context): boolean
 }
 
 export interface EpisodeQuerryType extends IndexResolver {
