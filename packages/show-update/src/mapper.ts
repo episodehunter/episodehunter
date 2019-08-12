@@ -1,6 +1,7 @@
 import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/thetvdb';
 import { Message } from '@episodehunter/types';
-import { safeMap, safeFilter, isValidEpisode } from '../util';
+import { safeFilter, safeMap, calculateEpisodeNumber } from '@episodehunter/utils';
+import { isValidEpisode } from './util';
 
 export function mapTheTvEpisodesToDefinition(tEpisodes: TheTvDbShowEpisode[]): Message.Dragonstone.UpdateEpisodes.EpisodeInput[] {
   return safeMap(mapTheTvEpisodeToDefinition)(safeFilter(isValidEpisode)(tEpisodes));
@@ -11,7 +12,7 @@ export function mapTheTvShowToDefinition(tShow: TheTvDbShow): Message.Dragonston
     tvdbId: tShow.id,
     imdbId: tShow.imdbId,
     name: tShow.seriesName,
-    airsDayOfWeek: mapDayToNumber(tShow.airsDayOfWeek),
+    airsDayOfWeek: mapDayToNumber(tShow.airsDayOfWeek as keyof typeof dayOfWeekString),
     airsTime: tShow.airsTime,
     firstAired: tShow.firstAired,
     genre: tShow.genre,
@@ -27,8 +28,7 @@ function mapTheTvEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): Message.Dra
   return {
     tvdbId: tEpisodes.id,
     name: tEpisodes.episodeName || `Episode #${tEpisodes.airedSeason}.${tEpisodes.airedEpisodeNumber}`,
-    season: tEpisodes.airedSeason,
-    episode: tEpisodes.airedEpisodeNumber,
+    episodenumber: calculateEpisodeNumber(tEpisodes.airedSeason, tEpisodes.airedEpisodeNumber),
     firstAired: tEpisodes.firstAired,
     overview: tEpisodes.overview,
     lastupdated: tEpisodes.lastUpdated
@@ -45,7 +45,7 @@ const dayOfWeekString = {
   Sunday: 6
 };
 
-function mapDayToNumber(day?: string): number | undefined {
+function mapDayToNumber(day?: keyof typeof dayOfWeekString): number | undefined {
   if (!day) {
     return;
   }

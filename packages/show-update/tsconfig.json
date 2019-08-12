@@ -3,11 +3,10 @@
     "target": "es2018",
     "module": "commonjs",
     "outDir": "./dist",
-    "strict": false,
+    "strict": true,
     "lib": ["es2018", "dom", "esnext.asynciterable"],
-    "noImplicitAny": false,
     "noUnusedLocals": true,
     "moduleResolution": "node",
-    "sourceMap": false
+    "sourceMap": true
   }
 }

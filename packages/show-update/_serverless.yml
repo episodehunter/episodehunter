@@ -6,7 +6,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs10.10
+  runtime: nodejs10x
   stage: prod
   region: us-east-1
   timeout: 25
@@ -21,24 +21,14 @@ provider:
 
 package:
   include:
-    - dist/**
     - node_modules/**
   exclude:
-    - src/**
     - env.yml
-    - .git/**
-    - .vscode/**
 
 functions:
   update:
-    handler: red-keep/handler.update
-    events:
-      - sns: ${self:custom.env.EH_SNS_UPDATE_SHOW}
-  add:
-    handler: red-keep/handler.add
-  update2:
-    handler: dragonstone/handler.update
+    handler: handler.update
     events:
       - sns: ${self:custom.env.SNS_UPDATE_SHOW_TOPIC}
-  add2:
-    handler: dragonstone/handler.add
+  add:
+    handler: handler.add

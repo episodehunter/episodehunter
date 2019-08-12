@@ -1,11 +1,11 @@
 import { Logger } from '@episodehunter/logger';
+import { ShowId } from '@episodehunter/types';
 import * as AddShow from '@episodehunter/types/message/dragonstone/add-show';
 import { ShowInput } from '@episodehunter/types/message/dragonstone/show-input';
 import * as UpdateEpisode from '@episodehunter/types/message/dragonstone/update-episodes';
 import * as UpdateShow from '@episodehunter/types/message/dragonstone/update-show';
 import * as AWS from 'aws-sdk';
-import { Lambda } from 'aws-sdk';
-import { config } from '../config';
+import { config } from './config';
 
 AWS.config.update({
   region: 'us-east-1'
@@ -14,13 +14,13 @@ AWS.config.update({
 const lambda = new AWS.Lambda();
 
 export async function updateEpisodesRequest(
-  showId: string,
+  showId: ShowId,
   firstEpisode: number,
   lastEpisode: number,
   episodes: UpdateEpisode.EpisodeInput[],
   awsRequestId: string,
   logger: Logger
-): Promise<Lambda.Types.InvocationResponse> {
+): Promise<AWS.Lambda.Types.InvocationResponse> {
   const event: UpdateEpisode.Event = { showId, firstEpisode, lastEpisode, episodes, requestStack: [awsRequestId] };
   logger.log(`Sending ${episodes.length} episodes to ${config.updateEpisodesDragonstoneFunctionName}`);
   return lambda
@@ -39,10 +39,10 @@ export async function updateEpisodesRequest(
 }
 
 export async function updateShowRequest(
-  showId: string,
+  showId: ShowId,
   showDef: ShowInput,
   awsRequestId: string
-): Promise<Lambda.Types.InvocationResponse> {
+): Promise<AWS.Lambda.Types.InvocationResponse> {
   const event: UpdateShow.Event = { showId, showInput: showDef, requestStack: [awsRequestId] };
   return lambda
     .invoke({
@@ -53,7 +53,7 @@ export async function updateShowRequest(
     .promise();
 }
 
-export async function addShowRequest(showDef: ShowInput, awsRequestId: string): Promise<{ id: string }> {
+export async function addShowRequest(showDef: ShowInput, awsRequestId: string): Promise<{ id: ShowId }> {
   const event: AddShow.Event = { showInput: showDef, requestStack: [awsRequestId] };
   return lambda
     .invoke({
@@ -64,11 +64,11 @@ export async function addShowRequest(showDef: ShowInput, awsRequestId: string): 
     .then(requestResult => {
       let result: AddShow.Response;
       try {
-        result = JSON.parse(requestResult.Payload.toString());
+        result = JSON.parse(requestResult.Payload!.toString());
       } catch (error) {
         throw new Error(`Can not parse response from Dragonston after adding show. Result: ${JSON.stringify(requestResult)}`);
       }
-      if (!result.ids || typeof result.ids.id !== 'string') {
+      if (!result.ids || !result.ids.id) {
         throw new TypeError(`Response do not contain any id. Result: ${JSON.stringify(requestResult)}`);
       }
       return { id: result.ids.id };

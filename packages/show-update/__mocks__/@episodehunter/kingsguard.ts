@@ -1,1 +1,1 @@
-export const createGuard = () => fn => fn;
+export const createGuard = () => (fn: Function) => fn;

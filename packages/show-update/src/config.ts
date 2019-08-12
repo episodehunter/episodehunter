@@ -1,8 +1,6 @@
 interface Config {
   sentryDsn: string;
   logdnaKey: string;
-  redKeepApiKey: string;
-  ehRedKeepUrl: string;
   theTvDbApiKey: string;
   snsUpdateShow: string;
   addShowDragonstoneFunctionName: string;
@@ -12,15 +10,13 @@ interface Config {
 
 function createProdConfig(): Config {
   return {
-    sentryDsn: process.env.AWS_SENTRY_DSN,
-    logdnaKey: process.env.LOGDNA_KEY,
-    redKeepApiKey: process.env.EH_RED_KEEP_API_KEY,
-    ehRedKeepUrl: process.env.EH_RED_KEEP_URL,
-    theTvDbApiKey: process.env.THE_TV_DB_API_KEY,
-    snsUpdateShow: process.env.EH_SNS_UPDATE_SHOW,
-    addShowDragonstoneFunctionName: process.env.ADD_SHOW_DRAGONSTONE_FUNCTION_NAME,
-    updateShowDragonstoneFunctionName: process.env.UPDATE_SHOW_DRAGONSTONE_FUNCTION_NAME,
-    updateEpisodesDragonstoneFunctionName: process.env.UPDATE_EPISODES_DRAGONSTONE_FUNCTION_NAME
+    sentryDsn: process.env.AWS_SENTRY_DSN!,
+    logdnaKey: process.env.LOGDNA_KEY!,
+    theTvDbApiKey: process.env.THE_TV_DB_API_KEY!,
+    snsUpdateShow: process.env.EH_SNS_UPDATE_SHOW!,
+    addShowDragonstoneFunctionName: process.env.ADD_SHOW_DRAGONSTONE_FUNCTION_NAME!,
+    updateShowDragonstoneFunctionName: process.env.UPDATE_SHOW_DRAGONSTONE_FUNCTION_NAME!,
+    updateEpisodesDragonstoneFunctionName: process.env.UPDATE_EPISODES_DRAGONSTONE_FUNCTION_NAME!
   };
 }
 
@@ -28,8 +24,6 @@ function createTestConfig() {
   return {
     sentryDsn: 'sentry-dsn',
     logdnaKey: 'LOGDNA_KEY',
-    redKeepApiKey: 'EH_RED_KEEP_API_KEY',
-    ehRedKeepUrl: 'EH_RED_KEEP_URL',
     theTvDbApiKey: 'THE_TV_DB_API_KEY',
     snsUpdateShow: 'EH_SNS_UPDATE_SHOW',
     addShowDragonstoneFunctionName: 'ADD_SHOW_DRAGONSTONE_FUNCTION_NAME',

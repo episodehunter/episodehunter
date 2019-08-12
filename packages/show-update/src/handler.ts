@@ -2,9 +2,9 @@ import { createGuard } from '@episodehunter/kingsguard';
 import { TooManyEpisodes } from '@episodehunter/thetvdb';
 import { Message } from '@episodehunter/types';
 import { SNSEvent } from 'aws-lambda';
-import { updateShow, addShow } from './update-show';
-import { InsufficientShowInformation } from '../custom-erros';
-import { config } from '../config';
+import { config } from './config';
+import { InsufficientShowInformation } from './custom-erros';
+import { addShow, updateShow } from './update-show';
 
 const guard = createGuard(config.sentryDsn, config.logdnaKey);
 
@@ -20,12 +20,12 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
   if (!ids.id || !ids.tvdbId) {
     throw new Error('theTvDbId or id is not a valid id: ' + message);
   }
-  logger.log(`Will update the show with theTvDbId: ${ids.tvdbId} and associated epesodes`);
+  logger.log(`Will update the show (id=${ids.id}, theTvDbId=${ids.tvdbId}) and associated epesodes`);
 
   try {
     return await updateShow(ids, logger, context.awsRequestId);
   } catch (error) {
-    logger.log(error && error.message);
+    logger.warn(error && error.message);
     if (error instanceof TooManyEpisodes || error instanceof InsufficientShowInformation) {
       return Promise.resolve('Error but OK: ' + error.message);
     }

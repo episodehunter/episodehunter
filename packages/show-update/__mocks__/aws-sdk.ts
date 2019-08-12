@@ -7,7 +7,7 @@ export const config = {
 export const invoke = jest.fn((event: { FunctionName: string; Payload: string; InvocationType?: string }) => ({
   promise: () => {
     if (event.FunctionName === appConfig.addShowDragonstoneFunctionName) {
-      const response: Partial<Dragonstone.AddShow.Response> = { ids: { id: 'some-new-id', tvdb: 1 } };
+      const response: Partial<Dragonstone.AddShow.Response> = { ids: { id: 100, tvdb: 1, imdb: null } };
       return Promise.resolve({ Payload: JSON.stringify(response) });
     }
     return Promise.resolve();

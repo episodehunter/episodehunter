@@ -1,7 +1,8 @@
 import { Logger } from '@episodehunter/logger';
-import { Message } from '@episodehunter/types';
-import { fetchShow, fetchShowEpisodes } from '../the-tv-db.util';
-import { calculateEpisodeNumber, createPromiseBatch, sortEpisode, groupArray } from '../util';
+import { Message, ShowId } from '@episodehunter/types';
+import { groupArray } from '@episodehunter/utils';
+import { fetchShow, fetchShowEpisodes, getInformationFromTvDb } from './the-tv-db.util';
+import { createPromiseBatch, sortEpisode } from './util';
 import { addShowRequest, updateEpisodesRequest, updateShowRequest } from './dragonstone.util';
 import { mapTheTvShowToDefinition, mapTheTvEpisodesToDefinition } from './mapper';
 
@@ -26,7 +27,7 @@ export async function addShow(
   logger: Logger,
   awsRequestId: string
 ): Promise<Message.UpdateShow.AddShow.Response> {
-  const [theTvDbShow, theTVDbEpisodes] = await Promise.all([fetchShow(tvDbId, logger), fetchShowEpisodes(tvDbId, logger)]);
+  const [theTvDbShow, theTVDbEpisodes] = await getInformationFromTvDb(tvDbId, logger);
   const showDef = mapTheTvShowToDefinition(theTvDbShow);
   const episodesDef = mapTheTvEpisodesToDefinition(theTVDbEpisodes);
   const dragsonstoneShow = await addShowRequest(showDef, awsRequestId);
@@ -35,19 +36,24 @@ export async function addShow(
   return dragsonstoneShow;
 }
 
+/**
+ * The sns mesages size is pretty small so lets create several batches instead
+ */
 export async function updateEpisodes(
-  showId: string,
+  showId: ShowId,
   episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[],
   awsRequestId: string,
   logger: Logger
 ) {
   const pb = createPromiseBatch();
   for (let episodeGroup of groupArray(episodes, 200)) {
+    const fisrtEpisodeInGroup = episodeGroup[0];
+    const lastEpisodeInGroup = episodeGroup[episodeGroup.length - 1];
     pb.add(
       updateEpisodesRequest(
         showId,
-        calculateEpisodeNumber(episodeGroup[0]),
-        calculateEpisodeNumber(episodeGroup[episodeGroup.length - 1]),
+        fisrtEpisodeInGroup.episodenumber,
+        lastEpisodeInGroup.episodenumber,
         episodeGroup,
         awsRequestId,
         logger
@@ -57,6 +63,9 @@ export async function updateEpisodes(
   return await pb.compleat();
 }
 
+/**
+ * Find the first episode that needs to update and only take that one and the rest in order
+ */
 function filterEpisodesToUpdate(episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[], lastupdate: Number) {
   const firstEpisodeIndex = episodes.findIndex(episode => episode.lastupdated > lastupdate);
   return episodes.slice(firstEpisodeIndex);
