@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2018",
+    "moduleResolution": "node",
+    "lib": ["es2018"],
+    "strict": true,
+    "noUnusedParameters": true,
+    "strictPropertyInitialization": true,
+    "allowUnusedLabels": false,
+    "sourceMap": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "pretty": true
+  }
+}

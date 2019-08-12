@@ -1,12 +1,13 @@
-import * as url from 'url'
 import { spy } from 'simple-spy'
-import {
-  handelHttpError,
-  TheTvDb,
-  getHigestRating,
-  ensureArray
-} from '../the-tv-db'
+import * as url from 'url'
 import { NotFound } from '../custom-erros'
+import {
+  ensureArray,
+  getHigestRating,
+  handelHttpError,
+  TheTvDb
+} from '../the-tv-db'
+import { TheTvDbShowImage } from '../types'
 
 describe('handelHttpError', () => {
   test('reject when not okay', () => {
@@ -315,7 +316,7 @@ describe('Get Higest Rating', () => {
 
   test('Get noting if the array is empty', () => {
     // Arrange
-    const episodes = []
+    const episodes: TheTvDbShowImage[] = []
 
     // Act
     const result = getHigestRating(episodes)
@@ -580,7 +581,7 @@ describe('ensureArray', () => {
     const arr = null
 
     // Act
-    const result = ensureArray(arr)
+    const result = ensureArray(arr as any)
 
     // Assert
     expect(result).toEqual([])

@@ -1,6 +1,6 @@
 import fetch, { Response } from 'node-fetch'
 import { TooManyEpisodes, NotFound, Timeout } from './custom-erros'
-import AbortController from 'abort-controller';
+import AbortController from 'abort-controller'
 import {
   TheTvDbShow,
   TheTvDbShowEpisode,
@@ -11,7 +11,9 @@ import {
 } from './types'
 
 const noop: (msg: string) => void = () => undefined
-const logWrapper = (log, msg: string) => <T>(val: T): T => {
+const logWrapper = (log: (msg: string) => void, msg: string) => <T>(
+  val: T
+): T => {
   log(msg)
   return val
 }
@@ -19,7 +21,7 @@ const logWrapper = (log, msg: string) => <T>(val: T): T => {
 export class TheTvDb {
   private apikey: string
   private fetch: typeof fetch
-  jwt: Promise<string>
+  jwt: Promise<string> | undefined = undefined
 
   constructor(apikey: string, _fetch = fetch) {
     this.apikey = apikey
@@ -144,37 +146,44 @@ export class TheTvDb {
       .then(logWrapper(log, 'Done and done'))
   }
 
-  private async get(url: string, log: typeof noop, timeout = 1000): Promise<Response> {
+  private async get(
+    url: string,
+    log: typeof noop,
+    timeout = 1000
+  ): Promise<Response> {
     log('Making request to ' + url)
-    const token = await this.token;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const token = await this.token
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeout)
 
     try {
       const result = await this.fetch(url, {
         method: 'GET',
         headers: { Authorization: 'Bearer ' + token },
         signal: controller.signal
-      } as any); // The current type to not accept signal
-      clearTimeout(timeoutId);
+      } as any) // The current type to not accept signal
+      clearTimeout(timeoutId)
       log('We got a result from ' + url)
-      return result;
+      return result
     } catch (error) {
-      clearTimeout(timeoutId);
+      clearTimeout(timeoutId)
       if (error.name === 'AbortError') {
         log(`Did not recive any reposne within ${timeout} ms. url: ` + url)
         if (timeout >= 3000) {
           log(`Giving up. url: ` + url)
-          throw new Timeout(`Timeout after ${timeout} ms for url: ${url}`);
+          throw new Timeout(`Timeout after ${timeout} ms for url: ${url}`)
         }
-        return this.get(url, log, timeout + 1000);
+        return this.get(url, log, timeout + 1000)
       }
       if (error) {
-        log(`Could not get any respone. ${error.name} ${error.message}. url: ` + url)
+        log(
+          `Could not get any respone. ${error.name} ${error.message}. url: ` +
+            url
+        )
       } else {
         log(`Could not get any respone. url: ` + url)
       }
-      throw error;
+      throw error
     }
   }
 
@@ -219,6 +228,7 @@ export function ensureArray<T = any>(data: T[]): T[] {
   return []
 }
 
-function rejectIfNot(error) {
-  return val => (val ? val : Promise.reject(error))
+function rejectIfNot(error: Error) {
+  return <T>(val: T): Promise<T> =>
+    val ? Promise.resolve(val) : Promise.reject(error)
 }
