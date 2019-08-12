@@ -2,3 +2,7 @@ dist
 node_modules
 env.yml
 .serverless
+npm-debug.log
+.nyc_output
+coverage
+bucket
