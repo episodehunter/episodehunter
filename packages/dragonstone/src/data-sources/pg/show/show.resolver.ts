@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import { Dragonstone, Message, ShowId } from '@episodehunter/types';
 import { PgShow } from '../pg-types';
 import { mapShow, mapShowInputToShow } from './show.mapper';
-import { update, insert } from '../util/pg-util';
+import { update, insertAndReturn } from '../util/pg-util';
 import { ShowLoader } from './show.loader';
 
 export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
@@ -44,7 +44,7 @@ export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
         return mapShow(dbResult.rows[0])!;
       }
       const newShow = mapShowInputToShow(showInput);
-      const dbInsertResult = await client.query(insert('shows', newShow as any));
+      const dbInsertResult = await client.query(insertAndReturn('shows', newShow as any));
       return mapShow(dbInsertResult.rows[0])!;
     }
   };
