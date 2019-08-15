@@ -2,10 +2,9 @@ console.time('loading');
 const handler = require('./dist/handler');
 console.timeEnd('loading');
 
-const data = 80379; // theTvDbId
-// const data = 121361; // theTvDbId, game of throes
+const data = 360893; // theTvDbId
 
-const event = { theTvDbId: data };
+const event = { theTvDbId: data, requestStack: ['local'] };
 
 const timeout = Date.now() + 15000;
 
