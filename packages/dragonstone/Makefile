@@ -11,7 +11,6 @@ deployfunctions: compile
 	serverless deploy --function updateShow && \
 	serverless deploy --function updateEpisodes && \
 	serverless deploy --function addShow && \
-	serverless deploy --function updateTitles && \
 	serverless deploy --function graphql;
 
 deploy-graphql: compile
