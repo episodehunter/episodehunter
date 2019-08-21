@@ -2,21 +2,23 @@
   "name": "@episodehunter/kingsguard",
   "version": "4.1.0",
   "description": "Kingsguard for episodehunter",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "prepublishOnly": "tsc",
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/episodehunter/kingsguard.git"
+    "url": "git+https://github.com/episodehunter/episodehunter.git"
   },
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/episodehunter/kingsguard/issues"
+    "url": "https://github.com/episodehunter/episodehunter/issues"
   },
-  "homepage": "https://github.com/episodehunter/kingsguard#readme",
+  "homepage": "https://github.com/episodehunter/episodehunter/packages/kingsguard#readme",
   "engines": {
     "node": "8.15.1"
   },
@@ -28,16 +30,16 @@
   "dependencies": {},
   "devDependencies": {
     "@episodehunter/logger": "4.1.2",
-    "@types/aws-lambda": "8.10.23",
-    "@types/jest": "24.0.11",
-    "@types/node": "11.12.2",
-    "jest": "24.5.0",
-    "simple-spy": "2.2.1",
-    "ts-jest": "24.0.1",
-    "typescript": "3.4.1"
+    "@types/aws-lambda": "8.10.31",
+    "@types/jest": "24.0.18",
+    "@types/node": "12.7.2",
+    "jest": "24.9.0",
+    "simple-spy": "3.0.1",
+    "ts-jest": "24.0.2",
+    "typescript": "3.5.3"
   },
   "peerDependencies": {
-    "@episodehunter/logger": "^4.1.0",
+    "@episodehunter/logger": "^4.1.2",
     "@types/aws-lambda": ">=8.10.23"
   },
   "jest": {

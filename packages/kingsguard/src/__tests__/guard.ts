@@ -1,5 +1,5 @@
 import { spy } from 'simple-spy'
-import { createGuard } from './guard'
+import { createGuard } from '../guard'
 
 jest.useFakeTimers()
 
@@ -20,7 +20,7 @@ beforeEach(() => {
 
 test('Set up logger', async () => {
   // Arrange
-  const setupLogger = spy(() => () => {})
+  const setupLogger = spy((logdnaKey: string, sentry: string) => () => {})
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const fun = (event: any, logger: any, context: any) => {}
   const awsFun = guard(fun)
@@ -78,7 +78,7 @@ test('Pass the result to the callback', async () => {
 test('Capture exception on failure', async () => {
   // Arrange
   expect.assertions(4)
-  const captureException = spy(() => null)
+  const captureException = spy((error: Error) => null)
   const setupLogger = () => () => ({
     captureException
   })
@@ -108,7 +108,7 @@ test('Capture a timeout error before timeout', async () => {
     functionName: 'test',
     getRemainingTimeInMillis: spy(() => timeoutTime)
   }
-  const captureException = spy(() => null)
+  const captureException = spy((error: Error) => null)
   const setupLogger = () => () => ({
     captureException
   })
@@ -136,7 +136,7 @@ test('Capture a timeout error before timeout', async () => {
 
 test('Extract request stack from header', async () => {
   // Arrange
-  const createLogger = spy(() => {})
+  const createLogger = spy((logdnaKey: string, sentry: string) => {})
   const setupLogger = spy(() => createLogger)
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const fun = (event: any, logger: any, context: any) => {}
@@ -158,7 +158,7 @@ test('Extract request stack from header', async () => {
 
 test('Extract request stack from event', async () => {
   // Arrange
-  const createLogger = spy(() => {})
+  const createLogger = spy((logdnaKey: string, sentry: string) => {})
   const setupLogger = spy(() => createLogger)
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const fun = (event: any, logger: any, context: any) => {}

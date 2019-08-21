@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2018",
     "module": "commonjs",
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "./",
+    "outDir": "./dist",
     "strict": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "declaration": true
   },
-  "files": ["index.ts"]
+  "include": ["src"]
 }
