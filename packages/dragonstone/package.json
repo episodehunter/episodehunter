@@ -32,14 +32,14 @@
   "devDependencies": {
     "@episodehunter/types": "^2.1.0",
     "@types/aws-lambda": "8.10.31",
-    "@types/dockerode": "^2.5.20",
+    "@types/dockerode": "2.5.20",
     "@types/graphql": "14.2.3",
     "@types/jest": "24.0.17",
     "@types/node": "12.6.2",
     "@types/pg": "7.4.14",
     "aws-lambda": "0.1.2",
     "jest": "24.8.0",
-    "testcontainers": "^1.2.0",
+    "testcontainers": "1.2.0",
     "ts-jest": "24.0.2"
   },
   "prettier": {
