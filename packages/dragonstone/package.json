@@ -21,7 +21,7 @@
   "dependencies": {
     "@episodehunter/kingsguard": "4.1.0",
     "@episodehunter/logger": "4.1.2",
-    "apollo-server-lambda": "2.6.9",
+    "apollo-server-lambda": "2.9.0",
     "dataloader": "1.4.0",
     "firebase-admin": "8.2.0",
     "graphql": "14.4.2",
