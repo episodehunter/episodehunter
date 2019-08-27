@@ -1,20 +1,16 @@
 import { setupLogger, Logger } from '@episodehunter/logger'
-import { Context, Callback } from 'aws-lambda'
+import { Context } from 'aws-lambda'
 
 type EventType = { [key: string]: any }
 
 function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setupLogger) {
   const createLogger = _setupLogger(ravenDsn, logdnaKey)
   return function guard<T extends EventType>(
-    fun: (event: T, logger: Logger, context: Context) => any
+    fun: (event: T, logger: Logger, context: Context) => Promise<unknown>
   ) {
-    return async (event: T | string, context: Context, callback: Callback) => {
-      let parsedEvent!: T
-      try {
-        parsedEvent = parseEvent(event);
-      } catch (error) {
-        return callback(error)
-      }
+    return async (event: T | string, context: Context) => {
+      const parsedEvent = parseEvent(event)
+
       let requestStack: string[] | undefined
       if (parsedEvent && parsedEvent.headers) {
         requestStack = extractRequestStackFromHeader(parsedEvent)
@@ -27,14 +23,16 @@ function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setup
         logger.captureException(new Error(`Timeout in 500ms for ${context.functionName}`))
       }, context.getRemainingTimeInMillis() - 500)
 
-      try {
-        callback(undefined, await fun(parsedEvent, logger, context))
-      } catch (error) {
-        logger.captureException(error)
-        callback(error)
-      } finally {
-        clearTimeout(timeoutId)
-      }
+      return fun(parsedEvent, logger, context)
+        .then(result => {
+          clearTimeout(timeoutId)
+          return result
+        })
+        .catch(error => {
+          clearTimeout(timeoutId)
+          logger.captureException(error)
+          return Promise.reject(error)
+        })
     }
   }
 }
@@ -42,10 +40,10 @@ function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setup
 function parseEvent<T>(event: T | string): T {
   if (typeof event === 'string') {
     try {
-      return JSON.parse(event);
+      return JSON.parse(event)
     } catch (error) {
-      console.error('Could not parse ' + event);
-      throw error;
+      console.error('Could not parse ' + event)
+      throw error
     }
   } else {
     return event

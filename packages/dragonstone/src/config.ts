@@ -49,7 +49,7 @@ function createDevelopConfig(): Config {
 }
 
 function createConfig(): Config {
-  if (process.env.NODE_ENV === 'develop') {
+  if (process.env.NODE_ENV === 'develop' || process.env.NODE_ENV === 'test') {
     return createDevelopConfig();
   }
   return createProductionConfig();

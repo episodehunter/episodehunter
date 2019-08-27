@@ -15,7 +15,7 @@ import { config } from './config'
 
 const guard = createGuard(config.sentryDsn, config.logdnaKey)
 
-export const plex = guard<APIGatewayEvent>((event, logger, context) => {
+export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
   const username =
     event.queryStringParameters && event.queryStringParameters.username
   const apikey = event.queryStringParameters && event.queryStringParameters.key
@@ -85,33 +85,36 @@ export const plex = guard<APIGatewayEvent>((event, logger, context) => {
     })
 })
 
-export const kodi = guard<APIGatewayEvent>((rawEvent, logger, context) => {
-  const event: KodiEpisodeEvent | KodiMovieEvent = parseJson(rawEvent.body)
-  if (!event) {
-    const message = 'Unable to parse body'
-    logger.log(message)
-    logger.captureBreadcrumb(message, 'parse', {
-      data: rawEvent.body
-    })
-    logger.captureException(new Error(message))
-    return createBadRequestResponse(message)
-  }
+export const kodi = guard<APIGatewayEvent>(
+  async (rawEvent, logger, context) => {
+    const event: KodiEpisodeEvent | KodiMovieEvent = parseJson(rawEvent.body)
+    if (!event) {
+      const message = 'Unable to parse body'
+      logger.log(message)
+      logger.captureBreadcrumb(message, 'parse', {
+        data: rawEvent.body
+      })
+      logger.captureException(new Error(message))
+      return createBadRequestResponse(message)
+    }
 
-  if (!isKodiEpisode(event)) {
-    const message = `Do not support movies yet. Exit. ${JSON.stringify(event)}`
-    logger.log(message)
-    return createOkResponse(message)
-  }
+    if (!isKodiEpisode(event)) {
+      const message = `Do not support movies yet. Exit. ${JSON.stringify(
+        event
+      )}`
+      logger.log(message)
+      return createOkResponse(message)
+    }
 
-  if (event.event_type !== 'scrobble') {
-    const message = `Do not support event type ${
-      event.event_type
-    } yet. Exit. ${JSON.stringify(event)}`
-    logger.log(message)
-    return createOkResponse(message)
-  }
+    if (event.event_type !== 'scrobble') {
+      const message = `Do not support event type ${
+        event.event_type
+      } yet. Exit. ${JSON.stringify(event)}`
+      logger.log(message)
+      return createOkResponse(message)
+    }
 
-  logger.log(`
+    logger.log(`
       Going to scrobbler for kodi.
       Username: ${event.username}
       Apikey: ${event.apikey}
@@ -120,42 +123,43 @@ export const kodi = guard<APIGatewayEvent>((rawEvent, logger, context) => {
       episode: ${event.episode}
     `)
 
-  if (!event.tvdb_id || !event.episode || !event.season) {
-    const message = `Sorry, episodehunter do not accept special episodes at the moment`
-    logger.log(message)
-    return createOkResponse(message)
-  }
+    if (!event.tvdb_id || !event.episode || !event.season) {
+      const message = `Sorry, episodehunter do not accept special episodes at the moment`
+      logger.log(message)
+      return createOkResponse(message)
+    }
 
-  if (!event.username || !event.apikey) {
-    const message = `"username" and/or apikey is missing`
-    logger.log(message)
-    return Promise.resolve(createUnauthorizedOkResponse(message))
-  }
+    if (!event.username || !event.apikey) {
+      const message = `"username" and/or apikey is missing`
+      logger.log(message)
+      return Promise.resolve(createUnauthorizedOkResponse(message))
+    }
 
-  return scrobbleEpisode(
-    event.username,
-    event.apikey,
-    {
-      episode: Number(event.episode),
-      season: Number(event.season),
-      id: Number(event.tvdb_id),
-      provider: 'thetvdb',
-      sorce: 'kodi'
-    },
-    logger,
-    context.awsRequestId
-  )
-    .then(() => createOkResponse('OK'))
-    .catch(error => {
-      if (error instanceof UnauthorizedError) {
-        logger.log(error.message)
-        return Promise.resolve(createUnauthorizedOkResponse(error.message))
-      } else if (error instanceof UnableToAddShowError) {
-        logger.log(error.message)
-        return Promise.resolve(createNotFoundResponse())
-      } else {
-        logger.log(error)
-        return Promise.reject(error)
-      }
-    })
-})
+    return scrobbleEpisode(
+      event.username,
+      event.apikey,
+      {
+        episode: Number(event.episode),
+        season: Number(event.season),
+        id: Number(event.tvdb_id),
+        provider: 'thetvdb',
+        sorce: 'kodi'
+      },
+      logger,
+      context.awsRequestId
+    )
+      .then(() => createOkResponse('OK'))
+      .catch(error => {
+        if (error instanceof UnauthorizedError) {
+          logger.log(error.message)
+          return Promise.resolve(createUnauthorizedOkResponse(error.message))
+        } else if (error instanceof UnableToAddShowError) {
+          logger.log(error.message)
+          return Promise.resolve(createNotFoundResponse())
+        } else {
+          logger.log(error)
+          return Promise.reject(error)
+        }
+      })
+  }
+)

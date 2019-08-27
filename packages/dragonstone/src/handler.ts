@@ -10,11 +10,28 @@ import { getUidFromHeader } from './util/auth';
 import { createFirebase } from './util/firebase-app';
 import { assertEpisodeNumber, assertEpisodes, assertShowId, assertShowInput } from './util/validate';
 import { createPostgresClient } from './util/pg';
-import { createResolver } from './data-sources/pg';
+import { createResolver, PgResolver } from './data-sources/pg';
+import { Client } from 'pg';
 
-const client = createPostgresClient();
 const firebaseApp = createFirebase();
-const pgResolver = createResolver(client);
+let client: Client | undefined;
+let pgResolver: PgResolver | undefined;
+
+const getClient = (): Client => {
+  if (!client) {
+    client = createPostgresClient();
+    // Expose the client for testing
+    (global as any).__DANGEROUS_CLIENT = client;
+  }
+  return client;
+};
+
+const getPgResolver = (): PgResolver => {
+  if (!pgResolver) {
+    pgResolver = createResolver(getClient());
+  }
+  return pgResolver;
+};
 
 let dangerousLogger: Logger;
 
@@ -32,7 +49,7 @@ const server = new ApolloServer({
   },
   context: async (req: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
     const firebaseUid = await getUidFromHeader(firebaseApp.auth, req.event.headers);
-    const context = await createContext(pgResolver, req.event.logger, firebaseUid);
+    const context = await createContext(getPgResolver(), req.event.logger, firebaseUid);
     return context;
   }
 });
@@ -40,7 +57,7 @@ const server = new ApolloServer({
 const apolloHandler = server.createHandler();
 const gard = createGuard(config.sentryDns, config.logdnaKey);
 
-exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
+export const graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   event.logger = logger;
   dangerousLogger = logger;
@@ -73,7 +90,7 @@ exports.graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event,
   });
 });
 
-exports.updateShowHandler = gard<Dragonstone.UpdateShow.Event>(
+export const updateShowHandler = gard<Dragonstone.UpdateShow.Event>(
   (event, logger): Promise<Dragonstone.UpdateShow.Response> => {
     try {
       assertShowId(event.showId);
@@ -83,11 +100,11 @@ exports.updateShowHandler = gard<Dragonstone.UpdateShow.Event>(
       throw new Error(`${error.message} ${JSON.stringify(event)}`);
     }
 
-    return pgResolver.show.updateShow(event.showId, event.showInput, logger);
+    return getPgResolver().show.updateShow(event.showId, event.showInput, logger);
   }
 );
 
-exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>(
+export const updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>(
   (event, logger): Promise<Dragonstone.UpdateEpisodes.Response> => {
     try {
       assertShowId(event.showId);
@@ -99,7 +116,7 @@ exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>(
       throw new Error(`${error.message} ${JSON.stringify(event)}`);
     }
 
-    return pgResolver.episode.updateEpisodes(
+    return getPgResolver().episode.updateEpisodes(
       event.showId,
       event.firstEpisode,
       event.lastEpisode,
@@ -109,9 +126,9 @@ exports.updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>(
   }
 );
 
-exports.addShowHandler = gard<Dragonstone.AddShow.Event>(
+export const addShowHandler = gard<Dragonstone.AddShow.Event>(
   (event, logger): Promise<Dragonstone.AddShow.Response> => {
     assertShowInput(event.showInput);
-    return pgResolver.show.addShow(event.showInput, logger);
+    return getPgResolver().show.addShow(event.showInput, logger);
   }
 );

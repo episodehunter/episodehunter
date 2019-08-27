@@ -10,7 +10,7 @@
     "build": "tsc -p tsconfig.build.json",
     "deploy": "make deploy",
     "test": "jest",
-    "test:intergration": "jest --testPathPattern=__intergration_test__/test.ts"
+    "test:intergration": "jest --testPathPattern=__intergration_test__/test.ts --runInBand --bail"
   },
   "repository": {
     "type": "git",

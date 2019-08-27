@@ -38,7 +38,7 @@ export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
       return mapShow(newShow);
     },
     async addShow(showInput: Message.Dragonstone.ShowInput, logger: Logger): Promise<Dragonstone.Show> {
-      const dbResult = await client.query('SELECT * FROM shows WHERE external_id_tvdb=$1 LIMIT 1', [showInput.tvdbId]);
+      const dbResult = await client.query('SELECT * FROM "shows" WHERE external_id_tvdb=$1 LIMIT 1', [showInput.tvdbId]);
       if (dbResult.rowCount > 0) {
         logger.log(`Show with thetvdb ${showInput.tvdbId} do already exist`);
         return mapShow(dbResult.rows[0])!;

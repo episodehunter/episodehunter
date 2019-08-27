@@ -57,7 +57,7 @@ export function inserts(table: string, obj: Record<string, rowValues>[]): QueryC
     rowsToInsert.push(rowToInsert);
   }
 
-  const text = `INSERT INTO ${table} (${columnNames.join(', ')}) VALUES ${expand(
+  const text = `INSERT INTO "${table}" (${columnNames.join(', ')}) VALUES ${expand(
     rowsToInsert.length,
     columnNames.length
   )}`;

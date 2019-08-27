@@ -1,5 +1,6 @@
 import { StartedTestContainer } from 'testcontainers/dist/test-container';
 import { GenericContainer } from 'testcontainers';
+import { Dragonstone } from '@episodehunter/types/message';
 import { Client } from 'pg';
 import { setupSchema } from './setup-db';
 
@@ -11,39 +12,128 @@ const pgContainer = new GenericContainer('postgres')
 describe('Intergration test', () => {
   let pg: StartedTestContainer;
   let client: Client;
+  let handler: typeof import('../src/handler');
 
-  beforeAll(async () => {
+  const createContext = () => ({
+    functionName: 'function-under-test',
+    getRemainingTimeInMillis: () => 5000,
+    functionVersion: '1',
+    requestId: 2,
+    logGroupName: 'log-group-name',
+    logStreamName: 'log-stream-name',
+    callbackWaitsForEmptyEventLoop: false,
+    invokedFunctionArn: '',
+    memoryLimitInMB: 100,
+    awsRequestId: '1',
+    done: () => null,
+    fail: () => null,
+    succeed: () => null
+  });
+
+  beforeAll(async done => {
     pg = await pgContainer.start();
     process.env.PG_CONNECTION_URI = `postgres://test:test@localhost:${pg.getMappedPort(5432)}/test`;
-    process.env.FIREBASE_KEY = `This is a Firebase key`;
-    process.env.ENGINE_API_KEY = `This is a ENGINE_API_KEY`;
-    process.env.LOGDNA_KEY = `This is a LOGDNA_KEY`;
-    process.env.AWS_SENTRY_DSN = `This is a AWS_SENTRY_DSN`;
+    // Start a local docker container with "docker run -p 54320:5432 -e POSTGRES_PASSWORD=test -e POSTGRES_USER=test postgres"
+    // and uncomment the following line:
+    // process.env.PG_CONNECTION_URI = `postgres://test:test@localhost:54320/test`;
+    process.env.FIREBASE_KEY = ``;
+    process.env.ENGINE_API_KEY = ``;
+    process.env.LOGDNA_KEY = ``;
+    process.env.AWS_SENTRY_DSN = ``;
+    process.env.NODE_ENV = 'test';
 
-    client = new Client({ connectionString: process.env.PG_CONNECTION_URI });
-    client.connect();
+    try {
+      client = new Client({ connectionString: process.env.PG_CONNECTION_URI });
+      client.connect();
 
-    await setupSchema(client);
+      await setupSchema(client);
+      handler = await import('../src/handler');
+      done();
+    } catch (error) {
+      done(error);
+    }
   });
 
-  afterAll(async () => {
-    await client.end();
-    await pg.stop();
+  afterAll(async done => {
+    const sutClient = (global as any).__DANGEROUS_CLIENT;
+    try {
+      await client.end();
+      if (sutClient) {
+        await sutClient.end();
+      }
+      await pg.stop();
+      done();
+    } catch (error) {
+      done(error);
+    }
   });
 
-  test('User must be created', async () => {
-    await client.query(
-      `INSERT INTO users (firebase_id, name, api_key) VALUES ('some key', 'some name', 'some api key')`
-    );
+  describe('Add show', () => {
+    test('Add a new, ended, show: Dexter', async () => {
+      // Arrange
+      const event: Dragonstone.AddShow.Event = {
+        showInput: {
+          tvdbId: 79349,
+          imdbId: 'tt0773262',
+          name: 'Dexter',
+          firstAired: '2006-10-01',
+          genre: ['Crime', 'Drama', 'Mystery', 'Suspense', 'Thriller'],
+          language: 'en',
+          network: 'Showtime',
+          overview: 'Dexter Morgan is a Miami-based blood splatter expert',
+          runtime: 50,
+          ended: true,
+          lastupdate: 1554064896
+        },
+        requestStack: []
+      };
+      const getDexterQuery = `SELECT * FROM shows WHERE name='Dexter'`;
+      let dbResult = await client.query(getDexterQuery);
+      expect(dbResult.rowCount).toBe(0);
 
-    const result = await client.query(`SELECT * FROM users`);
+      // Act
+      const result = await handler.addShowHandler(JSON.stringify(event), createContext());
 
-    expect(result.rowCount).toBe(1);
-    expect(result.rows[0]).toEqual({
-      id: 1,
-      firebase_id: 'some key',
-      name: 'some name',
-      api_key: 'some api key'
+      // Assert
+      dbResult = await client.query(getDexterQuery);
+
+      expect(dbResult.rowCount).toBe(1);
+      expect(dbResult.rows[0]).toEqual({
+        id: 3,
+        name: 'Dexter',
+        external_id_imdb: 'tt0773262',
+        external_id_tvdb: 79349,
+        airs_first: '2006-10-01',
+        airs_time: null,
+        airs_day: null,
+        genre: ['Crime', 'Drama', 'Mystery', 'Suspense', 'Thriller'],
+        language: 'en',
+        network: 'Showtime',
+        overview: 'Dexter Morgan is a Miami-based blood splatter expert',
+        runtime: 50,
+        ended: true,
+        lastupdated: 1554064896
+      });
+      expect(result).toEqual({
+        airs: {
+          first: '2006-10-01',
+          time: null,
+          day: null
+        },
+        ended: true,
+        genre: ['Crime', 'Drama', 'Mystery', 'Suspense', 'Thriller'],
+        ids: {
+          id: 3,
+          imdb: 'tt0773262',
+          tvdb: 79349
+        },
+        language: 'en',
+        lastupdated: 1554064896,
+        name: 'Dexter',
+        network: 'Showtime',
+        overview: 'Dexter Morgan is a Miami-based blood splatter expert',
+        runtime: 50
+      });
     });
   });
 });
