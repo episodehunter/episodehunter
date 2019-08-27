@@ -1,13 +1,6 @@
 import { Context } from 'aws-lambda';
-import * as DnaLogger from 'logdna';
+import * as dnaLogger from 'logdna';
 import * as Sentry from '@sentry/node';
-
-interface DnaLogger {
-  log: (
-    message: string,
-    opt: { level: 'Debug' | 'Trace' | 'Info' | 'Warn' | 'Error' | 'Fatal'; meta: any; app: string }
-  ) => void;
-}
 
 export interface Logger {
   log(message: string): void;
@@ -21,16 +14,19 @@ export function setupLogger(
   ravenDns?: string,
   logDnaApiKey?: string
 ): (context: Context, requestStack?: string[]) => Logger {
+  if (process.env.NODE_ENV === 'test') {
+    return createTestLogger;
+  }
   if (!ravenDns || !logDnaApiKey) {
-    console.warn('Logger: Missing ravenDns and/or logDnaApiKey, using console');
-    return createFakeLogger;
+    console.warn('Logger: Missing ravenDns and/or logDnaApiKey, using console only');
+    return createLocalLogger;
   }
   installSentry(ravenDns);
   const dnaLogger = installLogdna(logDnaApiKey);
   return createCreateSentryLogger(dnaLogger);
 }
 
-function createCreateSentryLogger(logdna: DnaLogger) {
+function createCreateSentryLogger(logdna: dnaLogger.DnaLogger) {
   return (context: Context, requestStack: string[] = []): Logger => {
     const meta = {
       functionName: context.functionName,
@@ -78,7 +74,7 @@ function createCreateSentryLogger(logdna: DnaLogger) {
       } catch (error) {
         logdna.log('Could not parse error message', { level: 'Fatal', meta, app: context.functionName });
       }
-      DnaLogger.flushAll(() => null);
+      dnaLogger.flushAll();
     };
     const eventStart = (message: string, category = 'event') => {
       const startMsg = `[START] ${message}. Remaning time ${context.getRemainingTimeInMillis()}ms`;
@@ -97,7 +93,21 @@ function createCreateSentryLogger(logdna: DnaLogger) {
   };
 }
 
-function createFakeLogger(context: Context, requestStack: string[] = []): Logger {
+function createTestLogger(): Logger {
+  return {
+    log: () => {},
+    warn: (message: string) => console.warn(message),
+    captureBreadcrumb: () => {},
+    captureException: (error: Error) => {
+      console.error(error);
+    },
+    eventStart: () => {
+      return () => {}
+    },
+  }
+}
+
+function createLocalLogger(context: Context, requestStack: string[] = []): Logger {
   const meta = {
     functionName: context.functionName,
     functionVersion: context.functionVersion,
@@ -110,19 +120,19 @@ function createFakeLogger(context: Context, requestStack: string[] = []): Logger
     console.log(message);
   };
   const warn = (message: string) => {
-    console.log(message);
+    console.warn(message);
   };
   const captureBreadcrumb = (message: string, category: string, data?: object) => {
     console.log(message, category, data);
   };
   const captureException = (error: Error & { awsRequestId?: string }) => {
     error.awsRequestId = context.awsRequestId;
-    console.log(error);
+    console.error(error);
     try {
       const logmsg = error.message + ' at ' + error.stack;
-      console.log(logmsg, { level: 'Fatal', meta, app: context.functionName });
+      console.error(logmsg, { level: 'Fatal', meta, app: context.functionName });
     } catch (error) {
-      console.log('Could not parse error message', { level: 'Fatal', meta, app: context.functionName });
+      console.error('Could not parse error message', { level: 'Fatal', meta, app: context.functionName });
     }
   };
   const eventStart = (message: string, category = 'event') => {
@@ -145,7 +155,7 @@ function installSentry(ravenDns: string) {
 }
 
 function installLogdna(logDnaApiKey: string) {
-  return DnaLogger.setupDefaultLogger(logDnaApiKey, {
+  return dnaLogger.createLogger(logDnaApiKey, {
     env: process.env.NODE_ENV === 'develop' ? 'develop' : 'production',
     index_meta: true
   });

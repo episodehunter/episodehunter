@@ -13,3 +13,5 @@ const handler = (event, context, cb) => {
   logger.log('Hello!');
 };
 ```
+
+Do not log under test (`process.env.NODE_ENV === 'test'`)

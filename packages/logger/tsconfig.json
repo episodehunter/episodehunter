@@ -2,14 +2,12 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "./",
-    "strict": false,
-    "noImplicitThis": true,
+    "outDir": "./dist",
+    "strict": true,
+    "noUnusedLocals": true,
     "moduleResolution": "node",
-    "strictPropertyInitialization": false,
-    "noUnusedLocals": true
+    "sourceMap": true,
+    "declaration": true
   },
-  "files": ["index.ts"]
+  "include": ["src", "logdna.d.ts"]
 }

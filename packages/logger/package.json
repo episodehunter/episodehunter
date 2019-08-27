@@ -2,14 +2,14 @@
   "name": "@episodehunter/logger",
   "version": "4.1.2",
   "description": "Logger for episodehunter",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "prepublishOnly": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/episodehunter/logger.git"
+    "url": "https://github.com/episodehunter/episodehunter.git"
   },
   "keywords": [
     "logger"
@@ -17,17 +17,17 @@
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/episodehunter/logger/issues"
+    "url": "https://github.com/episodehunter/episodehunter/issues"
   },
-  "homepage": "https://github.com/episodehunter/logger#readme",
+  "homepage": "https://github.com/episodehunter/episodehunter/packages/logger#readme",
   "dependencies": {
-    "@sentry/node": "^4.6.4",
-    "logdna": "^2.1.1"
+    "@sentry/node": "^5.6.2",
+    "logdna": "^3.3.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "8.10.24",
-    "@types/node": "11.12.2",
-    "typescript": "3.4.1"
+    "@types/aws-lambda": "8.10.31",
+    "@types/node": "12.7.2",
+    "typescript": "3.5.3"
   },
   "engines": {
     "node": "8.16.0"
