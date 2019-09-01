@@ -9,7 +9,7 @@
     "start": "NODE_ENV=develop node index.js",
     "build": "tsc -p tsconfig.build.json",
     "deploy": "make deploy",
-    "test": "jest",
+    "test": "jest --testPathPattern=src\/.+test.ts",
     "test:intergration": "jest --testPathPattern=__intergration_test__/test.ts --runInBand --bail"
   },
   "repository": {
@@ -38,6 +38,7 @@
     "@types/node": "12.7.2",
     "@types/pg": "7.4.14",
     "aws-lambda": "0.1.2",
+    "fast-check": "^1.16.2",
     "jest": "24.9.0",
     "testcontainers": "1.2.0",
     "ts-jest": "24.0.2"

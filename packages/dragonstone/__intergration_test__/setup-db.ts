@@ -1,6 +1,6 @@
 import { Client } from 'pg';
 
-export function setupSchema(client: Client) {
+export function setupDatabas(client: Client) {
   return client.query(`
   DROP VIEW IF EXISTS "public"."titles" cascade;
 
@@ -112,12 +112,12 @@ export function setupSchema(client: Client) {
 
   INSERT INTO "public"."shows" ("id", "name", "external_id_imdb", "external_id_tvdb", "airs_first", "airs_time", "airs_day", "genre", "language", "network", "overview", "runtime", "ended", "lastupdated") VALUES ('2', 'Breaking Bad', 'tt0903747', '81189', '2008-01-20', '21:00', '6', '{Crime,Drama,Suspense,Thriller}', 'en', 'AMC', 'Walter White, a struggling high school chemistry teacher, is diagnosed with advanced lung cancer. He turns to a life of crime, producing and selling methamphetamine accompanied by a former student, Jesse Pinkman, with the aim of securing his family''s financial future before he dies.', '45', 't', '1553807287');
   INSERT INTO "public"."episodes" ("show_id", "name", "first_aired", "overview", "lastupdated", "episodenumber", "external_id_tvdb") VALUES ('2', 'Pilot', '2008-01-20', 'When an unassuming high school chemistry teacher discovers he has a rare form of lung cancer, he decides to team up with a former student and create a top of the line crystal meth in a used RV, to provide for his family once he is gone.', '1520652290', '10001', '7121402'),
-    ('2', 'Cat''s in the Bag...', '2008-01-27', 'Walt and Jesse attempt to tie up loose ends. The desperate situation gets more complicated with the flip of a coin. Walt''s wife, Skyler, becomes suspicious of Walt''s strange behavior.', '1520652296', '10002', '7121402'),
-    ('2', '...And the Bag''s in the River', '2008-02-10', 'Walter fights with Jesse over his drug use, causing him to leave Walter alone with their captive, Krazy-8. Meanwhile, Hank has a scared straight moment with Walter Jr. after his aunt discovers he has been smoking pot. Also, Skylar is upset when Walter stays away from home.', '1520652300', '10003', '7121402'),
-    ('2', 'Cancer Man', '2008-02-17', 'Walter finally tells his family that he has been stricken with cancer. Meanwhile, the DEA believes Albuquerque has a new, big time player to worry about. Meanwhile, a worthy recipient is the target of a depressed Walter''s anger, and Jesse makes a surprise visit to his parents home.', '1520652304', '10004', '7121402'),
-    ('2', 'Gray Matter', '2008-02-24', 'Walter and Skyler attend a former colleague''s party. Jesse tries to free himself from the drugs, while Skyler organizes an intervention.', '1520652308', '10005', '7121402'),
-    ('2', 'Crazy Handful of Nothin''', '2008-03-02', 'The side effects of chemo begin to plague Walt. Meanwhile, the DEA rounds up suspected dealers.', '1520652311', '10006', '7121402'),
-    ('2', 'A No-Rough-Stuff-Type Deal', '2008-03-09', 'Walter accepts his new identity as a drug dealer after a PTA meeting. Elsewhere, Jesse decides to put his aunt''s house on the market and Skyler is the recipient of a baby shower.', '1520652316', '10007', '7121402');
+    ('2', 'Cat''s in the Bag...', '2008-01-27', 'Walt and Jesse attempt to tie up loose ends.', '1520652296', '10002', '7121402'),
+    ('2', '...And the Bag''s in the River', '2008-02-10', 'Walter fights with Jesse over his drug use', '1520652300', '10003', '7121402'),
+    ('2', 'Cancer Man', '2008-02-17', 'Walter finally tells his family that he has been stricken with cancer.', '1520652304', '10004', '7121402'),
+    ('2', 'Gray Matter', '2008-02-24', 'Walter and Skyler attend a former colleague''s party.', '1520652308', '10005', '7121402'),
+    ('2', 'Crazy Handful of Nothin''', '2008-03-02', 'The side effects of chemo begin to plague Walt.', '1520652311', '10006', '7121402'),
+    ('2', 'A No-Rough-Stuff-Type Deal', '2008-03-09', 'Walter accepts his new identity.', '1520652316', '10007', '7121402');
 
   SELECT setval('shows_id_seq', 3, false);
 

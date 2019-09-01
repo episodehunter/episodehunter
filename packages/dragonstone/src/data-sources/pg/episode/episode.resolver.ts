@@ -82,8 +82,8 @@ export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoad
     const batch = createEpisodeBatch(client);
 
     const episodesDbResult = await client.query(
-      `SELECT * FROM episodes WHERE episodenumber >= $1 AND episodenumber <= $2`,
-      [first, last]
+      `SELECT * FROM episodes WHERE episodenumber >= $1 AND episodenumber <= $2 AND show_id = $3`,
+      [first, last, showId]
     );
     const knownEpisodes = new Set<number>();
 

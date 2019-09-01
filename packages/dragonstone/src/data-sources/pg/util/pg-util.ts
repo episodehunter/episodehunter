@@ -16,12 +16,13 @@ export function update(table: string, id: number, obj: any): QueryConfig {
 
 export function updateEpisode(episode: PgEpisode): QueryConfig {
   return {
-    text: `UPDATE episodes SET name = $1, first_aird = $2, overview = $3, lastupdated = $4 WHERE show_id = $5 AND episodenumber = $6`,
+    text: `UPDATE episodes SET name = $1, first_aired = $2, overview = $3, lastupdated = $4, external_id_tvdb = $5 WHERE show_id = $6 AND episodenumber = $7`,
     values: [
       episode.name,
       episode.first_aired,
       episode.overview,
       episode.lastupdated,
+      episode.external_id_tvdb,
       episode.show_id,
       episode.episodenumber
     ]
@@ -66,7 +67,7 @@ export function inserts(table: string, obj: Record<string, rowValues>[]): QueryC
 
 function insertEpisodes(obj: PgEpisode[]): QueryConfig {
   const query = inserts('episodes', obj as any);
-  query.text += ` ON CONFLICT ON CONSTRAINT uniq_episode DO NOTHING`;
+  query.text += ` ON CONFLICT (show_id, episodenumber) DO NOTHING`;
   return query;
 }
 
@@ -118,8 +119,10 @@ export function createEpisodeBatch(client: Client) {
       await client.query(updateEpisode(episode));
     },
     async commit() {
-      await client.query(insertEpisodes(episodesToInsert));
-      episodesToInsert = [];
+      if (episodesToInsert.length > 0) {
+        await client.query(insertEpisodes(episodesToInsert));
+        episodesToInsert = [];
+      }
       await client.query('COMMIT');
       return stat;
     }
