@@ -11,7 +11,7 @@ export const episode = gql`
     lastupdated: Int!
     name: String!
     overview: String
-    watched: [WatchedEpisode]!
+    watched: [WatchedEpisode!]!
   }
 
   type EpisodeIds {

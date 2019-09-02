@@ -105,11 +105,8 @@ const NextToWatch: NextToWatchQuerryType = {
     return context.pgResolver.episode.getNextEpisodeToWatch(context.getUid(), showId);
   },
   madeMutation(root, args, context) {
-    if (Array.isArray(root)) {
-      return Boolean(root.length);
-    } else {
-      return Boolean(root);
-    }
+    // TODO: Remove this resolver
+    return true;
   }
 };
 

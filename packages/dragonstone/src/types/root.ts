@@ -18,7 +18,7 @@ export const root = gql`
 
   type RootQuery {
     show(id: Int!): Show
-    season(showId: Int!, season: Int!): [Episode]!
+    season(showId: Int!, season: Int!): [Episode!]!
     following: [Following!]!
     titles: [Title]!
     history(page: Int!): [History]!
@@ -26,7 +26,7 @@ export const root = gql`
   }
 
   type RootMutation {
-    checkInEpisode(episode: WatchedEpisodeInput!, apiKey: String, username: String): NextToWatch
+    checkInEpisode(episode: WatchedEpisodeInput!, apiKey: String, username: String): NextToWatch!
     checkInEpisodes(episodes: [WatchedEpisodeInput]!): NextToWatch!
     removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): NextToWatch!
     followShow(showId: Int!): Boolean
