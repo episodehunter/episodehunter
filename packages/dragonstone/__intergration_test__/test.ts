@@ -654,11 +654,14 @@ describe('Intergration test', () => {
     });
     test('User is not following Breaking bad', async () => {
       // Arrange
-      const event = createGraphQlEvent(`{
+      const event = createGraphQlEvent(
+        `{
         show(id: 2) {
           isFollowing
         }
-      }`, '2');
+      }`,
+        '2'
+      );
 
       // Act
       const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
