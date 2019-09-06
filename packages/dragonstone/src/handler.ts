@@ -6,7 +6,7 @@ import { config } from './config';
 import { createContext } from './context';
 import { resolvers } from './resolvers/root';
 import { root as typeDefs } from './types/root';
-import { getUidFromHeader } from './util/auth';
+import { getFirebaseUidFromHeader } from './util/auth';
 import { createFirebase } from './util/firebase-app';
 import { assertEpisodeNumber, assertEpisodes, assertShowId, assertShowInput } from './util/validate';
 import { createPostgresClient } from './util/pg';
@@ -48,7 +48,7 @@ const server = new ApolloServer({
     return error;
   },
   context: async (req: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
-    const firebaseUid = await getUidFromHeader(firebaseApp.auth, req.event.headers);
+    const firebaseUid = await getFirebaseUidFromHeader(firebaseApp.auth, req.event.headers);
     const context = await createContext(getPgResolver(), req.event.logger, firebaseUid);
     return context;
   }

@@ -3,7 +3,7 @@ import { GenericContainer } from 'testcontainers';
 import { Dragonstone } from '@episodehunter/types/message';
 import { Client } from 'pg';
 import { setupDatabas } from './setup-db';
-import { PgEpisode } from '../src/data-sources/pg/pg-types';
+import { PgEpisode, PgUser } from '../src/data-sources/pg/pg-types';
 
 interface GraphQLResult {
   statusCode: 200;
@@ -37,7 +37,7 @@ describe('Intergration test', () => {
     succeed: () => null
   });
 
-  const createGraphQlEvent = (query: string, auth = false) => {
+  const createGraphQlEvent = (query: string, token = '') => {
     return {
       httpMethod: 'POST',
       body: JSON.stringify({
@@ -47,9 +47,9 @@ describe('Intergration test', () => {
       requestContext: {
         path: '/'
       },
-      headers: auth
+      headers: token
         ? {
-            Authorization: 'B 2'
+            Authorization: `B ${token}`
           }
         : {}
     };
@@ -92,10 +92,11 @@ describe('Intergration test', () => {
     }
   });
 
+  beforeEach(() => setupDatabas(client));
+
   describe('Add show', () => {
     test('Do not add an existing show', async () => {
       // Arrange
-      await setupDatabas(client);
       const event: Dragonstone.AddShow.Event = {
         showInput: {
           tvdbId: 305288, // Stranger Things
@@ -147,7 +148,6 @@ describe('Intergration test', () => {
     });
     test('Add a new, ended, show: Dexter', async () => {
       // Arrange
-      await setupDatabas(client);
       const event: Dragonstone.AddShow.Event = {
         showInput: {
           tvdbId: 79349,
@@ -164,7 +164,6 @@ describe('Intergration test', () => {
         },
         requestStack: []
       };
-      await setupDatabas(client);
       const getDexterQuery = `SELECT * FROM shows WHERE name='Dexter'`;
 
       // Act
@@ -216,7 +215,6 @@ describe('Intergration test', () => {
   describe('Update episodes', () => {
     test(`Update episode 'Cancer Man'`, async () => {
       // Arrange
-      await setupDatabas(client);
       const event: Dragonstone.UpdateEpisodes.Event = {
         showId: 2,
         firstEpisode: 10002,
@@ -271,13 +269,12 @@ describe('Intergration test', () => {
       });
     });
 
-    test(`Insert a new episode 'New episode'`, async () => {
+    test(`Insert a new episodes`, async () => {
       // Arrange
-      await setupDatabas(client);
       const event: Dragonstone.UpdateEpisodes.Event = {
         showId: 2,
         firstEpisode: 10006,
-        lastEpisode: 10008,
+        lastEpisode: 10010,
         episodes: [
           {
             episodenumber: 10006,
@@ -300,8 +297,22 @@ describe('Intergration test', () => {
             firstAired: '2008-02-19',
             lastupdated: 1520652316,
             name: 'New episode',
-            overview: 'Some text',
             tvdbId: 8
+          },
+          {
+            episodenumber: 10009,
+            firstAired: '2008-02-20',
+            lastupdated: 1520652317,
+            name: 'New episode2',
+            overview: 'Some text2',
+            tvdbId: 9
+          },
+          {
+            episodenumber: 10010,
+            firstAired: '2008-02-21',
+            lastupdated: 1520652318,
+            name: 'New episode3',
+            tvdbId: 10
           }
         ],
         requestStack: []
@@ -313,23 +324,43 @@ describe('Intergration test', () => {
 
       // Assert
       const newEpisodes = await client.query(`SELECT * FROM episodes`);
+      const isNewEpisode = (e: PgEpisode) => e.show_id === 2 && [10008, 10009, 10010].includes(e.episodenumber);
       expect(result).toBe(true); // It should go all well
-      expect(newEpisodes.rowCount).toBe(oldEpisodes.rowCount + 1);
-      expect(newEpisodes.rows.filter(r => !(r.episodenumber === 10008 && r.show_id === 2))).toEqual(oldEpisodes.rows);
-      expect(newEpisodes.rows.find(r => r.episodenumber === 10008 && r.show_id === 2)).toEqual({
-        show_id: 2,
-        name: 'New episode',
-        first_aired: '2008-02-19',
-        overview: 'Some text',
-        lastupdated: 1520652316,
-        episodenumber: 10008,
-        external_id_tvdb: 8
-      });
+      expect(newEpisodes.rowCount).toBe(oldEpisodes.rowCount + 3);
+      expect(newEpisodes.rows.filter(r => !isNewEpisode(r))).toEqual(oldEpisodes.rows);
+      expect(newEpisodes.rows.filter(r => isNewEpisode(r))).toEqual([
+        {
+          show_id: 2,
+          name: 'New episode',
+          first_aired: '2008-02-19',
+          lastupdated: 1520652316,
+          episodenumber: 10008,
+          external_id_tvdb: 8,
+          overview: null
+        },
+        {
+          show_id: 2,
+          name: 'New episode2',
+          first_aired: '2008-02-20',
+          overview: 'Some text2',
+          lastupdated: 1520652317,
+          external_id_tvdb: 9,
+          episodenumber: 10009
+        },
+        {
+          show_id: 2,
+          episodenumber: 10010,
+          first_aired: '2008-02-21',
+          lastupdated: 1520652318,
+          name: 'New episode3',
+          external_id_tvdb: 10,
+          overview: null
+        }
+      ]);
     });
 
     test(`Remove an episode`, async () => {
       // Arrange
-      await setupDatabas(client);
       const event: Dragonstone.UpdateEpisodes.Event = {
         showId: 2,
         firstEpisode: 10006,
@@ -362,7 +393,6 @@ describe('Intergration test', () => {
   describe('Update Show', () => {
     test(`Update 'Breaking Bad'`, async () => {
       // Arrange
-      await setupDatabas(client);
       const event: Dragonstone.UpdateShow.Event = {
         showId: 2,
         showInput: {
@@ -413,7 +443,6 @@ describe('Intergration test', () => {
     });
     test(`Update a show that dont exist`, async () => {
       // Arrange
-      await setupDatabas(client);
       const event: Dragonstone.UpdateShow.Event = {
         showId: 21,
         showInput: {
@@ -448,42 +477,31 @@ describe('Intergration test', () => {
   describe('[GraphQL] Show', () => {
     test('Get a show', async () => {
       // Arrange
-      await setupDatabas(client);
       await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('2', '2')`);
-      const event = {
-        httpMethod: 'POST',
-        body: JSON.stringify({
-          query: `{
-            show(id: 2) {
-              name
-              airs {
-                first
-                time
-                day
-              }
-              ended
-              genre
-              ids {
-                id
-                imdb
-                tvdb
-              }
-              language
-              lastupdated
-              network
-              overview
-              runtime
-              seasons
-              followers
-            }
-          }`
-        }),
-        path: 'http://localhost:8080',
-        requestContext: {
-          path: '/'
-        },
-        headers: {}
-      };
+      const event = createGraphQlEvent(`{
+        show(id: 2) {
+          name
+          airs {
+            first
+            time
+            day
+          }
+          ended
+          genre
+          ids {
+            id
+            imdb
+            tvdb
+          }
+          language
+          lastupdated
+          network
+          overview
+          runtime
+          seasons
+          followers
+        }
+      }`);
 
       // Act
       const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
@@ -519,7 +537,6 @@ describe('Intergration test', () => {
     });
     test('Get upcoming episode for braking bad', async () => {
       // Arrange
-      await setupDatabas(client);
       const justAirdDate = new Date();
       justAirdDate.setTime(justAirdDate.getTime() - 24 * 2 * 60 * 60 * 1000);
       const justAirdDateStr = `${justAirdDate.getFullYear()}-${String(justAirdDate.getMonth() + 1).padStart(
@@ -537,28 +554,18 @@ describe('Intergration test', () => {
         ('2', 'Fun episode', '${justAirdDateStr}', 'Some overview', '1520652290', '10008', '7121402'),
         ('2', 'What?', '${nextAirdDateStr}', 'Walt and Jesse attempt to tie up loose ends.', '1520652296', '10009', '7121402')
       `);
-      const event = {
-        httpMethod: 'POST',
-        body: JSON.stringify({
-          query: `{
-            show(id: 2) {
-              name
-              upcomingEpisode {
-                name
-              }
-              justAirdEpisode {
-                name
-              }
-              numberOfAiredEpisodes
-            }
-          }`
-        }),
-        path: 'http://localhost:8080',
-        requestContext: {
-          path: '/'
-        },
-        headers: {}
-      };
+      const event = createGraphQlEvent(`{
+        show(id: 2) {
+          name
+          upcomingEpisode {
+            name
+          }
+          justAirdEpisode {
+            name
+          }
+          numberOfAiredEpisodes
+        }
+      }`);
 
       // Act
       const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
@@ -582,34 +589,24 @@ describe('Intergration test', () => {
     });
     test('Get next episode to watch for user', async () => {
       // Arrange
-      await setupDatabas(client);
       await client.query(`INSERT INTO "public"."tv_watched" ("user_id", "show_id", "time", "type", "episodenumber") VALUES
       ('2', '2', '1000000000', '2', '10001'),
       ('2', '2', '1000000000', '2', '10003')
       `);
 
-      const event = {
-        httpMethod: 'POST',
-        body: JSON.stringify({
-          query: `{
-            show(id: 2) {
-              nextToWatch {
-                numberOfEpisodesToWatch
-                episode {
-                  name
-                }
-              }
+      const event = createGraphQlEvent(
+        `{
+        show(id: 2) {
+          nextToWatch {
+            numberOfEpisodesToWatch
+            episode {
+              name
             }
-          }`
-        }),
-        path: 'http://localhost:8080',
-        requestContext: {
-          path: '/'
-        },
-        headers: {
-          Authorization: 'B 2'
+          }
         }
-      };
+      }`,
+        '2'
+      );
 
       // Act
       const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
@@ -631,26 +628,16 @@ describe('Intergration test', () => {
     });
     test('User is following Breaking bad', async () => {
       // Arrange
-      await setupDatabas(client);
       await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('2', '2')`);
 
-      const event = {
-        httpMethod: 'POST',
-        body: JSON.stringify({
-          query: `{
-            show(id: 2) {
-              isFollowing
-            }
-          }`
-        }),
-        path: 'http://localhost:8080',
-        requestContext: {
-          path: '/'
-        },
-        headers: {
-          Authorization: 'B 2'
+      const event = createGraphQlEvent(
+        `{
+        show(id: 2) {
+          isFollowing
         }
-      };
+      }`,
+        '2'
+      );
 
       // Act
       const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
@@ -667,25 +654,11 @@ describe('Intergration test', () => {
     });
     test('User is not following Breaking bad', async () => {
       // Arrange
-      await setupDatabas(client);
-
-      const event = {
-        httpMethod: 'POST',
-        body: JSON.stringify({
-          query: `{
-            show(id: 2) {
-              isFollowing
-            }
-          }`
-        }),
-        path: 'http://localhost:8080',
-        requestContext: {
-          path: '/'
-        },
-        headers: {
-          Authorization: 'B 2'
+      const event = createGraphQlEvent(`{
+        show(id: 2) {
+          isFollowing
         }
-      };
+      }`, '2');
 
       // Act
       const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
@@ -704,22 +677,11 @@ describe('Intergration test', () => {
   describe('[GraphQL] Season', () => {
     test('Get season 2 for Stranger Things', async () => {
       // Arrange
-      await setupDatabas(client);
-      const event = {
-        httpMethod: 'POST',
-        body: JSON.stringify({
-          query: `{
-            season(showId: 1, season: 2) {
-              name
-            }
-          }`
-        }),
-        path: 'http://localhost:8080',
-        requestContext: {
-          path: '/'
-        },
-        headers: {}
-      };
+      const event = createGraphQlEvent(`{
+        season(showId: 1, season: 2) {
+          name
+        }
+      }`);
 
       // Act
       const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
@@ -764,7 +726,6 @@ describe('Intergration test', () => {
   describe('[GraphQL] Following', () => {
     test('Get list of following', async () => {
       // Arrange
-      await setupDatabas(client);
       await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('2', '2')`);
       const event = createGraphQlEvent(
         `{
@@ -775,7 +736,7 @@ describe('Intergration test', () => {
           }
         }
       }`,
-        true
+        '2'
       );
 
       // Act
@@ -800,7 +761,6 @@ describe('Intergration test', () => {
   describe('[GraphQL] titles', () => {
     test('Get list of titles', async () => {
       // Arrange
-      await setupDatabas(client);
       await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('2', '2')`);
       const event = createGraphQlEvent(`{
         titles {
@@ -842,7 +802,6 @@ describe('Intergration test', () => {
   describe('[GraphQL] History', () => {
     test('Get first page of history', async () => {
       // Arrange
-      await setupDatabas(client);
       await client.query(`INSERT INTO "public"."tv_watched" ("user_id", "show_id", "time", "type", "episodenumber") VALUES
         ('2', '2', '1000000000', '2', '10001'),
         ('2', '2', '1000000001', '2', '10002'),
@@ -862,7 +821,7 @@ describe('Intergration test', () => {
           }
         }
       }`,
-        true
+        '2'
       );
 
       // Act
@@ -923,7 +882,6 @@ describe('Intergration test', () => {
     });
     test('Get history of one episode', async () => {
       // Arrange
-      await setupDatabas(client);
       await client.query(`INSERT INTO "public"."tv_watched" ("user_id", "show_id", "time", "type", "episodenumber") VALUES
         ('2', '2', '1000000000', '2', '10001'),
         ('2', '2', '1000000001', '2', '10002'),
@@ -939,7 +897,7 @@ describe('Intergration test', () => {
           }
         }
       }`,
-        true
+        '2'
       );
 
       // Act
@@ -1001,14 +959,14 @@ describe('Intergration test', () => {
   describe('[GraphQL] User', () => {
     test('Get api key of a user', async () => {
       // Arrange
-      await setupDatabas(client);
-      const event = createGraphQlEvent(`{
+      const event = createGraphQlEvent(
+        `{
         me {
           apikey
           username
         }
       }`,
-        true
+        '2'
       );
 
       // Act
@@ -1029,8 +987,8 @@ describe('Intergration test', () => {
   describe('[GraphQL] Mutation', () => {
     test('Check in episode with token', async () => {
       // Arrange
-      await setupDatabas(client);
-      const event = createGraphQlEvent(`mutation {
+      const event = createGraphQlEvent(
+        `mutation {
         checkInEpisode(episode: {
           showId: 2
           episodenumber: 10001
@@ -1042,7 +1000,7 @@ describe('Intergration test', () => {
           }
         }
       }`,
-        true
+        '2'
       );
 
       // Act
@@ -1060,15 +1018,404 @@ describe('Intergration test', () => {
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM tv_watched`);
-      expect(dbResult.rows).toEqual([{
-        id: 1,
-        user_id: 2,
-        show_id: 2,
-        time: 1000000000,
-        type: 2,
-        episodenumber: 10001
-      }]);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 2,
+          show_id: 2,
+          time: 1000000000,
+          type: 2,
+          episodenumber: 10001
+        }
+      ]);
+    });
+    test('Check in episode with api key', async () => {
+      // Arrange
+      const event = createGraphQlEvent(
+        `mutation {
+        checkInEpisode(episode: {
+          showId: 2
+          episodenumber: 10001
+          time: 1000000000
+          type: checkIn
+        }, apiKey: "hello", username: "tjoskar2") {
+          madeMutation
+        }
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          checkInEpisode: {
+            madeMutation: true
+          }
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM tv_watched`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 2,
+          show_id: 2,
+          time: 1000000000,
+          type: 2,
+          episodenumber: 10001
+        }
+      ]);
+    });
+    test('Check in episodes', async () => {
+      // Arrange
+      const event = createGraphQlEvent(
+        `mutation {
+        checkInEpisodes(episodes: [{
+          showId: 2
+          episodenumber: 10001
+          time: 1000000000
+          type: checkIn
+        }, {
+          showId: 2
+          episodenumber: 10002
+          time: 1000000001
+          type: checkIn
+        }]) {
+          episode {
+            episodenumber
+          }
+        }
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          checkInEpisodes: {
+            episode: {
+              episodenumber: 10003
+            }
+          }
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM tv_watched`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 2,
+          show_id: 2,
+          time: 1000000000,
+          type: 2,
+          episodenumber: 10001
+        },
+        {
+          id: 2,
+          user_id: 2,
+          show_id: 2,
+          time: 1000000001,
+          type: 2,
+          episodenumber: 10002
+        }
+      ]);
+    });
+    test('Remove check in', async () => {
+      // Arrange
+      await client.query(`
+      INSERT INTO "public"."tv_watched" ("user_id", "show_id", "time", "type", "episodenumber") VALUES
+      ('2', '2', '1000000000', '2', '10001'),
+      ('2', '2', '1000000001', '2', '10002'),
+      ('2', '2', '1000000002', '2', '10003'),
+      ('2', '2', '1000000003', '2', '10003'),
+      ('3', '2', '1000000003', '2', '10003')
+      `);
+      const event = createGraphQlEvent(
+        `mutation {
+        removeCheckedInEpisode(episode: {
+          showId: 2
+          episodenumber: 10003
+        }) {
+          episode {
+            episodenumber
+          }
+        }
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          removeCheckedInEpisode: {
+            episode: {
+              episodenumber: 10003 // Next exposode to watch
+            }
+          }
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM tv_watched`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 2,
+          show_id: 2,
+          time: 1000000000,
+          type: 2,
+          episodenumber: 10001
+        },
+        {
+          id: 2,
+          user_id: 2,
+          show_id: 2,
+          time: 1000000001,
+          type: 2,
+          episodenumber: 10002
+        },
+        {
+          id: 5,
+          user_id: 3,
+          show_id: 2,
+          time: 1000000003,
+          type: 2,
+          episodenumber: 10003
+        }
+      ]);
+    });
+    test('Follow show', async () => {
+      // Arrange
+      const followingDbResult = await client.query(`SELECT * FROM "following"`);
+      expect(followingDbResult.rowCount).toBe(0);
+      const event = createGraphQlEvent(
+        `mutation {
+        followShow(showId: 2)
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          followShow: true
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM "following"`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 2,
+          show_id: 2
+        }
+      ]);
+    });
+    test('Follow show that somebody else is following', async () => {
+      // Arrange
+      await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('3', '2')`);
+      const event = createGraphQlEvent(
+        `mutation {
+        followShow(showId: 2)
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          followShow: true
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM "following"`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 3,
+          show_id: 2
+        },
+        {
+          id: 2,
+          user_id: 2,
+          show_id: 2
+        }
+      ]);
+    });
+    test('Try to follow show that dont exist', async () => {
+      // Arrange
+      const followingDbResult = await client.query(`SELECT * FROM "following"`);
+      expect(followingDbResult.rowCount).toBe(0);
+      const event = createGraphQlEvent(
+        `mutation {
+        followShow(showId: 200)
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          followShow: false
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM "following"`);
+      expect(dbResult.rowCount).toEqual(0);
+    });
+    test('Follow show that we allready follow', async () => {
+      // Arrange
+      await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('2', '2')`);
+      const followingDbResult = await client.query(`SELECT * FROM "following"`);
+      expect(followingDbResult.rowCount).toBe(1);
+      const event = createGraphQlEvent(
+        `mutation {
+        followShow(showId: 200)
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          followShow: false
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM "following"`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 2,
+          show_id: 2
+        }
+      ]);
+    });
+    test('Unfollow show', async () => {
+      // Arrange
+      await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('2', '2'), ('3', '2')`);
+      const followingDbResult = await client.query(`SELECT * FROM "following"`);
+      expect(followingDbResult.rowCount).toBe(2);
+      const event = createGraphQlEvent(
+        `mutation {
+        unfollowShow(showId: 2)
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          unfollowShow: true
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM "following"`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 2,
+          user_id: 3,
+          show_id: 2
+        }
+      ]);
+    });
+    test('Try to unfollow a show that we dont follow', async () => {
+      // Arrange
+      const followingDbResult = await client.query(`SELECT * FROM "following"`);
+      expect(followingDbResult.rowCount).toBe(0);
+      const event = createGraphQlEvent(
+        `mutation {
+        followShow(showId: 200)
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          followShow: false
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM "following"`);
+      expect(dbResult.rowCount).toEqual(0);
+    });
+    test('Create a user row in the database', async () => {
+      // Arrange
+      const event = createGraphQlEvent(
+        `mutation {
+        createUser(metadata: { username: "myusername" })
+      }`,
+        '123456789' // firebase id
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          createUser: true
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM "users"`);
+      expect(dbResult.rowCount).toBe(3);
+      const newRow = dbResult.rows.filter(r => r.name === 'myusername');
+      expect(newRow.length).toBe(1);
+      expect(newRow[0].firebase_id).toBe('123456789');
+      expect(typeof newRow[0].api_key).toBe('string');
+      expect(newRow[0].api_key.length).toBe(5);
+    });
+    test('Do not create a dublet if the user exists', async () => {
+      // Arrange
+      const dbResultBefore = await client.query(`SELECT * FROM "users"`);
+      const event = createGraphQlEvent(
+        `mutation {
+        createUser(metadata: { username: "tjoskar2" })
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          createUser: true
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResultAfter = await client.query(`SELECT * FROM "users"`);
+      const sort = (a: PgUser, b: PgUser) => a.id - b.id;
+      expect(dbResultAfter.rows.sort(sort)).toEqual(dbResultBefore.rows.sort(sort));
     });
   });
-
 });

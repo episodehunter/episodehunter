@@ -18,6 +18,10 @@ export const createUserResolver = (client: Client) => ({
     return mapUser(dbResult.rows[0]);
   },
   async followShow(userId: number, showId: number): Promise<boolean> {
+    const showResult = await client.query('SELECT id from "shows" WHERE id=$1 LIMIT 1', [showId]);
+    if (showResult.rowCount === 0) {
+      return false;
+    }
     const following: Omit<PgFollowing, 'id'> = {
       show_id: showId,
       user_id: userId
@@ -36,7 +40,7 @@ export const createUserResolver = (client: Client) => ({
     const getUserId = () => client.query(`SELECT id FROM users WHERE firebase_id = $1 LIMIT 1`, [firebaseUid]);
     let dbResult = await getUserId();
     if (dbResult.rowCount === 0) {
-      this.createUser(firebaseUid, { username: 'Batman' });
+      await this.createUser(firebaseUid, { username: 'Batman' });
       dbResult = await getUserId();
       if (dbResult.rowCount === 0) {
         return null;
@@ -47,7 +51,7 @@ export const createUserResolver = (client: Client) => ({
   async createUser(firebaseUid: string, metadata: Dragonstone.UserInput): Promise<boolean> {
     const apiKey = generateApiKey();
     await client.query(
-      `INSERT INTO users (firebase_id, name, api_key) VALUES ($1, $2, $3) ON CONFLICT (firebase_id) DO NOTHING`,
+      `INSERT INTO users (firebase_id, name, api_key) VALUES ($1, $2, $3) ON CONFLICT (firebase_id) DO UPDATE SET name = $2;`,
       [firebaseUid, metadata.username, apiKey]
     );
     return true;

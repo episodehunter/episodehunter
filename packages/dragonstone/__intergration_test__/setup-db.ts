@@ -12,6 +12,7 @@ export function setupDatabas(client: Client) {
       "show_id" int4 NOT NULL,
       PRIMARY KEY ("id")
   );
+  SELECT setval('following_id_seq', 1, false);
 
   DROP TABLE IF EXISTS "public"."shows" cascade;
   CREATE SEQUENCE IF NOT EXISTS shows_id_seq;
@@ -44,12 +45,13 @@ export function setupDatabas(client: Client) {
       "episodenumber" int4,
       PRIMARY KEY ("id")
   );
+  SELECT setval('tv_watched_id_seq', 1, false);
 
   DROP TABLE IF EXISTS "public"."users" cascade;
   CREATE SEQUENCE IF NOT EXISTS users_id_seq;
   CREATE TABLE "public"."users" (
       "id" int4 NOT NULL DEFAULT nextval('users_id_seq'::regclass),
-      "firebase_id" text NOT NULL,
+      "firebase_id" text NOT NULL UNIQUE,
       "name" text NOT NULL,
       "api_key" text NOT NULL,
       PRIMARY KEY ("id")
@@ -121,7 +123,7 @@ export function setupDatabas(client: Client) {
 
   SELECT setval('shows_id_seq', 3, false);
 
-  INSERT INTO "public"."users" ("id", "firebase_id", "name", "api_key") VALUES ('2', '2', 'tjoskar2', 'hello');
-  SELECT setval('users_id_seq', 3, false);
+  INSERT INTO "public"."users" ("id", "firebase_id", "name", "api_key") VALUES ('2', '2', 'tjoskar2', 'hello'), ('3', '3', 'john', 'snow');
+  SELECT setval('users_id_seq', 4, false);
   `);
 }
