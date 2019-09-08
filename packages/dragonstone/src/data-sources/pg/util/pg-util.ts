@@ -1,5 +1,6 @@
 import { QueryConfig, Client } from 'pg';
-import { PgEpisode } from '../pg-types';
+import { sql, spreadInsert } from 'squid/pg';
+import { NewEpisodeRecord } from '../schema';
 
 export function update(table: string, id: number, obj: any): QueryConfig {
   const baseText = `UPDATE ${table} SET `;
@@ -14,114 +15,43 @@ export function update(table: string, id: number, obj: any): QueryConfig {
   return { text, values };
 }
 
-export function updateEpisode(episode: PgEpisode): QueryConfig {
-  return {
-    text: `UPDATE episodes SET name = $1, first_aired = $2, overview = $3, lastupdated = $4, external_id_tvdb = $5 WHERE show_id = $6 AND episodenumber = $7`,
-    values: [
-      episode.name,
-      episode.first_aired,
-      episode.overview,
-      episode.lastupdated,
-      episode.external_id_tvdb,
-      episode.show_id,
-      episode.episodenumber
-    ]
-  };
-}
-
-type rowValues = string | number | null;
-
-export function insert(table: string, obj: Record<string, rowValues>): QueryConfig {
-  return inserts(table, [obj]);
-}
-
-export function insertAndReturn(table: string, obj: Record<string, rowValues>): QueryConfig {
-  const query = inserts(table, [obj]);
-  query.text += ` RETURNING *`;
-  return query;
-}
-
-export function insertsAndReturn(table: string, obj: Record<string, rowValues>[]): QueryConfig {
-  const query = inserts(table, obj);
-  query.text += ` RETURNING *`;
-  return query;
-}
-
-export function inserts(table: string, obj: Record<string, rowValues>[]): QueryConfig {
-  const columnNames = Object.keys(obj[0]);
-  const rowsToInsert: rowValues[][] = [];
-  for (let row of obj) {
-    const rowToInsert: rowValues[] = [];
-    for (let key of columnNames) {
-      rowToInsert.push(row[key]);
-    }
-    rowsToInsert.push(rowToInsert);
-  }
-
-  const text = `INSERT INTO "${table}" (${columnNames.join(', ')}) VALUES ${expand(
-    rowsToInsert.length,
-    columnNames.length
-  )}`;
-  return { text, values: flatten(rowsToInsert) };
-}
-
-function insertEpisodes(obj: PgEpisode[]): QueryConfig {
-  const query = inserts('episodes', obj as any);
-  query.text += ` ON CONFLICT (show_id, episodenumber) DO NOTHING`;
-  return query;
-}
-
-function expand(rowCount: number, columnCount: number, startAt = 1): string {
-  let index = startAt;
-  return Array(rowCount)
-    .fill(0)
-    .map(
-      () =>
-        `(${Array(columnCount)
-          .fill(0)
-          .map(() => `$${index++}`)
-          .join(', ')})`
-    )
-    .join(', ');
-}
-
-function flatten<T>(arr: T[][]): T[] {
-  const newArr: T[] = [];
-  arr.forEach(v => v.forEach(p => newArr.push(p)));
-  return newArr;
-}
-
 export function createEpisodeBatch(client: Client) {
-  let episodesToInsert: PgEpisode[] = [];
+  let episodesToInsert: NewEpisodeRecord[] = [];
   const stat = {
     deleted: 0,
     updated: 0,
     inserted: 0
   };
+  const insertEpisodes = async () => {
+    await client.query(
+      sql`INSERT INTO episodes ${spreadInsert(...episodesToInsert)} ON CONFLICT (show_id, episodenumber) DO NOTHING`
+    );
+    episodesToInsert = [];
+  }
   return {
     async begin() {
       await client.query('BEGIN');
     },
     async delete(showId: number, episodenumber: number) {
       stat.deleted++;
-      await client.query(`DELETE FROM episodes WHERE episodenumber = $1 and show_id = $2`, [episodenumber, showId]);
+      await client.query(sql`DELETE FROM episodes WHERE episodenumber = ${episodenumber} and show_id = ${showId}`);
     },
-    async insert(episode: PgEpisode) {
+    async insert(episode: NewEpisodeRecord) {
       stat.inserted++;
       episodesToInsert.push(episode);
       if (episodesToInsert.length >= 50) {
-        await client.query(insertEpisodes(episodesToInsert));
-        episodesToInsert = [];
+        await insertEpisodes();
       }
     },
-    async update(episode: PgEpisode) {
+    async update(episode: NewEpisodeRecord) {
       stat.updated++;
-      await client.query(updateEpisode(episode));
+      await client.query(sql`
+        UPDATE episodes SET name = ${episode.name}, first_aired = ${episode.first_aired}, overview = ${episode.overview}, lastupdated = ${episode.lastupdated}, external_id_tvdb = ${episode.external_id_tvdb} WHERE show_id = ${episode.show_id} AND episodenumber = ${episode.episodenumber}
+      `);
     },
     async commit() {
       if (episodesToInsert.length > 0) {
-        await client.query(insertEpisodes(episodesToInsert));
-        episodesToInsert = [];
+        await insertEpisodes();
       }
       await client.query('COMMIT');
       return stat;

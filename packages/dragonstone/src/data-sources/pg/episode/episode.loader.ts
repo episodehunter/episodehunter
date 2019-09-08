@@ -1,6 +1,7 @@
 import { Client } from 'pg';
+import { sql } from "squid/pg"
 import DataLoader from 'dataloader';
-import { PgEpisode } from '../pg-types';
+import { EpisodeRecord } from '../schema';
 
 interface EpisodeKey {
   show_id: number;
@@ -8,15 +9,15 @@ interface EpisodeKey {
 }
 
 export function createEpisodeLoader(client: Client) {
-  const getBatchEpisodes = async (lookupKey: EpisodeKey[]): Promise<PgEpisode[]> => {
+  const getBatchEpisodes = async (lookupKey: EpisodeKey[]): Promise<(EpisodeRecord | null)[]> => {
     const keys = lookupKey.map(key => `(${key.show_id | 0}, ${key.episodenumber | 0})`).join(', ');
-    const dbResult = await client.query(`
+    const dbResult = await client.query<EpisodeRecord>(sql`
       SELECT * FROM episodes
-      WHERE (show_id, episodenumber) IN (${keys})
+      WHERE (show_id, episodenumber) IN (${sql.raw(keys)})
     `);
     return lookupKey.map(key => {
       return (
-        dbResult.rows.find((row: PgEpisode) => {
+        dbResult.rows.find(row => {
           return row.show_id === key.show_id && row.episodenumber === key.episodenumber;
         }) || null
       );
@@ -27,9 +28,9 @@ export function createEpisodeLoader(client: Client) {
     return String(lookupKey.show_id + '_' + lookupKey.episodenumber);
   };
 
-  return new DataLoader<EpisodeKey, PgEpisode>(getBatchEpisodes, {
+  return new DataLoader<EpisodeKey, EpisodeRecord | null>(getBatchEpisodes, {
     cacheKeyFn
   });
 }
 
-export type EpisodeLoader = DataLoader<EpisodeKey, PgEpisode>;
+export type EpisodeLoader = DataLoader<EpisodeKey, EpisodeRecord | null>;

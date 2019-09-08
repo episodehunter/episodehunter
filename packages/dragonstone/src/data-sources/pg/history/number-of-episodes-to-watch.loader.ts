@@ -1,6 +1,7 @@
+import { createDateString } from '@episodehunter/utils';
 import DataLoader from 'dataloader';
 import { Client } from 'pg';
-import { dateFormat } from '../../../util/util';
+import { sql } from 'squid/pg';
 
 interface Key {
   showId: number;
@@ -11,18 +12,15 @@ export function createNumberOfEpisodesToWatchLoader(client: Client): NumberOfEpi
   const getBatch = async (keys: Key[]): Promise<number[]> => {
     const userId = keys[0].userId | 0;
     const uniqIds = Array.from(new Set(keys.map(key => Number(key.showId)).filter(Boolean)));
-    const day = dateFormat();
+    const day = createDateString(new Date());
 
-    const dbRerult = await client.query(
-      `
+    const dbRerult = await client.query(sql`
       SELECT COUNT(*) as c, show_id
       FROM episodes as e
-      WHERE e.show_id in (${uniqIds.join(
-        ','
-      )}) AND e.first_aired <= $1 AND NOT EXISTS (SELECT 1 FROM tv_watched as w WHERE w.user_id = $2 AND w.show_id = e.show_id AND w.episodenumber = e.episodenumber) GROUP BY e.show_id;
-    `,
-      [day, userId]
-    );
+      WHERE e.show_id in (${sql.raw(
+        uniqIds.join(',')
+      )}) AND e.first_aired <= ${day} AND NOT EXISTS (SELECT 1 FROM tv_watched as w WHERE w.user_id = ${userId} AND w.show_id = e.show_id AND w.episodenumber = e.episodenumber) GROUP BY e.show_id;
+    `);
 
     return keys.map(key => {
       const match = dbRerult.rows.find(row => row.show_id === key.showId);

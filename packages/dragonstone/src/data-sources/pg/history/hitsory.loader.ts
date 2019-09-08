@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader';
 import { Client } from 'pg';
-import { PgWatchedEpisode } from '../pg-types';
+import { sql } from 'squid/pg';
+import { WatchedEpisodeRecord } from '../schema';
 
 interface Key {
   userId: number;
@@ -9,7 +10,7 @@ interface Key {
 }
 
 export function createHistoryLoader(client: Client): HistoryLoader {
-  const getBatchUpcoming = async (keys: Key[]): Promise<PgWatchedEpisode[][]> => {
+  const getBatchUpcoming = async (keys: Key[]): Promise<WatchedEpisodeRecord[][]> => {
     const showId = keys[0].showId | 0;
     const userId = keys[0].userId | 0;
     const uniqIds = Array.from(new Set(keys.map(key => Number(key.episodenumber)).filter(Boolean)));
@@ -18,13 +19,10 @@ export function createHistoryLoader(client: Client): HistoryLoader {
       return keys.map(() => []);
     }
 
-    const dbRerult = await client.query(
-      `
+    const dbRerult = await client.query<WatchedEpisodeRecord>(sql`
       SELECT *
       FROM tv_watched
-      WHERE user_id = $1 AND show_id = $2 AND episodenumber IN (${uniqIds.join(',')});
-      `,
-      [userId, showId]
+      WHERE user_id=${userId} AND show_id=${showId} AND episodenumber IN (${sql.raw(uniqIds.join(','))});`
     );
 
     return keys.map(key => {
@@ -32,7 +30,7 @@ export function createHistoryLoader(client: Client): HistoryLoader {
     });
   };
 
-  return new DataLoader<Key, PgWatchedEpisode[]>(getBatchUpcoming);
+  return new DataLoader<Key, WatchedEpisodeRecord[]>(getBatchUpcoming);
 }
 
-export type HistoryLoader = DataLoader<Key, PgWatchedEpisode[]>;
+export type HistoryLoader = DataLoader<Key, WatchedEpisodeRecord[]>;

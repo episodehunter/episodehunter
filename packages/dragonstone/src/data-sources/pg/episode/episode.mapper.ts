@@ -1,15 +1,15 @@
 import { Dragonstone, Message } from '@episodehunter/types';
-import { PgEpisode } from '../pg-types';
+import { EpisodeRecord, NewEpisodeRecord } from '../schema';
 
-export function mapEpisodes(episodes: (PgEpisode | null)[]): Dragonstone.Episode[] {
+export function mapEpisodes(episodes: (EpisodeRecord | null)[]): Dragonstone.Episode[] {
   return episodes.filter(Boolean).map(e => mapEpisode(e)) as any;
 }
 
 export function mapEpisode(episode: null): null;
 export function mapEpisode(episode: undefined): null;
-export function mapEpisode(episode: PgEpisode): Dragonstone.Episode;
-export function mapEpisode(episode: PgEpisode | null): null;
-export function mapEpisode(episode?: PgEpisode | null): Dragonstone.Episode | null {
+export function mapEpisode(episode: EpisodeRecord): Dragonstone.Episode;
+export function mapEpisode(episode: EpisodeRecord | null): null;
+export function mapEpisode(episode?: EpisodeRecord | null): Dragonstone.Episode | null {
   if (!episode) {
     return null;
   }
@@ -29,8 +29,8 @@ export function mapEpisode(episode?: PgEpisode | null): Dragonstone.Episode | nu
 export function mapEpisodeInputToEpisode(
   showId: number,
   episodeInput: Message.Dragonstone.UpdateEpisodes.EpisodeInput
-): PgEpisode {
-  const episode: PgEpisode = {
+): NewEpisodeRecord {
+  const episode: NewEpisodeRecord = {
     first_aired: episodeInput.firstAired,
     episodenumber: episodeInput.episodenumber,
     overview: episodeInput.overview || null,

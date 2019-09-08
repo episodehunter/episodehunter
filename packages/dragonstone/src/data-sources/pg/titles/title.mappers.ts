@@ -1,7 +1,7 @@
-import { PgTitle } from '../pg-types';
+import { TitleRecord } from '../schema';
 import { Dragonstone } from '@episodehunter/types';
 
-export function mapTitles(titles: PgTitle[]): Dragonstone.Title[] {
+export function mapTitles(titles: TitleRecord[]): Dragonstone.Title[] {
   return titles.map(pgTitle => ({
     id: pgTitle.id,
     name: pgTitle.name,

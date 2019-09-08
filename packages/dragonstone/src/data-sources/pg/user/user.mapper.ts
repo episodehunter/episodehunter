@@ -1,7 +1,7 @@
-import { PgUser } from '../pg-types';
+import { UserRecord } from '../schema';
 import { Dragonstone } from '@episodehunter/types';
 
-export function mapUser(user?: PgUser): Dragonstone.User | null {
+export function mapUser(user?: UserRecord): Dragonstone.User | null {
   if (!user) {
     return null;
   }

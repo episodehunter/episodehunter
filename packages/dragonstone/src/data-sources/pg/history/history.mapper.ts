@@ -1,12 +1,12 @@
 import { Dragonstone } from '@episodehunter/types';
 import { WatchedEnum } from '@episodehunter/types/dragonstone/watched-episode';
-import { PgWatchedEpisode } from '../pg-types';
+import { WatchedEpisodeRecord, NewWatchedEpisodeRecord } from '../schema';
 
-export function mapWatchedEpisodes(episodes: PgWatchedEpisode[]): Dragonstone.WatchedEpisode.WatchedEpisode[] {
+export function mapWatchedEpisodes(episodes: WatchedEpisodeRecord[]): Dragonstone.WatchedEpisode.WatchedEpisode[] {
   return episodes.map(mapWatchedEpisode) as Dragonstone.WatchedEpisode.WatchedEpisode[];
 }
 
-export function mapWatchedEpisode(episode?: PgWatchedEpisode): Dragonstone.WatchedEpisode.WatchedEpisode | null {
+export function mapWatchedEpisode(episode?: WatchedEpisodeRecord): Dragonstone.WatchedEpisode.WatchedEpisode | null {
   if (!episode) {
     return null;
   }
@@ -21,7 +21,7 @@ export function mapWatchedEpisode(episode?: PgWatchedEpisode): Dragonstone.Watch
 export function mapWatchedInputToWatchedEpisode(
   input: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput,
   userId: number
-): PgWatchedEpisode {
+): NewWatchedEpisodeRecord {
   return {
     episodenumber: input.episodenumber,
     show_id: input.showId,

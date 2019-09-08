@@ -20,8 +20,8 @@ export const root = gql`
     show(id: Int!): Show
     season(showId: Int!, season: Int!): [Episode!]!
     following: [Following!]!
-    titles: [Title]!
-    history(page: Int!): [History]!
+    titles: [Title!]!
+    history(page: Int!): [History!]!
     me: User
   }
 

@@ -1,7 +1,7 @@
 import { Dragonstone, Message } from '@episodehunter/types';
-import { PgShow } from '../pg-types';
+import { ShowRecord, NewShowRecord } from '../schema';
 
-export function mapShow(show?: PgShow): Dragonstone.Show | null {
+export function mapShow(show?: ShowRecord | null): Dragonstone.Show | null {
   if (!show) {
     return null;
   }
@@ -27,12 +27,12 @@ export function mapShow(show?: PgShow): Dragonstone.Show | null {
   };
 }
 
-export function mapShowInputToShow(showInput: Message.Dragonstone.ShowInput): Omit<PgShow, 'id'>;
-export function mapShowInputToShow(showInput: Message.Dragonstone.ShowInput, showId: number): PgShow;
+export function mapShowInputToShow(showInput: Message.Dragonstone.ShowInput): NewShowRecord;
+export function mapShowInputToShow(showInput: Message.Dragonstone.ShowInput, showId: number): ShowRecord;
 export function mapShowInputToShow(
   showInput: Message.Dragonstone.ShowInput,
   showId?: number
-): PgShow | Omit<PgShow, 'id'> {
+): NewShowRecord | ShowRecord {
   const show = {
     airs_day: showInput.airsDayOfWeek || null,
     airs_first: showInput.firstAired || null,

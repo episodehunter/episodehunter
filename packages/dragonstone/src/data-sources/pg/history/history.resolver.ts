@@ -1,7 +1,7 @@
 import { Logger } from '@episodehunter/logger';
 import { Dragonstone, ShowId } from '@episodehunter/types';
 import { Client } from 'pg';
-import { insert, inserts } from '../util/pg-util';
+import { sql, spreadInsert } from 'squid/pg';
 import { mapWatchedEpisodes, mapWatchedInputToWatchedEpisode } from './history.mapper';
 import { HistoryLoader } from './hitsory.loader';
 import { NumberOfEpisodesToWatchLoader } from './number-of-episodes-to-watch.loader';
@@ -12,14 +12,12 @@ export const createHistoryResolver = (
   historyLoader: HistoryLoader
 ) => ({
   async getHistoryPage(userId: number, page: number): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]> {
-    const dbResult = await client.query(
-      `
+    const offset = (page * 20) | 0;
+    const dbResult = await client.query(sql`
       SELECT *
       FROM tv_watched
-      WHERE user_id = $1
-      ORDER BY time DESC LIMIT 20 OFFSET $2;
-      `,
-      [userId, (page * 20) | 0]
+      WHERE user_id = ${userId}
+      ORDER BY time DESC LIMIT 20 OFFSET ${offset};`
     );
     return mapWatchedEpisodes(dbResult.rows);
   },
@@ -47,7 +45,7 @@ export const createHistoryResolver = (
     watchedEpisodeInput: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
   ): Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput> {
     const wh = mapWatchedInputToWatchedEpisode(watchedEpisodeInput, userId);
-    await client.query(insert('tv_watched', wh as any));
+    await client.query(sql`INSERT INTO "tv_watched" ${spreadInsert(wh)};`);
     return watchedEpisodeInput;
   },
 
@@ -57,13 +55,13 @@ export const createHistoryResolver = (
     watchedEpisodeInput: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput,
     logger: Logger
   ): Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput | null> {
-    const userResult = await client.query(`SELECT id FROM users WHERE name = $1 AND api_key = $2 LIMIT 1`, [ username, apiKey ])
+    const userResult = await client.query(sql`SELECT id FROM users WHERE name = ${username} AND api_key = ${apiKey} LIMIT 1`)
     if (userResult.rowCount === 0) {
       logger.warn(`Could not find user with apiKey: ${apiKey} and username ${username}`)
       return null;
     }
     const wh = mapWatchedInputToWatchedEpisode(watchedEpisodeInput, userResult.rows[0].id);
-    await client.query(insert('tv_watched', wh as any));
+    await client.query(sql`INSERT INTO "tv_watched" ${spreadInsert(wh)};`);
     return watchedEpisodeInput;
   },
 
@@ -72,7 +70,7 @@ export const createHistoryResolver = (
     watchedEpisodeInputs: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput[]
   ): Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput[]> {
     const wh = watchedEpisodeInputs.map(w => mapWatchedInputToWatchedEpisode(w, userId));
-    await client.query(inserts('tv_watched', wh as any[]));
+    await client.query(sql`INSERT INTO "tv_watched" ${spreadInsert(...wh)};`);
     return watchedEpisodeInputs;
   },
 
@@ -80,11 +78,8 @@ export const createHistoryResolver = (
     userId: number,
     unwatchedEpisodeInput: Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
   ): Promise<Dragonstone.WatchedEpisode.UnwatchedEpisodeInput> {
-    await client.query(`DELETE FROM tv_watched WHERE episodenumber = $1 AND show_id = $2 AND user_id = $3`, [
-      unwatchedEpisodeInput.episodenumber,
-      unwatchedEpisodeInput.showId,
-      userId
-    ]);
+    const { episodenumber, showId } = unwatchedEpisodeInput;
+    await client.query(sql`DELETE FROM tv_watched WHERE episodenumber = ${episodenumber} AND show_id = ${showId} AND user_id = ${userId}`);
     return unwatchedEpisodeInput;
   }
 });

@@ -3,7 +3,7 @@ import { GenericContainer } from 'testcontainers';
 import { Dragonstone } from '@episodehunter/types/message';
 import { Client } from 'pg';
 import { setupDatabas } from './setup-db';
-import { PgEpisode, PgUser } from '../src/data-sources/pg/pg-types';
+import { EpisodeRecord, UserRecord } from '../src/data-sources/pg/schema';
 
 interface GraphQLResult {
   statusCode: 200;
@@ -254,7 +254,7 @@ describe('Intergration test', () => {
 
       // Assert
       const newEpisodes = await client.query(`SELECT * FROM episodes`);
-      const findEpisode = (r: PgEpisode) => r.episodenumber === 10004 && r.show_id === 2;
+      const findEpisode = (r: EpisodeRecord) => r.episodenumber === 10004 && r.show_id === 2;
       expect(result).toBe(true); // It should go all well
       expect(newEpisodes.rowCount).toBe(oldEpisodes.rowCount); // We should not remove nor add any new episodes
       expect(newEpisodes.rows.filter(r => !findEpisode(r))).toEqual(oldEpisodes.rows.filter(r => !findEpisode(r)));
@@ -324,7 +324,7 @@ describe('Intergration test', () => {
 
       // Assert
       const newEpisodes = await client.query(`SELECT * FROM episodes`);
-      const isNewEpisode = (e: PgEpisode) => e.show_id === 2 && [10008, 10009, 10010].includes(e.episodenumber);
+      const isNewEpisode = (e: EpisodeRecord) => e.show_id === 2 && [10008, 10009, 10010].includes(e.episodenumber);
       expect(result).toBe(true); // It should go all well
       expect(newEpisodes.rowCount).toBe(oldEpisodes.rowCount + 3);
       expect(newEpisodes.rows.filter(r => !isNewEpisode(r))).toEqual(oldEpisodes.rows);
@@ -1417,7 +1417,7 @@ describe('Intergration test', () => {
       });
       expect(result.statusCode).toBe(200);
       const dbResultAfter = await client.query(`SELECT * FROM "users"`);
-      const sort = (a: PgUser, b: PgUser) => a.id - b.id;
+      const sort = (a: UserRecord, b: UserRecord) => a.id - b.id;
       expect(dbResultAfter.rows.sort(sort)).toEqual(dbResultBefore.rows.sort(sort));
     });
   });
