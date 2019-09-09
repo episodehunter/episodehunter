@@ -24,9 +24,7 @@ function findShowsToUpdate(titles: Title[], theTvDbIds: TheTvDbUpdatedShowId[], 
       });
     } else if (showMatch.lastupdated > idAndTime.lastUpdated) {
       logger.warn(
-        `The tv db says ${showMatch.id} should update, but we have a newer version. ${showMatch.lastupdated} > ${
-          idAndTime.lastUpdated
-        } == true`
+        `The tv db says ${showMatch.id} should update, but we have a newer version. ${showMatch.lastupdated} > ${idAndTime.lastUpdated} == true`
       );
     }
   }
