@@ -64,7 +64,7 @@ export async function getShowId(
 const query = `
 mutation checkInEpisode($episode: WatchedEpisodeInput!, $apiKey: String!, $username: String!) {
   checkInEpisode(episode: $episode, apiKey: $apiKey, username: $username) {
-		madeMutation
+    madeMutation
   }
 }
 `

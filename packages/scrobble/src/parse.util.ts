@@ -1,23 +1,23 @@
 import { MediaProvider, KodiEpisodeEvent, KodiMovieEvent } from './types'
 
 export interface EpisodeInformation {
-  provider: MediaProvider
+  provider: MediaProvider;
   /**
    * Show id
    */
-  id: number
+  id: number;
   /**
    * Season number
    */
-  season: number
+  season: number;
   /**
    * Episode number
    */
-  episode: number
+  episode: number;
   /**
    * Episode number
    */
-  sorce: 'plex' | 'kodi'
+  sorce: 'plex' | 'kodi';
 }
 
 export function plexEpisodeParse(payload: string): EpisodeInformation | null {
@@ -53,7 +53,7 @@ function isKodiScrobleEpisode(
   )
 }
 
-export function parseJson(jsonStr: string | null) {
+export function parseJson<T = unknown>(jsonStr: string | null): T | null {
   if (!jsonStr) {
     return null
   }

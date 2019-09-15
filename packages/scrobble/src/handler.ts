@@ -87,7 +87,7 @@ export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
 
 export const kodi = guard<APIGatewayEvent>(
   async (rawEvent, logger, context) => {
-    const event: KodiEpisodeEvent | KodiMovieEvent = parseJson(rawEvent.body)
+    const event = parseJson<KodiEpisodeEvent | KodiMovieEvent>(rawEvent.body)
     if (!event) {
       const message = 'Unable to parse body'
       logger.log(message)

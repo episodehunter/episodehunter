@@ -13,7 +13,7 @@ export async function scrobbleEpisode(
   episodeInfo: EpisodeInformation,
   log: Logger,
   requestId: string
-) {
+): Promise<null> {
   const episodenumber = calculateEpisodeNumber(
     episodeInfo.season,
     episodeInfo.episode
