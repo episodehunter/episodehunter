@@ -41,7 +41,7 @@ export async function addShow(
  */
 export async function updateEpisodes(
   showId: ShowId,
-  episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[],
+  episodes: Message.Dragonstone.EpisodeInput[],
   awsRequestId: string,
   logger: Logger
 ) {
@@ -66,7 +66,7 @@ export async function updateEpisodes(
 /**
  * Find the first episode that needs to update and only take that one and the rest in order
  */
-function filterEpisodesToUpdate(episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[], lastupdate: Number) {
+function filterEpisodesToUpdate(episodes: Message.Dragonstone.EpisodeInput[], lastupdate: Number) {
   const firstEpisodeIndex = episodes.findIndex(episode => episode.lastupdated > lastupdate);
   return episodes.slice(firstEpisodeIndex);
 }

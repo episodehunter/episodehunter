@@ -1,5 +1,5 @@
 import { Logger } from '@episodehunter/kingsguard'
-import { WatchedEpisodeInput, WatchedEnum } from '@episodehunter/types/dragonstone'
+import { Dragonstone } from '@episodehunter/types'
 import { calculateEpisodeNumber, unixTimestamp } from '@episodehunter/utils'
 import {
   getShowId,
@@ -19,11 +19,11 @@ export async function scrobbleEpisode(
     episodeInfo.episode
   )
   const showId = await getShowId(episodeInfo.id, requestId, log)
-  const watchedEpisode: WatchedEpisodeInput = {
+  const watchedEpisode: Dragonstone.WatchedEpisodeInput = {
     episodenumber,
     showId,
     time: unixTimestamp(),
-    type: episodeInfo.sorce === 'kodi' ? WatchedEnum.KodiScrobble : WatchedEnum.PlexScrobble
+    type: episodeInfo.sorce === 'kodi' ? 'kodiScrobble' : 'plexScrobble'
   }
   return scrobbleEpisodeToDragonstone(
     watchedEpisode,

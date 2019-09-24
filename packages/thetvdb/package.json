@@ -36,25 +36,6 @@
     "type": "git",
     "url": "https://github.com/episodehunter/episodehunter"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "src/.*\\.(test|spec)\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ],
-    "testEnvironment": "node",
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true,
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/dist/",
-      "<rootDir>/node_modules/",
-      "<rootDir>/types/"
-    ]
-  },
   "prettier": {
     "semi": false,
     "singleQuote": true

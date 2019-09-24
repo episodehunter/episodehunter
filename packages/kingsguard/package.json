@@ -41,18 +41,5 @@
   "peerDependencies": {
     "@episodehunter/logger": "^4.1.2",
     "@types/aws-lambda": ">=8.10.23"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ]
   }
 }

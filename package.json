@@ -5,7 +5,8 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "lerna bootstrap",
+    "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types"
   },
   "repository": {
     "type": "git",

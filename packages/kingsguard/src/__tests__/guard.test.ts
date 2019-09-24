@@ -8,25 +8,19 @@ const context = {
   getRemainingTimeInMillis: spy(() => 10000)
 }
 
-const callback = (error: any, result: any) => {
-  if (error) {
-    throw error
-  }
-}
-
 beforeEach(() => {
   context.getRemainingTimeInMillis.reset()
 })
 
 test('Set up logger', async () => {
   // Arrange
-  const setupLogger = spy((logdnaKey: string, sentry: string) => () => {})
+  const setupLogger = spy((logdnaKey: string, sentry: string) => () => ({ flush: () => {} }))
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
-  const fun = (event: any, logger: any, context: any) => {}
+  const fun = (event: any, logger: any, context: any) => Promise.resolve(null)
   const awsFun = guard(fun)
 
   // Act
-  await awsFun(null, context as any, callback)
+  await awsFun(null, context as any)
 
   // Assert
   expect(setupLogger.callCount).toBe(1)
@@ -39,7 +33,8 @@ test('Pass args to lambda', async () => {
   expect.assertions(3)
   const setupLogger = spy(() => () => ({
     log: () => {},
-    captureException: () => {}
+    captureException: () => {},
+    flush: () => {}
   }))
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const mockEvenet = { id: 1 }
@@ -47,55 +42,51 @@ test('Pass args to lambda', async () => {
     expect(event).toBe(mockEvenet)
     expect(typeof logger.log).toBe('function')
     expect(cnx).toBe(context)
+    return Promise.resolve(null)
   }
   const awsFun = guard(fun)
 
   // Act
-  await awsFun(mockEvenet, context as any, callback)
+  await awsFun(mockEvenet, context as any)
 })
 
 test('Pass the result to the callback', async () => {
   // Arrange
   expect.assertions(1)
-  const setupLogger = spy(() => () => {
-    log: () => {}
-  })
+  const setupLogger = spy(() => () => ({
+    log: () => {},
+    flush: () => {}
+  }))
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const mockEvenet = { id: 1 }
   const myResult = { id: 1 }
-  const myCallback = (error: any, result: any) => {
-    expect(result).toBe(myResult)
-  }
   const fun = (event: any, logger: any, cnx: any) => {
-    return myResult
+    return Promise.resolve(myResult)
   }
   const awsFun = guard(fun)
 
   // Act
-  await awsFun(mockEvenet, context as any, myCallback)
+  const result = await awsFun(mockEvenet, context as any)
+  expect(result).toBe(myResult)
 })
 
 test('Capture exception on failure', async () => {
   // Arrange
-  expect.assertions(4)
   const captureException = spy((error: Error) => null)
   const setupLogger = () => () => ({
-    captureException
+    captureException,
+    flush: () => {}
   })
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const mockEvenet = { id: 1 }
   const myError = new Error('Random error')
-  const myCallback = (error: any, result: any) => {
-    expect(error).toBe(myError)
-    expect(result).toBe(undefined)
-  }
   const fun = (event: any, logger: any, cnx: any) => {
     throw myError
   }
   const awsFun = guard(fun)
 
   // Act
-  await awsFun(mockEvenet, context as any, myCallback)
+  await expect(awsFun(mockEvenet, context as any)).rejects.toBe(myError)
   expect(captureException.callCount).toBe(1)
   expect(captureException.args[0][0]).toBe(myError)
 })
@@ -110,7 +101,8 @@ test('Capture a timeout error before timeout', async () => {
   }
   const captureException = spy((error: Error) => null)
   const setupLogger = () => () => ({
-    captureException
+    captureException,
+    flush: () => {}
   })
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const fun = (event: any, logger: any, cnx: any) => {
@@ -121,25 +113,29 @@ test('Capture a timeout error before timeout', async () => {
   const awsFun = guard(fun)
 
   // Act
-  awsFun(null, myContext as any, callback)
+  const p = awsFun(null, myContext as any)
 
   // Assert
   expect((setTimeout as any).mock.calls.length).toBe(2)
   expect((setTimeout as any).mock.calls[0][1]).toBe(timeoutTime - 500)
   expect(captureException.callCount).toBe(0)
 
-  jest.runTimersToTime(9500)
+  jest.advanceTimersByTime(9501)
 
   expect(captureException.callCount).toBe(1)
   expect(captureException.args[0][0].message.includes('Timeout')).toBe(true)
+  jest.advanceTimersByTime(10001)
+  await p;
 })
 
 test('Extract request stack from header', async () => {
   // Arrange
-  const createLogger = spy((logdnaKey: string, sentry: string) => {})
+  const createLogger = spy((logdnaKey: string, sentry: string) => ({
+    flush: () => {}
+  }))
   const setupLogger = spy(() => createLogger)
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
-  const fun = (event: any, logger: any, context: any) => {}
+  const fun = (event: any, logger: any, context: any) => Promise.resolve()
   const awsFun = guard(fun)
   const event = {
     headers: {
@@ -148,7 +144,7 @@ test('Extract request stack from header', async () => {
   }
 
   // Act
-  await awsFun(event, context as any, callback)
+  await awsFun(event, context as any)
 
   // Assert
   expect(createLogger.callCount).toBe(1)
@@ -158,17 +154,19 @@ test('Extract request stack from header', async () => {
 
 test('Extract request stack from event', async () => {
   // Arrange
-  const createLogger = spy((logdnaKey: string, sentry: string) => {})
+  const createLogger = spy((logdnaKey: string, sentry: string) => ({
+    flush: () => {}
+  }))
   const setupLogger = spy(() => createLogger)
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
-  const fun = (event: any, logger: any, context: any) => {}
+  const fun = (event: any, logger: any, context: any) => Promise.resolve()
   const awsFun = guard(fun)
   const event = {
     requestStack: ['id1', 'id2']
   }
 
   // Act
-  await awsFun(event, context as any, callback)
+  await awsFun(event, context as any)
 
   // Assert
   expect(createLogger.callCount).toBe(1)
@@ -178,7 +176,9 @@ test('Extract request stack from event', async () => {
 
 test('Parse JSON event', async () => {
   // Arrange
-  const setupLogger = () => () => {}
+  const setupLogger = () => () => ({
+    flush: () => {}
+  })
   const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
   const fun = spy((event: any, logger: any, context: any) => {})
   const awsFun = guard(fun as any)
@@ -187,7 +187,7 @@ test('Parse JSON event', async () => {
   })
 
   // Act
-  await awsFun(event, context as any, callback)
+  await awsFun(event, context as any)
 
   // Assert
   expect(fun.callCount).toBe(1)

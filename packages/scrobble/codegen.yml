@@ -1,9 +1,9 @@
 schema: ../types/dragonstone-schema.json
-documents: "src/dragonstone.util.ts"
+documents: 'src/dragonstone.util.ts'
 pluckConfig:
   modules:
-    - name: "@episodehunter/utils"
-      identifier: "gql"
+    - name: '@episodehunter/utils'
+      identifier: 'gql'
 generates:
   ./src/dragonstone.ts:
     plugins:
@@ -11,3 +11,4 @@ generates:
       - typescript-operations
     config:
       skipTypename: true
+      enumsAsTypes: true

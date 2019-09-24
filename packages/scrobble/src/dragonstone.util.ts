@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk'
-import { WatchedEpisodeInput } from '@episodehunter/types/dragonstone'
+import { Dragonstone } from '@episodehunter/types'
 import { Message } from '@episodehunter/types'
 import { gql } from '@episodehunter/utils'
 import { Logger } from '@episodehunter/logger'
@@ -87,7 +87,7 @@ const scrobbleEpisodeQuery = gql`
 `
 
 export async function scrobbleEpisode(
-  episode: WatchedEpisodeInput,
+  episode: Dragonstone.WatchedEpisodeInput,
   apiKey: string,
   username: string,
   requestId: string

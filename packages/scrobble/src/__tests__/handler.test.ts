@@ -163,12 +163,13 @@ describe('Kodi', () => {
     })
 
     // Act as assert
-    await expect(kodi(
-      { body: JSON.stringify(event) } as any,
-      context as any
-    )).rejects.toThrow()
-    expect(captureException).toBeCalledTimes(1);
-    expect(captureException.mock.calls[0][0].message).toEqual('Payload is empty: undefined')
+    await expect(
+      kodi({ body: JSON.stringify(event) } as any, context as any)
+    ).rejects.toThrow()
+    expect(captureException).toBeCalledTimes(1)
+    expect(captureException.mock.calls[0][0].message).toEqual(
+      'Payload is empty: undefined'
+    )
   })
   test('Scrobble a show that cant be added do to error', async () => {
     // Arrange
@@ -206,11 +207,14 @@ describe('Kodi', () => {
 
     // Assert
     expect(result).toEqual({
-      body: '{"message":"Could not found show. Nor could we add it. Does it realy exist? Is it a tvdb show?"}',
+      body:
+        '{"message":"Could not found show. Nor could we add it. Does it realy exist? Is it a tvdb show?"}',
       headers: { 'Content-Type': 'application/json' },
       statusCode: '404'
     })
-    expect(captureException).toBeCalledTimes(1);
-    expect(captureException.mock.calls[0][0].message).toEqual('Error: The show can not be added')
+    expect(captureException).toBeCalledTimes(1)
+    expect(captureException.mock.calls[0][0].message).toEqual(
+      'Error: The show can not be added'
+    )
   })
 })

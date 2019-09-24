@@ -1,6 +1,6 @@
 import { createGuard, Logger } from '@episodehunter/kingsguard';
 import { TheTvDbUpdatedShowId } from '@episodehunter/thetvdb';
-import { Event as ShowToUpdate } from '@episodehunter/types/message/show-update/update-show';
+import { Message } from '@episodehunter/types';
 import { unixTimestamp } from '@episodehunter/utils';
 import { config } from './config';
 import { getTitles, publishShowUpdate } from './dragonstone.util';
@@ -9,8 +9,12 @@ import { Title } from './types';
 
 const twoHours = 7200;
 
-function findShowsToUpdate(titles: Title[], theTvDbIds: TheTvDbUpdatedShowId[], logger: Logger): ShowToUpdate[] {
-  const showsToUpdate: ShowToUpdate[] = [];
+function findShowsToUpdate(
+  titles: Title[],
+  theTvDbIds: TheTvDbUpdatedShowId[],
+  logger: Logger
+): Message.UpdateShow.UpdateShow.Event[] {
+  const showsToUpdate: Message.UpdateShow.UpdateShow.Event[] = [];
 
   for (let idAndTime of theTvDbIds) {
     const showMatch = titles.find(title => title.tvdbId === idAndTime.id);

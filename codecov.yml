@@ -1,0 +1,22 @@
+flags:
+  dragonstone:
+    paths:
+      - packages/dragonstone/
+  kingsguard:
+    paths:
+      - packages/kingsguard/
+  scheduler:
+    paths:
+      - packages/scheduler/
+  scrobble:
+    paths:
+      - packages/scrobble/
+  show-update:
+    paths:
+      - packages/show-update/
+  thetvdb:
+    paths:
+      - packages/thetvdb/
+  utils:
+    paths:
+      - packages/utils/

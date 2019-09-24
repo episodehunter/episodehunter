@@ -5,10 +5,10 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "prepare": "npm run build",
-    "test": "jest",
-    "preversion": "npm run build && npm run lint && npm run test",
+    "test": "npm run lint && jest",
+    "preversion": "npm run build && npm run test",
     "lint": "eslint --ext .ts src",
     "postinstall": "npm run generate",
     "generate": "graphql-codegen"
@@ -32,7 +32,7 @@
     "@graphql-codegen/typescript": "^1.7.0",
     "@graphql-codegen/typescript-operations": "^1.7.0",
     "@types/aws-lambda": "8.10.31",
-    "@types/jest": "24.0.17",
+    "@types/jest": "24.0.18",
     "@types/node": "12.7.2",
     "@typescript-eslint/eslint-plugin": "^2.2.0",
     "@typescript-eslint/parser": "^2.2.0",
@@ -41,8 +41,8 @@
     "eslint-plugin-graphql": "^3.0.3",
     "graphql": "^14.5.6",
     "jest": "24.9.0",
-    "ts-jest": "24.0.2",
-    "typescript": "3.5.3"
+    "ts-jest": "24.1.0",
+    "typescript": "3.6.3"
   },
   "dependencies": {
     "@episodehunter/types": "^2.1.0",
@@ -55,17 +55,5 @@
   "prettier": {
     "singleQuote": true,
     "semi": false
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "src/.*\\.test\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ]
   }
 }

@@ -57,3 +57,17 @@ Util functions for episodehunter
 ### Firebase fn
 
 Specific functions for firebase
+
+### Developing
+
+Bootstrap
+
+```
+npx lerna bootstrap
+```
+
+Test:
+
+```
+npx lerna run test
+```

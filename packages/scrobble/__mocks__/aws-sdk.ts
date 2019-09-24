@@ -1,6 +1,6 @@
 export const response = jest.fn();
 
-export const invoke = jest.fn((data: any) => ({
+export const invoke = jest.fn((_: any) => ({
   promise: response
 }));
 

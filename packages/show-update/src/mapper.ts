@@ -3,7 +3,7 @@ import { Message } from '@episodehunter/types';
 import { safeFilter, safeMap, calculateEpisodeNumber } from '@episodehunter/utils';
 import { isValidEpisode } from './util';
 
-export function mapTheTvEpisodesToDefinition(tEpisodes: TheTvDbShowEpisode[]): Message.Dragonstone.UpdateEpisodes.EpisodeInput[] {
+export function mapTheTvEpisodesToDefinition(tEpisodes: TheTvDbShowEpisode[]): Message.Dragonstone.EpisodeInput[] {
   return safeMap(mapTheTvEpisodeToDefinition)(safeFilter(isValidEpisode)(tEpisodes));
 }
 
@@ -24,7 +24,7 @@ export function mapTheTvShowToDefinition(tShow: TheTvDbShow): Message.Dragonston
   };
 }
 
-function mapTheTvEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): Message.Dragonstone.UpdateEpisodes.EpisodeInput {
+function mapTheTvEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): Message.Dragonstone.EpisodeInput {
   return {
     tvdbId: tEpisodes.id,
     name: tEpisodes.episodeName || `Episode #${tEpisodes.airedSeason}.${tEpisodes.airedEpisodeNumber}`,

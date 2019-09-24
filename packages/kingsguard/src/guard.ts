@@ -23,18 +23,17 @@ function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setup
         logger.captureException(new Error(`Timeout in 500ms for ${context.functionName}`))
       }, context.getRemainingTimeInMillis() - 500)
 
-      return fun(parsedEvent, logger, context)
-        .then(result => {
-          clearTimeout(timeoutId)
-          logger.flush()
-          return result
-        })
-        .catch(error => {
-          clearTimeout(timeoutId)
-          logger.captureException(error)
-          logger.flush()
-          return Promise.reject(error)
-        })
+      try {
+        const result = await fun(parsedEvent, logger, context)
+        clearTimeout(timeoutId)
+        logger.flush()
+        return result
+      } catch (error) {
+        clearTimeout(timeoutId)
+        logger.captureException(error)
+        logger.flush()
+        return Promise.reject(error)
+      }
     }
   }
 }
