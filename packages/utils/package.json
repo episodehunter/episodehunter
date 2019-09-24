@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Util functions for episodehunter",
   "main": "dist/index.js",
   "scripts": {
