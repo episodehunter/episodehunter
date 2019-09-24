@@ -38,7 +38,7 @@ function findShowsToUpdate(
 
 const guard = createGuard(config.sentryDns, config.logdnaKey);
 
-export const update = guard(async (event, logger, context) => {
+export const update = guard(async (_, logger, context) => {
   logger.log('Start a mass update of shows to dragonstone');
   const twoHoursAgo = unixTimestamp() - twoHours;
   const [titles, theTvDbUpdates] = await Promise.all([

@@ -1,12 +1,8 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es2018",
-    "module": "commonjs",
+    "declaration": false,
     "outDir": "./dist",
-    "strict": true,
-    "noUnusedLocals": true,
-    "moduleResolution": "node",
-    "sourceMap": false
-  },
-  "include": ["src"]
+    "lib": ["es2018", "dom", "esnext.asynciterable"]
+  }
 }
