@@ -2,9 +2,12 @@
   "name": "@episodehunter/types",
   "version": "2.1.0",
   "description": "Types for episodehunter",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "postinstall": "npm run generate",
+    "generate": "graphql-codegen",
+    "build": "rm -rf dist && npm run generate && tsc -p tsconfig.build.json && ts-node build.ts",
     "prepare": "npm run build"
   },
   "repository": {
@@ -22,7 +25,14 @@
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "3.5.3"
+    "@graphql-codegen/cli": "^1.7.0",
+    "@graphql-codegen/schema-ast": "^1.7.0",
+    "@graphql-codegen/typescript": "^1.7.0",
+    "@graphql-codegen/typescript-resolvers": "^1.7.0",
+    "@types/node": "^12.7.5",
+    "graphql": "^14.5.5",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
   },
   "prettier": {
     "singleQuote": true,

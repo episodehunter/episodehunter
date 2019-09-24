@@ -1,20 +1,20 @@
 import { createDateString } from '@episodehunter/utils';
-import DataLoader from 'dataloader';
-import { Client } from 'pg';
 import { sql } from 'squid/pg';
+import { PgClient } from '../../../util/pg';
+import { createDataLoader, DataLoader } from '../util/data-loader';
 
 interface Key {
   showId: number;
   userId: number;
 }
 
-export function createNumberOfEpisodesToWatchLoader(client: Client): NumberOfEpisodesToWatchLoader {
+export function createNumberOfEpisodesToWatchLoader(client: PgClient): NumberOfEpisodesToWatchLoader {
   const getBatch = async (keys: Key[]): Promise<number[]> => {
     const userId = keys[0].userId | 0;
     const uniqIds = Array.from(new Set(keys.map(key => Number(key.showId)).filter(Boolean)));
     const day = createDateString(new Date());
 
-    const dbRerult = await client.query(sql`
+    const dbRerult = await client.query<{c: number, show_id: number}>(sql`
       SELECT COUNT(*) as c, show_id
       FROM episodes as e
       WHERE e.show_id in (${sql.raw(
@@ -32,7 +32,7 @@ export function createNumberOfEpisodesToWatchLoader(client: Client): NumberOfEpi
     });
   };
 
-  return new DataLoader<Key, number>(getBatch, {
+  return createDataLoader<Key, number>(getBatch, {
     cache: false
   });
 }

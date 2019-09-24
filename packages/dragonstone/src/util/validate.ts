@@ -16,7 +16,7 @@ const knownShowProps: { [key in keyof Message.Dragonstone.ShowInput]: string[] }
   lastupdate: ['number']
 };
 
-const knownEpisodeProps: { [key in keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput]: string[] } = {
+const knownEpisodeProps: { [key in keyof Message.Dragonstone.EpisodeInput]: string[] } = {
   name: ['string'],
   episodenumber: ['number'],
   firstAired: ['string'],
@@ -53,11 +53,11 @@ export function assertShowInput(input: Message.Dragonstone.ShowInput) {
   }
 }
 
-export function assertEpisodes(input: Message.Dragonstone.UpdateEpisodes.EpisodeInput[]) {
+export function assertEpisodes(input: Message.Dragonstone.EpisodeInput[]) {
   input.forEach(e => assertEpisode(e));
 }
 
-function assertEpisode(input: Message.Dragonstone.UpdateEpisodes.EpisodeInput) {
+function assertEpisode(input: Message.Dragonstone.EpisodeInput) {
   const knownKeys = Object.keys(knownEpisodeProps);
   Object.keys(input).forEach(key => {
     if (!knownKeys.includes(key)) {
@@ -67,14 +67,14 @@ function assertEpisode(input: Message.Dragonstone.UpdateEpisodes.EpisodeInput) {
   Object.entries(knownEpisodeProps).forEach(([key, values]) => {
     const validType = values!.some(type => {
       if (type === 'undefined') {
-        return input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput] == null; // accept null or undefined
+        return input[key as keyof Message.Dragonstone.EpisodeInput] == null; // accept null or undefined
       }
-      return typeof input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput] === type;
+      return typeof input[key as keyof Message.Dragonstone.EpisodeInput] === type;
     });
     if (!validType) {
       throw new TypeError(
         `Expected type ${values!.join(' or ')} for ${key} but got ${printType(
-          input[key as keyof Message.Dragonstone.UpdateEpisodes.EpisodeInput]
+          input[key as keyof Message.Dragonstone.EpisodeInput]
         )} for episode ${input.episodenumber}`
       );
     }

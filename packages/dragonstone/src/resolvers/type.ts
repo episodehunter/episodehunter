@@ -1,110 +1,107 @@
-import { Dragonstone, ShowId } from '@episodehunter/types';
-import { Show } from '@episodehunter/types/dragonstone';
+import { ShowId } from '@episodehunter/types';
+import * as Schema from '@episodehunter/types/dragonstone-resolvers-types';
 import { Context } from '../context';
-import { Following as FollowingType } from './type';
 
-export interface Following {
-  show: Show;
-  showId: ShowId;
+type Maybe<T> = Schema.Maybe<T>;
+
+export type Resolver<TParent, TArgs, TResult> = (
+  parent: TParent,
+  args: TArgs,
+  context: Context
+) => Promise<TResult> | TResult;
+
+export type RootShow = Omit<
+  Schema.Show,
+  | 'seasons'
+  | 'followers'
+  | 'upcomingEpisode'
+  | 'justAirdEpisode'
+  | 'numberOfAiredEpisodes'
+  | 'nextToWatch'
+  | 'isFollowing'
+>;
+export type RootEpisode = Omit<Schema.Episode, 'watched'>;
+export type RootFollowing = Omit<Schema.Following, 'show'>;
+export type RootHistory = Omit<Schema.History, 'show' | 'episode'>;
+
+type RootResolversKeys = {
+  [P in keyof Required<Schema.RootQuery>]: Resolver<void, any, any>;
+};
+
+export interface RootResolvers extends RootResolversKeys {
+  show: Resolver<void, Schema.RootQueryShowArgs, Maybe<RootShow>>;
+  findShow: Resolver<void, Schema.RootQueryFindShowArgs, Maybe<RootShow>>;
+  season: Resolver<void, Schema.RootQuerySeasonArgs, RootEpisode[]>;
+  following: Resolver<void, void, RootFollowing[]>;
+  titles: Resolver<void, void, Schema.Title[]>;
+  history: Resolver<void, Schema.RootQueryHistoryArgs, RootHistory[]>;
+  me: Resolver<void, void, Schema.User>;
 }
 
-interface IndexResolver {
-  [key: string]: (root: any, args: any, context: Context) => any;
+type ShowResolversKeys = {
+  [P in keyof Omit<Required<Schema.ShowResolvers>, keyof RootShow>]: Resolver<any, any, any>;
+};
+type ShowResolver<T> = Resolver<RootShow, void, T>;
+
+export interface ShowResolvers extends ShowResolversKeys {
+  upcomingEpisode: ShowResolver<Maybe<RootEpisode>>;
+  nextToWatch: ShowResolver<{ showId: ShowId }>; // TODO: Do we need this?
+  justAirdEpisode: ShowResolver<Maybe<RootEpisode>>;
+  followers: ShowResolver<number>;
+  isFollowing: ShowResolver<boolean>;
+  seasons: ShowResolver<number[]>;
+  numberOfAiredEpisodes: ShowResolver<number>;
 }
 
-export interface ShowQueryType extends IndexResolver {
-  upcomingEpisode(root: Dragonstone.Show, args: void, context: Context): Promise<Dragonstone.Episode | null>;
-  nextToWatch(root: Dragonstone.Show, args: void, context: Context): { showId: ShowId };
-  justAirdEpisode(root: Dragonstone.Show, args: void, context: Context): Promise<Dragonstone.Episode | null>;
-  followers(root: Dragonstone.Show, args: void, context: Context): Promise<number>;
-  isFollowing(root: Dragonstone.Show, args: void, context: Context): Promise<boolean>;
-  seasons(root: Dragonstone.Show, args: void, context: Context): Promise<number[]>;
-  numberOfAiredEpisodes(root: Dragonstone.Show, args: void, context: Context): Promise<number>;
+type NextToWatchResolversKeys = {
+  [P in keyof Required<Schema.NextToWatchResolvers>]: Resolver<any, any, any>;
+};
+type NextToWatchResolver<T> = Resolver<
+  Maybe<Schema.WatchedEpisodeInput | Schema.WatchedEpisodeInput[] | Schema.UnwatchedEpisodeInput | { showId: number }>,
+  void,
+  T
+>;
+
+export interface NextToWatchResolvers extends NextToWatchResolversKeys {
+  numberOfEpisodesToWatch: NextToWatchResolver<number>;
+  episode: NextToWatchResolver<Maybe<RootEpisode>>;
+  madeMutation: NextToWatchResolver<boolean>;
 }
 
-export interface NextToWatchQuerryType extends IndexResolver {
-  numberOfEpisodesToWatch(
-    root:
-      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
-      | Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
-      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput[]
-      | { showId: number },
-    args: void,
-    context: Context
-  ): Promise<number>;
-  episode(
-    root:
-      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
-      | Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
-      | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput[]
-      | { showId: number },
-    args: void,
-    context: Context
-  ): Promise<Dragonstone.Episode | null>;
-  madeMutation(root:
-    | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput
-    | Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput
-    | Dragonstone.WatchedEpisode.UnwatchedEpisodeInput[]
-    | { showId: number },
-  args: void,
-  context: Context): boolean
+type EpisodeResolverKeys = {
+  [P in keyof Omit<Required<Schema.EpisodeResolvers>, keyof RootEpisode>]: Resolver<any, any, any>;
+};
+
+export interface EpisodeResolvers extends EpisodeResolverKeys {
+  watched: Resolver<RootEpisode, void, Schema.WatchedEpisodeInput[]>;
 }
 
-export interface EpisodeQuerryType extends IndexResolver {
-  watched(
-    root: Dragonstone.Episode,
-    args: void,
-    context: Context
-  ): Promise<Dragonstone.WatchedEpisode.WatchedEpisode[]>;
+type HistoryResolversKeys = {
+  [P in keyof Omit<Required<Schema.HistoryResolvers>, keyof RootHistory>]: Resolver<any, any, any>;
+};
+
+export interface HistoryResolver extends HistoryResolversKeys {
+  show: Resolver<RootHistory, void, Maybe<RootShow>>;
+  episode: Resolver<RootHistory, void, Maybe<RootEpisode>>;
 }
 
-export interface RootQueryType extends IndexResolver {
-  show: (root: void, args: { id: ShowId }, context: Context) => Promise<Dragonstone.Show | null>;
-  season: (root: void, args: { showId: ShowId; season: number }, context: Context) => Promise<Dragonstone.Episode[]>;
-  following: (root: void, args: {}, context: Context) => Promise<Pick<FollowingType, 'showId'>[]>;
-  titles: (root: void, args: {}, context: Context) => Promise<Dragonstone.Title[]>;
-  history: (
-    root: void,
-    args: { page: number },
-    context: Context
-  ) => Promise<Omit<Dragonstone.History, 'show' | 'episode'>[]>;
-  me: (root: void, args: {}, context: Context) => Promise<Dragonstone.User>;
+type FollowingResolversKeys = {
+  [P in keyof Omit<Required<Schema.FollowingResolvers>, keyof RootFollowing>]: Resolver<any, any, any>;
+};
+
+export interface FollowingResolvers extends FollowingResolversKeys {
+  show: Resolver<RootFollowing, void, Maybe<RootShow>>;
 }
 
-export interface HistoryQueryType extends IndexResolver {
-  show: (
-    root: Omit<Dragonstone.History, 'show' | 'episode'>,
-    args: {},
-    context: Context
-  ) => Promise<Dragonstone.Show | null>;
-  episode: (
-    root: Omit<Dragonstone.History, 'show' | 'episode'>,
-    args: {},
-    context: Context
-  ) => Promise<Dragonstone.Episode | null>;
-}
+type MutationResolversKeys = {
+  [P in keyof Required<Schema.RootMutationResolvers>]: Resolver<any, any, any>;
+};
 
-export interface FollowingQueryType extends IndexResolver {
-  show: (root: Pick<FollowingType, 'showId'>, args: {}, context: Context) => Promise<Dragonstone.Show | null>;
-}
-
-export interface RootMutationType extends IndexResolver {
-  checkInEpisode: (
-    root: void,
-    args: { episode: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput, apiKey?: string, username?: string },
-    context: Context
-  ) => Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput | null>;
-  checkInEpisodes: (
-    root: void,
-    args: { episodes: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput[] },
-    context: Context
-  ) => Promise<Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput[]>;
-  removeCheckedInEpisode: (
-    root: void,
-    args: { episode: Dragonstone.WatchedEpisode.UnwatchedEpisodeInput },
-    context: Context
-  ) => Promise<Dragonstone.WatchedEpisode.UnwatchedEpisodeInput>;
-  followShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
-  unfollowShow: (root: void, args: { showId: ShowId }, context: Context) => Promise<boolean>;
-  createUser: (root: void, args: { metadata: Dragonstone.UserInput }, context: Context) => Promise<boolean>;
+export interface RootMutationResolvers extends MutationResolversKeys {
+  checkInEpisode: Resolver<void, Schema.RootMutationCheckInEpisodeArgs, Maybe<Schema.WatchedEpisodeInput>>;
+  checkInEpisodes: Resolver<void, Schema.RootMutationCheckInEpisodesArgs, Maybe<Schema.WatchedEpisodeInput[]>>;
+  removeCheckedInEpisode: Resolver<void, Schema.RootMutationRemoveCheckedInEpisodeArgs, Maybe<Schema.UnwatchedEpisodeInput>>;
+  followShow: Resolver<void, Schema.RootMutationFollowShowArgs, boolean>;
+  unfollowShow: Resolver<void, Schema.RootMutationUnfollowShowArgs, boolean>;
+  createUser: Resolver<void, Schema.RootMutationCreateUserArgs, boolean>;
 }

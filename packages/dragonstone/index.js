@@ -33,18 +33,22 @@ createServer((req, res) => {
       return;
     }
 
-    const callback = (error, result) => {
-      if (error) throw error;
-      res.statusCode = result.statusCode;
-      for (let key in result.headers) {
-        if (result.headers.hasOwnProperty(key)) {
-          res.setHeader(key, result.headers[key]);
+    const context = { functionName: 'dragonstone-local', getRemainingTimeInMillis: () => 1000000 };
+
+    graphqlHandler(event, context)
+      .then(result => {
+        res.statusCode = result.statusCode;
+        for (let key in result.headers) {
+          if (result.headers.hasOwnProperty(key)) {
+            res.setHeader(key, result.headers[key]);
+          }
         }
-      }
-      res.write(result.body);
-      res.end();
-    };
-    graphqlHandler(event, { functionName: 'dragonstone-local', getRemainingTimeInMillis: () => 1000000 }, callback);
+        res.write(result.body);
+        res.end();
+      }).catch(err => {
+        console.error(err);
+        throw err;
+      });
   });
 }).listen(8080, () => {
   console.log('🚀 at 8080');

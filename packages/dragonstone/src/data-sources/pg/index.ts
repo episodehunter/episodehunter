@@ -1,17 +1,17 @@
-import { Client } from 'pg';
-import { createEpisodeResolver } from './episode/episode.resolver';
-import { createUpcomingResolver } from './episode/upcoming.resolver';
-import { createUpcomingLoader, createJustAirdLoader } from './episode/upcoming.loader';
+import { PgClient } from '../../util/pg';
 import { createEpisodeLoader } from './episode/episode.loader';
+import { createEpisodeResolver } from './episode/episode.resolver';
+import { createJustAirdLoader, createUpcomingLoader } from './episode/upcoming.loader';
+import { createUpcomingResolver } from './episode/upcoming.resolver';
 import { createHistoryResolver } from './history/history.resolver';
-import { createNumberOfEpisodesToWatchLoader } from './history/number-of-episodes-to-watch.loader';
 import { createHistoryLoader } from './history/hitsory.loader';
-import { createShowResolver } from './show/show.resolver';
+import { createNumberOfEpisodesToWatchLoader } from './history/number-of-episodes-to-watch.loader';
 import { createShowLoader } from './show/show.loader';
-import { createUserResolver } from './user/user.resolver';
+import { createShowResolver } from './show/show.resolver';
 import { createTitlesResolver } from './titles/titles.resolver';
+import { createUserResolver } from './user/user.resolver';
 
-export const createResolver = (client: Client) => {
+export const createResolver = (client: PgClient) => {
   const episodeLoader = createEpisodeLoader(client);
   const showLoader = createShowLoader(client);
   const upcomingLoader = createUpcomingLoader(client);

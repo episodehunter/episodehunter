@@ -1,0 +1,6 @@
+# import Show from "show.graphql"
+
+type Following {
+  showId: Int!
+  show: Show!
+}

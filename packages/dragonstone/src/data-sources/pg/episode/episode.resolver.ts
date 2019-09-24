@@ -1,14 +1,14 @@
 import { Logger } from '@episodehunter/logger';
 import { Dragonstone, Message, ShowId } from '@episodehunter/types';
 import { calculateEpisodeNumber, createDateString } from '@episodehunter/utils';
-import { Client } from 'pg';
 import { sql } from 'squid/pg';
+import { PgClient } from '../../../util/pg';
 import { EpisodeRecord } from '../schema';
 import { createEpisodeBatch } from '../util/pg-util';
 import { EpisodeLoader } from './episode.loader';
 import { mapEpisode, mapEpisodeInputToEpisode, mapEpisodes } from './episode.mapper';
 
-export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoader) => ({
+export const createEpisodeResolver = (client: PgClient, episodeLoader: EpisodeLoader) => ({
   async getNextEpisodeToWatch(userId: number, showId: ShowId): Promise<Dragonstone.Episode | null> {
     const dbResult = await client.query<EpisodeRecord>(sql`
       SELECT * FROM episodes AS e
@@ -39,7 +39,7 @@ export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoad
   },
 
   async getSeasons(showId: ShowId): Promise<number[]> {
-    const dbResult = await client.query(sql`
+    const dbResult = await client.query<{ season: number }>(sql`
       SELECT DISTINCT episodenumber / 10000 as season
       FROM episodes WHERE show_id = ${showId};
     `);
@@ -47,7 +47,7 @@ export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoad
   },
 
   async getNumberOfAiredEpisodes(showId: ShowId): Promise<number> {
-    const dbResult = await client.query(sql`
+    const dbResult = await client.query<{ c: number }>(sql`
       SELECT COUNT(*) AS c
       FROM episodes
       WHERE show_id = ${showId} AND first_aired <= ${createDateString(new Date())};
@@ -59,7 +59,7 @@ export const createEpisodeResolver = (client: Client, episodeLoader: EpisodeLoad
     showId: ShowId,
     first: number,
     last: number,
-    episodes: Message.Dragonstone.UpdateEpisodes.EpisodeInput[],
+    episodes: Message.Dragonstone.EpisodeInput[],
     logger: Logger
   ): Promise<boolean> {
     const currentShowDbResult = await client.query(sql`SELECT id FROM shows WHERE id = ${showId}`);

@@ -9,7 +9,7 @@ import {
 } from './response'
 import { PlexEvent, KodiEpisodeEvent, KodiMovieEvent } from './types'
 import { plexEpisodeParse, parseJson, isKodiEpisode } from './parse.util'
-import { UnauthorizedError, UnableToAddShowError } from './custom-error'
+import { UnableToAddShowError } from './custom-error'
 import { scrobbleEpisode } from './scrobbler.util'
 import { config } from './config'
 
@@ -19,6 +19,8 @@ export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
   const username =
     event.queryStringParameters && event.queryStringParameters.username
   const apikey = event.queryStringParameters && event.queryStringParameters.key
+  logger.log(JSON.stringify(event.headers))
+  logger.log(JSON.stringify(event.body))
   const payload: PlexEvent = JSON.parse(parse(event, true).payload)
   const eventType = payload.event
   const mediaType = payload.Metadata.type
@@ -78,9 +80,6 @@ export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
     .then(() => createOkResponse('OK'))
     .catch(error => {
       logger.log(error && error.message)
-      if (error instanceof UnauthorizedError) {
-        return Promise.resolve(createUnauthorizedOkResponse(error.message))
-      }
       return Promise.reject(error)
     })
 })
@@ -150,11 +149,8 @@ export const kodi = guard<APIGatewayEvent>(
     )
       .then(() => createOkResponse('OK'))
       .catch(error => {
-        if (error instanceof UnauthorizedError) {
-          logger.log(error.message)
-          return Promise.resolve(createUnauthorizedOkResponse(error.message))
-        } else if (error instanceof UnableToAddShowError) {
-          logger.log(error.message)
+        if (error instanceof UnableToAddShowError) {
+          logger.captureException(error)
           return Promise.resolve(createNotFoundResponse())
         } else {
           logger.log(error)

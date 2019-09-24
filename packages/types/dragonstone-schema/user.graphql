@@ -1,0 +1,9 @@
+
+type User {
+  apikey: String!
+  username: String!
+}
+
+input UserInput {
+  username: String!
+}

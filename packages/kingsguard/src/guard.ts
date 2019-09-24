@@ -26,11 +26,13 @@ function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setup
       return fun(parsedEvent, logger, context)
         .then(result => {
           clearTimeout(timeoutId)
+          logger.flush()
           return result
         })
         .catch(error => {
           clearTimeout(timeoutId)
           logger.captureException(error)
+          logger.flush()
           return Promise.reject(error)
         })
     }

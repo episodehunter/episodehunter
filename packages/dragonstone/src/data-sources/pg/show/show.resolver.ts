@@ -1,19 +1,20 @@
 import { Logger } from '@episodehunter/logger';
-import { Dragonstone, Message, ShowId } from '@episodehunter/types';
-import { Client } from 'pg';
+import { Message, ShowId } from '@episodehunter/types';
 import { spreadInsert, sql } from 'squid/pg';
+import { RootShow } from '../../../resolvers/type';
+import { PgClient } from '../../../util/pg';
 import { ShowRecord } from '../schema';
 import { update } from '../util/pg-util';
 import { ShowLoader } from './show.loader';
 import { mapShow, mapShowInputToShow } from './show.mapper';
 
-export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
+export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => {
   return {
-    async getShow(id: ShowId): Promise<Dragonstone.Show | null> {
+    async getShow(id: ShowId): Promise<RootShow | null> {
       return showLoader.load(id).then(show => mapShow(show));
     },
     async getNumberOfFollowers(showId: ShowId): Promise<number> {
-      const dbResult = await client.query(sql`SELECT COUNT(*) as c FROM "following" WHERE show_id = ${showId};`);
+      const dbResult = await client.query<{ c: number }>(sql`SELECT COUNT(*) as c FROM "following" WHERE show_id = ${showId};`);
       return dbResult.rows[0].c;
     },
     async isFollowingShow(showId: ShowId, userId: number): Promise<boolean> {
@@ -26,7 +27,7 @@ export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
       showId: number,
       showInput: Message.Dragonstone.ShowInput,
       logger: Logger
-    ): Promise<Dragonstone.Show | null> {
+    ): Promise<RootShow | null> {
       const dbResult = await client.query<ShowRecord>(sql`SELECT * FROM shows WHERE id=${showId} LIMIT 1`);
       const dbShow: ShowRecord = dbResult.rows[0];
       if (!dbShow) {
@@ -37,8 +38,8 @@ export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
       await client.query(update('shows', showId, newShow));
       return mapShow(newShow);
     },
-    async addShow(showInput: Message.Dragonstone.ShowInput, logger: Logger): Promise<Dragonstone.Show> {
-      const dbResult = await client.query(
+    async addShow(showInput: Message.Dragonstone.ShowInput, logger: Logger): Promise<RootShow> {
+      const dbResult = await client.query<ShowRecord>(
         sql`SELECT * FROM "shows" WHERE external_id_tvdb=${showInput.tvdbId} LIMIT 1`
       );
       if (dbResult.rowCount > 0) {
@@ -46,7 +47,7 @@ export const createShowResolver = (client: Client, showLoader: ShowLoader) => {
         return mapShow(dbResult.rows[0])!;
       }
       const newShow = mapShowInputToShow(showInput);
-      const dbInsertResult = await client.query(sql`INSERT INTO "shows" ${spreadInsert(newShow)} RETURNING *;`);
+      const dbInsertResult = await client.query<ShowRecord>(sql`INSERT INTO "shows" ${spreadInsert(newShow)} RETURNING *;`);
       return mapShow(dbInsertResult.rows[0])!;
     }
   };

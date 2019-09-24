@@ -1,0 +1,9 @@
+# import WatchedEpisode from "watched-episode.graphql"
+# import Show from "show.graphql"
+# import Episode from "episode.graphql"
+
+type History {
+  watchedEpisode: WatchedEpisode!
+  show: Show
+  episode: Episode
+}

@@ -1,0 +1,8 @@
+
+type Title {
+  id: Int!
+  name: String!
+  followers: Int!
+  tvdbId: Int!
+  lastupdated: Int!
+}

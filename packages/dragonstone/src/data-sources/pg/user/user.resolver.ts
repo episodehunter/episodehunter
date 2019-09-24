@@ -1,13 +1,13 @@
 import { Dragonstone } from '@episodehunter/types';
 import { safeMap } from '@episodehunter/utils';
-import { Client } from 'pg';
 import { spreadInsert, sql } from 'squid/pg';
-import { Following } from '../../../resolvers/type';
+import { RootFollowing } from '../../../resolvers/type';
+import { PgClient } from '../../../util/pg';
 import { FollowingRecord, NewFollowingRecord, UserRecord } from '../schema';
 import { mapUser } from './user.mapper';
 
-export const createUserResolver = (client: Client) => ({
-  async getFollowing(userId: number): Promise<Pick<Following, 'showId'>[]> {
+export const createUserResolver = (client: PgClient) => ({
+  async getFollowing(userId: number): Promise<RootFollowing[]> {
     const dbResult = await client.query<FollowingRecord>(sql`SELECT * FROM following WHERE user_id = ${userId}`);
     return safeMap((row: FollowingRecord) => ({
       showId: row.show_id
@@ -37,7 +37,7 @@ export const createUserResolver = (client: Client) => ({
     if (!firebaseUid) {
       return null;
     }
-    const getUserId = () => client.query(sql`SELECT id FROM users WHERE firebase_id = ${firebaseUid} LIMIT 1`);
+    const getUserId = () => client.query<{id: number}>(sql`SELECT id FROM users WHERE firebase_id = ${firebaseUid} LIMIT 1`);
     let dbResult = await getUserId();
     if (dbResult.rowCount === 0) {
       await this.createUser(firebaseUid, { username: 'Batman' });

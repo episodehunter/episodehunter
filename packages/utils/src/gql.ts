@@ -1,4 +1,4 @@
-export const gql = (literals: string, ...substitutions: any[]) => {
+export const gql = (literals: string | TemplateStringsArray, ...substitutions: any[]) => {
   let result = '';
 
   // run the loop only for the substitution count

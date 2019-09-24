@@ -1,9 +1,17 @@
 import * as AWS from 'aws-sdk'
-import { Message, Dragonstone } from '@episodehunter/types'
+import { WatchedEpisodeInput } from '@episodehunter/types/dragonstone'
+import { Message } from '@episodehunter/types'
+import { gql } from '@episodehunter/utils'
+import { Logger } from '@episodehunter/logger'
 import { config } from './config'
 import { UnableToAddShowError } from './custom-error'
 import { GraphQLClient } from 'graphql-request'
-import { Logger } from '@episodehunter/logger'
+import {
+  GetShowQuery,
+  GetShowQueryVariables,
+  CheckInEpisodeMutation,
+  CheckInEpisodeMutationVariables
+} from './dragonstone'
 
 AWS.config.update({
   region: 'us-east-1'
@@ -41,46 +49,55 @@ async function createShow(
     })
 }
 
+const getShowQuery = gql`
+  query GetShow($theTvDbId: Int!) {
+    findShow(theTvDbId: $theTvDbId) {
+      ids {
+        id
+      }
+    }
+  }
+`
+
 export async function getShowId(
   theTvDbId: number,
   requestId: string,
   log: Logger
 ): Promise<number> {
-  const show = await client.request<null | { show: { ids: { id: number } } }>(`{
-    show(theTvDbId: ${theTvDbId}) {
-      ids {
-        id
-      }
-    }
-  }`)
-  if (!show) {
+  const variables: GetShowQueryVariables = { theTvDbId }
+  const result = await client.request<GetShowQuery>(getShowQuery, variables)
+  if (!result || !result.findShow) {
     log.log(`Request to add show with theTvDbId: ${theTvDbId}`)
     return createShow(theTvDbId, requestId)
   } else {
-    return show.show.ids.id
+    return result.findShow.ids.id
   }
 }
 
-const query = `
-mutation checkInEpisode($episode: WatchedEpisodeInput!, $apiKey: String!, $username: String!) {
-  checkInEpisode(episode: $episode, apiKey: $apiKey, username: $username) {
-    madeMutation
+const scrobbleEpisodeQuery = gql`
+  mutation checkInEpisode(
+    $episode: WatchedEpisodeInput!
+    $apiKey: String!
+    $username: String!
+  ) {
+    checkInEpisode(episode: $episode, apiKey: $apiKey, username: $username) {
+      madeMutation
+    }
   }
-}
 `
 
-export function scrobbleEpisode(
-  episodeInput: Dragonstone.WatchedEpisode.WatchedEpisodeInput,
+export async function scrobbleEpisode(
+  episode: WatchedEpisodeInput,
   apiKey: string,
   username: string,
   requestId: string
 ): Promise<null> {
   client.setHeader('request-id', requestId)
-  return client
-    .request<{ checkInEpisode: null | { madeMutation: true } }>(query, {
-      episodeInput,
-      apiKey,
-      username
-    })
-    .then(() => null)
+  const variables: CheckInEpisodeMutationVariables = {
+    episode,
+    apiKey,
+    username
+  }
+  await client.request<CheckInEpisodeMutation>(scrobbleEpisodeQuery, variables)
+  return null
 }

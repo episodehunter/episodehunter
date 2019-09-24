@@ -1,12 +1,11 @@
-import { Dragonstone } from '@episodehunter/types';
-import { WatchedEnum } from '@episodehunter/types/dragonstone/watched-episode';
-import { WatchedEpisodeRecord, NewWatchedEpisodeRecord } from '../schema';
+import { WatchedEpisodeInput, WatchedEpisode } from '@episodehunter/types/dragonstone-resolvers-types';
+import { NewWatchedEpisodeRecord, WatchedEpisodeRecord } from '../schema';
 
-export function mapWatchedEpisodes(episodes: WatchedEpisodeRecord[]): Dragonstone.WatchedEpisode.WatchedEpisode[] {
-  return episodes.map(mapWatchedEpisode) as Dragonstone.WatchedEpisode.WatchedEpisode[];
+export function mapWatchedEpisodes(episodes: WatchedEpisodeRecord[]): WatchedEpisode[] {
+  return episodes.map(mapWatchedEpisode) as WatchedEpisode[];
 }
 
-export function mapWatchedEpisode(episode?: WatchedEpisodeRecord): Dragonstone.WatchedEpisode.WatchedEpisode | null {
+export function mapWatchedEpisode(episode?: WatchedEpisodeRecord): WatchedEpisode | null {
   if (!episode) {
     return null;
   }
@@ -19,13 +18,13 @@ export function mapWatchedEpisode(episode?: WatchedEpisodeRecord): Dragonstone.W
 }
 
 export function mapWatchedInputToWatchedEpisode(
-  input: Dragonstone.WatchedEpisode.InternalWatchedEpisodeInput,
+  input: WatchedEpisodeInput,
   userId: number
 ): NewWatchedEpisodeRecord {
   return {
     episodenumber: input.episodenumber,
     show_id: input.showId,
-    type: input.type || WatchedEnum.checkIn,
+    type: input.type || 2,
     time: input.time,
     user_id: userId
   };

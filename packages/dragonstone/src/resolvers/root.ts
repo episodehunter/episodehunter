@@ -1,20 +1,24 @@
-import { History } from '@episodehunter/types/dragonstone';
+import { Dragonstone } from '@episodehunter/types';
+import { WatchEpisodeType } from '@episodehunter/types/extra-types';
 import { ApolloError } from 'apollo-server-lambda';
 import { Context } from '../context';
 import { unixTimestampType } from './timestamp';
 import {
-  EpisodeQuerryType,
-  FollowingQueryType,
-  HistoryQueryType,
-  NextToWatchQuerryType,
-  RootMutationType,
-  RootQueryType,
-  ShowQueryType
+  EpisodeResolvers,
+  FollowingResolvers,
+  HistoryResolver,
+  NextToWatchResolvers,
+  RootMutationResolvers,
+  RootResolvers,
+  ShowResolvers
 } from './type';
 
-const RootQuery: RootQueryType = {
+const RootQuery: RootResolvers = {
   show(root, args, context) {
     return context.pgResolver.show.getShow(args.id);
+  },
+  findShow(root, args, context) {
+    return null;
   },
   season(root, args, context) {
     return context.pgResolver.episode.getSeasonEpisodes(args.showId, args.season);
@@ -25,7 +29,7 @@ const RootQuery: RootQueryType = {
   titles(root, args, context) {
     return context.pgResolver.titles.getTitles();
   },
-  async history(root, args, context): Promise<Pick<History, 'watchedEpisode'>[]> {
+  async history(root, args, context) {
     const result = await context.pgResolver.history.getHistoryPage(context.getUid(), Math.max(args.page, 0));
     return result.map(watchedEpisode => ({ watchedEpisode }));
   },
@@ -38,7 +42,7 @@ const RootQuery: RootQueryType = {
   }
 };
 
-const History: HistoryQueryType = {
+const History: HistoryResolver = {
   show(root, args, context) {
     return context.pgResolver.show.getShow(root.watchedEpisode.showId);
   },
@@ -47,13 +51,13 @@ const History: HistoryQueryType = {
   }
 };
 
-const Following: FollowingQueryType = {
+const Following: FollowingResolvers = {
   show(root, args, context) {
     return context.pgResolver.show.getShow(root.showId);
   }
 };
 
-const Show: ShowQueryType = {
+const Show: ShowResolvers = {
   upcomingEpisode(root, args, context) {
     return context.pgResolver.upcoming.getUpcomingEpisode(root.ids.id);
   },
@@ -79,7 +83,7 @@ const Show: ShowQueryType = {
   }
 };
 
-const NextToWatch: NextToWatchQuerryType = {
+const NextToWatch: NextToWatchResolvers = {
   numberOfEpisodesToWatch(root, args, context) {
     let showId = 0;
     if (Array.isArray(root)) {
@@ -110,16 +114,21 @@ const NextToWatch: NextToWatchQuerryType = {
   }
 };
 
-const Episode: EpisodeQuerryType = {
+const Episode: EpisodeResolvers = {
   watched(root: any, args: any, context: Context) {
     return context.pgResolver.history.getWatchHistoryForEpisode(context.getUid(), root.ids.showId, root.episodenumber);
   }
 };
 
-const RootMutation: RootMutationType = {
+const RootMutation: RootMutationResolvers = {
   checkInEpisode(root, args, context) {
     if (args.apiKey && args.username) {
-      return context.pgResolver.history.checkInEpisodeWithApiKey(args.apiKey, args.username, args.episode, context.logger);
+      return context.pgResolver.history.checkInEpisodeWithApiKey(
+        args.apiKey,
+        args.username,
+        args.episode,
+        context.logger
+      );
     }
     return context.pgResolver.history.checkInEpisode(context.getUid(), args.episode);
   },
@@ -148,7 +157,7 @@ export const resolvers = {
     checkIn: 2,
     checkInSeason: 3,
     plexScrobble: 4
-  },
+  } as { [K in Dragonstone.WatchedEnum]: WatchEpisodeType },
   RootQuery: RootQuery,
   RootMutation: RootMutation,
   History,

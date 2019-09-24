@@ -1,0 +1,13 @@
+schema: ../types/dragonstone-schema.json
+documents: "src/dragonstone.util.ts"
+pluckConfig:
+  modules:
+    - name: "@episodehunter/utils"
+      identifier: "gql"
+generates:
+  ./src/dragonstone.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+    config:
+      skipTypename: true

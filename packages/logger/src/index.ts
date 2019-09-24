@@ -8,6 +8,7 @@ export interface Logger {
   captureBreadcrumb(message: string, category: string, data?: object): void;
   captureException(error: Error & { awsRequestId?: string }): void;
   eventStart(message: string, category?: string): void;
+  flush(): void;
 }
 
 export function setupLogger(
@@ -55,26 +56,25 @@ function createCreateSentryLogger(logdna: dnaLogger.DnaLogger) {
       logdna.log(message, { level: 'Warn', meta, app: context.functionName });
     };
     const captureBreadcrumb = (message: string, category: string, data?: object) => {
-      console.log(message, category, data);
+      const metaData = Object.assign({}, meta, data);
       Sentry.addBreadcrumb({
         level: Sentry.Severity.Warning,
         message,
         category,
-        data: Object.assign({}, meta, data)
+        data: metaData
       });
-      logdna.log(message, { level: 'Error', meta, app: context.functionName });
+      logdna.log(message, { level: 'Error', meta: metaData, app: context.functionName });
     };
-    const captureException = (error: Error & { awsRequestId?: string }) => {
+    const captureException = (error: Error & { awsRequestId?: string, path?: string[] }) => {
       error.awsRequestId = context.awsRequestId;
-      console.log(error);
       Sentry.captureException(error);
+      const metaData = Object.assign({}, meta, { errorName: error.name, stack: error.stack, path: error.path })
       try {
         const logmsg = error.message + ' at ' + error.stack;
-        logdna.log(logmsg, { level: 'Fatal', meta, app: context.functionName });
+        logdna.log(logmsg, { level: 'Fatal', meta: metaData, app: context.functionName });
       } catch (error) {
         logdna.log('Could not parse error message', { level: 'Fatal', meta, app: context.functionName });
       }
-      dnaLogger.flushAll();
     };
     const eventStart = (message: string, category = 'event') => {
       const startMsg = `[START] ${message}. Remaning time ${context.getRemainingTimeInMillis()}ms`;
@@ -88,8 +88,11 @@ function createCreateSentryLogger(logdna: dnaLogger.DnaLogger) {
         captureBreadcrumb(endMsg, 'End ' + category);
       };
     };
+    const flush = () => {
+      dnaLogger.flushAll();
+    }
 
-    return { log, warn, captureBreadcrumb, captureException, eventStart };
+    return { flush, log, warn, captureBreadcrumb, captureException, eventStart };
   };
 }
 
@@ -104,6 +107,7 @@ function createTestLogger(): Logger {
     eventStart: () => {
       return () => {}
     },
+    flush: () => {}
   }
 }
 
@@ -125,12 +129,12 @@ function createLocalLogger(context: Context, requestStack: string[] = []): Logge
   const captureBreadcrumb = (message: string, category: string, data?: object) => {
     console.log(message, category, data);
   };
-  const captureException = (error: Error & { awsRequestId?: string }) => {
+  const captureException = (error: Error & { awsRequestId?: string, path: string[] }) => {
     error.awsRequestId = context.awsRequestId;
-    console.error(error);
+    const metaData = Object.assign({}, meta, { errorName: error.name, stack: error.stack, path: error.path })
     try {
       const logmsg = error.message + ' at ' + error.stack;
-      console.error(logmsg, { level: 'Fatal', meta, app: context.functionName });
+      console.error(logmsg, { level: 'Fatal', meta: metaData, app: context.functionName });
     } catch (error) {
       console.error('Could not parse error message', { level: 'Fatal', meta, app: context.functionName });
     }
@@ -146,8 +150,11 @@ function createLocalLogger(context: Context, requestStack: string[] = []): Logge
       console.log(endMsg, 'End ' + category);
     };
   };
+  const flush = () => {
+    console.log('Flush');
+  }
 
-  return { log, warn, captureBreadcrumb, captureException, eventStart };
+  return { flush, log, warn, captureBreadcrumb, captureException, eventStart };
 }
 
 function installSentry(ravenDns: string) {

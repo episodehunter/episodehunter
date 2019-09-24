@@ -1,14 +1,14 @@
-import { Client } from 'pg';
-import { sql } from "squid/pg"
-import DataLoader from 'dataloader';
+import { sql } from 'squid/pg';
+import { PgClient } from '../../../util/pg';
 import { EpisodeRecord } from '../schema';
+import { createDataLoader, DataLoader } from '../util/data-loader';
 
 interface EpisodeKey {
   show_id: number;
   episodenumber: number;
 }
 
-export function createEpisodeLoader(client: Client) {
+export function createEpisodeLoader(client: PgClient) {
   const getBatchEpisodes = async (lookupKey: EpisodeKey[]): Promise<(EpisodeRecord | null)[]> => {
     const keys = lookupKey.map(key => `(${key.show_id | 0}, ${key.episodenumber | 0})`).join(', ');
     const dbResult = await client.query<EpisodeRecord>(sql`
@@ -28,7 +28,7 @@ export function createEpisodeLoader(client: Client) {
     return String(lookupKey.show_id + '_' + lookupKey.episodenumber);
   };
 
-  return new DataLoader<EpisodeKey, EpisodeRecord | null>(getBatchEpisodes, {
+  return createDataLoader<EpisodeKey, EpisodeRecord | null>(getBatchEpisodes, {
     cacheKeyFn
   });
 }

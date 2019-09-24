@@ -1,0 +1,7 @@
+# import Episode from "episode.graphql"
+
+type NextToWatch {
+  numberOfEpisodesToWatch: Int!
+  episode: Episode
+  madeMutation: Boolean!
+}

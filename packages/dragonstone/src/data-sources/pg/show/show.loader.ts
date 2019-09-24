@@ -1,9 +1,9 @@
-import { Client } from 'pg';
-import DataLoader from 'dataloader';
-import { ShowRecord } from '../schema';
 import { sql } from 'squid/pg';
+import { PgClient } from '../../../util/pg';
+import { ShowRecord } from '../schema';
+import { createDataLoader, DataLoader } from '../util/data-loader';
 
-export function createShowLoader(client: Client): ShowLoader {
+export function createShowLoader(client: PgClient): ShowLoader {
   const getBatchShows = async (lookupKey: number[]): Promise<(ShowRecord | null)[]> => {
     const keys = lookupKey.map(key => `${key | 0}`).join(', ');
     const dbResult = await client.query<ShowRecord>(sql`
@@ -14,7 +14,7 @@ export function createShowLoader(client: Client): ShowLoader {
     });
   };
 
-  return new DataLoader<number, ShowRecord | null>(getBatchShows);
+  return createDataLoader<number, ShowRecord | null>(getBatchShows);
 }
 
 export type ShowLoader = DataLoader<number, ShowRecord | null>;

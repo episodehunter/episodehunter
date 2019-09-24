@@ -1,0 +1,21 @@
+schema: dragonstone-schema/schema.graphql
+generates:
+  ./src/dragonstone.ts:
+    plugins:
+      - typescript
+    config:
+      skipTypename: true
+      enumsAsTypes: true
+  ./dragonstone-schema.graphql:
+    plugins:
+      - schema-ast
+  ./dragonstone-resolvers-types.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      skipTypename: true
+      enumsAsTypes: true
+      showUnusedMappers: true
+      enumValues:
+        WatchedEnum: ./extra-types#WatchEpisodeType

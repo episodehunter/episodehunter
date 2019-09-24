@@ -10,7 +10,7 @@
     "build": "tsc -p tsconfig.build.json",
     "deploy": "make deploy",
     "test": "jest --testPathPattern=src/.+test.ts",
-    "test:intergration": "jest --testPathPattern=__intergration_test__/test.ts --runInBand --bail"
+    "test:intergration": "jest --testPathPattern=__intergration_test__/test.ts --runInBand"
   },
   "repository": {
     "type": "git",
@@ -22,28 +22,27 @@
     "@episodehunter/kingsguard": "4.1.0",
     "@episodehunter/logger": "4.1.2",
     "@episodehunter/utils": "^1.0.1",
-    "apollo-server-lambda": "2.9.0",
+    "apollo-server-lambda": "2.9.3",
     "dataloader": "1.4.0",
-    "firebase-admin": "8.2.0",
-    "graphql": "14.5.3",
-    "pg": "7.11.0",
+    "firebase-admin": "8.6.0",
+    "graphql": "14.5.7",
+    "pg": "7.12.1",
     "squid": "^0.5.1",
-    "tslib": "1.10.0",
-    "typescript": "3.5.3"
+    "tslib": "1.10.0"
   },
   "devDependencies": {
     "@episodehunter/types": "^2.1.0",
-    "@types/aws-lambda": "8.10.31",
+    "@types/aws-lambda": "8.10.32",
     "@types/dockerode": "2.5.20",
-    "@types/graphql": "14.2.3",
-    "@types/jest": "24.0.17",
-    "@types/node": "12.7.2",
-    "@types/pg": "7.4.14",
+    "@types/jest": "24.0.18",
+    "@types/node": "12.7.5",
+    "@types/pg": "7.11.1",
     "aws-lambda": "0.1.2",
-    "fast-check": "^1.16.2",
+    "fast-check": "^1.16.3",
     "jest": "24.9.0",
-    "testcontainers": "1.2.0",
-    "ts-jest": "24.0.2"
+    "testcontainers": "2.0.0",
+    "ts-jest": "24.1.0",
+    "typescript": "3.6.3"
   },
   "prettier": {
     "singleQuote": true,

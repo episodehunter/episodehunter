@@ -1,27 +1,28 @@
 import { createGuard, Logger } from '@episodehunter/kingsguard';
-import { Dragonstone } from '@episodehunter/types/message';
+import { Message } from '@episodehunter/types';
+import typeDefs from '@episodehunter/types/dragonstone-aot-schema';
 import { ApolloServer } from 'apollo-server-lambda';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { config } from './config';
 import { createContext } from './context';
 import { resolvers } from './resolvers/root';
-import { root as typeDefs } from './types/root';
 import { getFirebaseUidFromHeader } from './util/auth';
 import { createFirebase } from './util/firebase-app';
 import { assertEpisodeNumber, assertEpisodes, assertShowId, assertShowInput } from './util/validate';
-import { createPostgresClient } from './util/pg';
+import { createPostgresClient, PgClient, DatabaseError } from './util/pg';
 import { createResolver, PgResolver } from './data-sources/pg';
-import { Client } from 'pg';
 
 const firebaseApp = createFirebase();
-let client: Client | undefined;
+let client: PgClient | undefined;
 let pgResolver: PgResolver | undefined;
 
-const getClient = (): Client => {
+const getClient = (): PgClient => {
   if (!client) {
     client = createPostgresClient();
     // Expose the client for testing
-    (global as any).__DANGEROUS_CLIENT = client;
+    if (process.env.NODE_ENV === 'test') {
+      (global as any).__DANGEROUS_CLIENT = client;
+    }
   }
   return client;
 };
@@ -37,15 +38,41 @@ let dangerousLogger: Logger;
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers: resolvers as any,
   engine: {
-    apiKey: config.engineApiKey
-  },
-  formatError(error) {
-    if (dangerousLogger) {
-      dangerousLogger.captureException(error);
+    apiKey: config.engineApiKey,
+    reportErrorFunction(err) {
+      // Error while reporting error to engine
+      if (dangerousLogger) {
+        dangerousLogger.captureException(err);
+      }
     }
-    return error;
+  },
+  formatError(err) {
+    if (dangerousLogger) {
+      if (err.originalError) {
+        const errorToLog = {
+          name: err.originalError.name,
+          message: err.originalError.message,
+          path: err.path,
+          stack: err.originalError.stack
+        }
+        dangerousLogger.captureException(errorToLog);
+      } else {
+        dangerousLogger.captureException(err);
+      }
+    }
+
+    if (err.originalError instanceof DatabaseError) {
+      return {
+        message: 'Sorry but there was an internal server error. We could not handel you request for some reason. We will fix it ASAP',
+        locations: err.locations,
+        path: err.path,
+        extensions: err.extensions
+      }
+    } else {
+      return err;
+    }
   },
   context: async (req: { event: { headers: { [key: string]: string }; logger: Logger } }) => {
     const firebaseUid = await getFirebaseUidFromHeader(firebaseApp.auth, req.event.headers);
@@ -70,13 +97,7 @@ export const graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((e
         if (!result) {
           return;
         }
-        if (/"errors":/.test(result.body)) {
-          try {
-            logger.captureException(JSON.parse(result.body));
-          } catch (error) {
-            logger.captureException(new Error(`Response containes Error ${result.body}`));
-          }
-        } else if (result.statusCode > 200) {
+        if (result.statusCode > 200) {
           logger.captureException(
             new Error(`Status code is ${result.statusCode}. body: ${JSON.stringify(result.body)}`)
           );
@@ -90,8 +111,8 @@ export const graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((e
   });
 });
 
-export const updateShowHandler = gard<Dragonstone.UpdateShow.Event>(
-  (event, logger): Promise<Dragonstone.UpdateShow.Response> => {
+export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
+  (event, logger): Promise<Message.Dragonstone.UpdateShowResponse> => {
     try {
       assertShowId(event.showId);
       assertShowInput(event.showInput);
@@ -104,8 +125,8 @@ export const updateShowHandler = gard<Dragonstone.UpdateShow.Event>(
   }
 );
 
-export const updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>(
-  (event, logger): Promise<Dragonstone.UpdateEpisodes.Response> => {
+export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEvent>(
+  (event, logger): Promise<Message.Dragonstone.UpdateEpisodesResponse> => {
     try {
       assertShowId(event.showId);
       assertEpisodeNumber(event.firstEpisode);
@@ -126,8 +147,8 @@ export const updateEpisodesHandler = gard<Dragonstone.UpdateEpisodes.Event>(
   }
 );
 
-export const addShowHandler = gard<Dragonstone.AddShow.Event>(
-  (event, logger): Promise<Dragonstone.AddShow.Response> => {
+export const addShowHandler = gard<Message.Dragonstone.AddShowEvent>(
+  (event, logger): Promise<Message.Dragonstone.AddShowResponse> => {
     assertShowInput(event.showInput);
     return getPgResolver().show.addShow(event.showInput, logger);
   }

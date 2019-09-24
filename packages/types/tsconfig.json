@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ESNEXT",
     "module": "commonjs",
+    "strict": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "outDir": "./dist",
-    "strict": true
+    "declaration": true
   }
 }

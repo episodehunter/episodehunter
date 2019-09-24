@@ -1,7 +1,8 @@
-import { Dragonstone, Message } from '@episodehunter/types';
+import { Message } from '@episodehunter/types';
 import { ShowRecord, NewShowRecord } from '../schema';
+import { RootShow } from '../../../resolvers/type';
 
-export function mapShow(show?: ShowRecord | null): Dragonstone.Show | null {
+export function mapShow(show?: ShowRecord | null): RootShow | null {
   if (!show) {
     return null;
   }

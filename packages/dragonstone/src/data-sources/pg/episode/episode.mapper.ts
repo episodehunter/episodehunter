@@ -9,7 +9,7 @@ export function mapEpisode(episode: null): null;
 export function mapEpisode(episode: undefined): null;
 export function mapEpisode(episode: EpisodeRecord): Dragonstone.Episode;
 export function mapEpisode(episode: EpisodeRecord | null): null;
-export function mapEpisode(episode?: EpisodeRecord | null): Dragonstone.Episode | null {
+export function mapEpisode(episode?: EpisodeRecord | null): Omit<Dragonstone.Episode, 'watched'> | null {
   if (!episode) {
     return null;
   }
@@ -28,7 +28,7 @@ export function mapEpisode(episode?: EpisodeRecord | null): Dragonstone.Episode 
 
 export function mapEpisodeInputToEpisode(
   showId: number,
-  episodeInput: Message.Dragonstone.UpdateEpisodes.EpisodeInput
+  episodeInput: Message.Dragonstone.EpisodeInput
 ): NewEpisodeRecord {
   const episode: NewEpisodeRecord = {
     first_aired: episodeInput.firstAired,

@@ -1,5 +1,6 @@
-import { QueryConfig, Client } from 'pg';
+import { QueryConfig } from 'pg';
 import { sql, spreadInsert } from 'squid/pg';
+import { PgClient } from '../../../util/pg';
 import { NewEpisodeRecord } from '../schema';
 
 export function update(table: string, id: number, obj: any): QueryConfig {
@@ -15,7 +16,7 @@ export function update(table: string, id: number, obj: any): QueryConfig {
   return { text, values };
 }
 
-export function createEpisodeBatch(client: Client) {
+export function createEpisodeBatch(client: PgClient) {
   let episodesToInsert: NewEpisodeRecord[] = [];
   const stat = {
     deleted: 0,

@@ -12,9 +12,11 @@ module.exports =  {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
     "graphql/template-strings": ['error', {
-      env: 'literal',
-      schemaJson: require('../gql-test/schema.json')
+      env: 'apollo',
+      schemaJson: require('@episodehunter/types/dragonstone-schema.json'),
+      tagName: 'gql'
     }]
   },
   plugins: [

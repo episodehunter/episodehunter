@@ -3,8 +3,8 @@ import { defineTable, Schema, NewTableRow, TableRow } from 'squid';
 export type NewEpisodeRecord = NewTableRow<typeof episodesTable>;
 export type EpisodeRecord = TableRow<typeof episodesTable>;
 
-export type NewWatchedEpisodeRecord = NewTableRow<typeof watchedEpisodeTable>;
-export type WatchedEpisodeRecord = TableRow<typeof watchedEpisodeTable>;
+export type NewWatchedEpisodeRecord = Omit<NewTableRow<typeof watchedEpisodeTable>, 'type'> & { type: 0 | 1 | 2 | 3 | 4 };;
+export type WatchedEpisodeRecord = Omit<TableRow<typeof watchedEpisodeTable>, 'type'> & { type: 0 | 1 | 2 | 3 | 4 };
 
 export type NewShowRecord = NewTableRow<typeof showTable>;
 export type ShowRecord = TableRow<typeof showTable>;

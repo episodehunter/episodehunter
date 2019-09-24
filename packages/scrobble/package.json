@@ -7,9 +7,11 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
-    "start": "tsc -w",
     "test": "jest",
-    "lint": "eslint --ext .ts src"
+    "preversion": "npm run build && npm run lint && npm run test",
+    "lint": "eslint --ext .ts src",
+    "postinstall": "npm run generate",
+    "generate": "graphql-codegen"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,9 @@
   "author": "tjoskar <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@episodehunter/types": "^2.1.0",
+    "@graphql-codegen/cli": "^1.7.0",
+    "@graphql-codegen/typescript": "^1.7.0",
+    "@graphql-codegen/typescript-operations": "^1.7.0",
     "@types/aws-lambda": "8.10.31",
     "@types/jest": "24.0.17",
     "@types/node": "12.7.2",
@@ -35,12 +39,13 @@
     "aws-sdk": "2.507.0",
     "eslint": "^6.3.0",
     "eslint-plugin-graphql": "^3.0.3",
-    "graphql": "^14.5.5",
+    "graphql": "^14.5.6",
     "jest": "24.9.0",
     "ts-jest": "24.0.2",
     "typescript": "3.5.3"
   },
   "dependencies": {
+    "@episodehunter/types": "^2.1.0",
     "@episodehunter/kingsguard": "4.1.0",
     "@episodehunter/logger": "4.1.2",
     "@episodehunter/utils": "^1.0.1",

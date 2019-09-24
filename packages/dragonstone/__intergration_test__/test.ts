@@ -1,6 +1,6 @@
 import { StartedTestContainer } from 'testcontainers/dist/test-container';
 import { GenericContainer } from 'testcontainers';
-import { Dragonstone } from '@episodehunter/types/message';
+import { Message } from '@episodehunter/types';
 import { Client } from 'pg';
 import { setupDatabas } from './setup-db';
 import { EpisodeRecord, UserRecord } from '../src/data-sources/pg/schema';
@@ -97,7 +97,7 @@ describe('Intergration test', () => {
   describe('Add show', () => {
     test('Do not add an existing show', async () => {
       // Arrange
-      const event: Dragonstone.AddShow.Event = {
+      const event: Message.Dragonstone.AddShowEvent = {
         showInput: {
           tvdbId: 305288, // Stranger Things
           imdbId: 'tt0773262',
@@ -148,7 +148,7 @@ describe('Intergration test', () => {
     });
     test('Add a new, ended, show: Dexter', async () => {
       // Arrange
-      const event: Dragonstone.AddShow.Event = {
+      const event: Message.Dragonstone.AddShowEvent = {
         showInput: {
           tvdbId: 79349,
           imdbId: 'tt0773262',
@@ -215,7 +215,7 @@ describe('Intergration test', () => {
   describe('Update episodes', () => {
     test(`Update episode 'Cancer Man'`, async () => {
       // Arrange
-      const event: Dragonstone.UpdateEpisodes.Event = {
+      const event: Message.Dragonstone.UpdateEpisodesEvent = {
         showId: 2,
         firstEpisode: 10002,
         lastEpisode: 10004,
@@ -271,7 +271,7 @@ describe('Intergration test', () => {
 
     test(`Insert a new episodes`, async () => {
       // Arrange
-      const event: Dragonstone.UpdateEpisodes.Event = {
+      const event: Message.Dragonstone.UpdateEpisodesEvent = {
         showId: 2,
         firstEpisode: 10006,
         lastEpisode: 10010,
@@ -361,7 +361,7 @@ describe('Intergration test', () => {
 
     test(`Remove an episode`, async () => {
       // Arrange
-      const event: Dragonstone.UpdateEpisodes.Event = {
+      const event: Message.Dragonstone.UpdateEpisodesEvent = {
         showId: 2,
         firstEpisode: 10006,
         lastEpisode: 10007,
@@ -393,7 +393,7 @@ describe('Intergration test', () => {
   describe('Update Show', () => {
     test(`Update 'Breaking Bad'`, async () => {
       // Arrange
-      const event: Dragonstone.UpdateShow.Event = {
+      const event: Message.Dragonstone.UpdateShowEvent = {
         showId: 2,
         showInput: {
           tvdbId: 81180,
@@ -443,7 +443,7 @@ describe('Intergration test', () => {
     });
     test(`Update a show that dont exist`, async () => {
       // Arrange
-      const event: Dragonstone.UpdateShow.Event = {
+      const event: Message.Dragonstone.UpdateShowEvent = {
         showId: 21,
         showInput: {
           tvdbId: 81180,
@@ -755,6 +755,72 @@ describe('Intergration test', () => {
               show: {
                 name: 'Breaking Bad'
               }
+            }
+          ]
+        }
+      });
+    });
+    test('[regression bug] Get list of upcoming episodes for folloing shows', async () => {
+      // Arrange
+      const justAirdDate = new Date();
+      justAirdDate.setTime(justAirdDate.getTime() - 24 * 2 * 60 * 60 * 1000);
+      const justAirdDateStr = `${justAirdDate.getFullYear()}-${String(justAirdDate.getMonth() + 1).padStart(
+        2,
+        '0'
+      )}-${String(justAirdDate.getDate()).padStart(2, '0')}`;
+      const nextAirdDate = new Date();
+      nextAirdDate.setTime(nextAirdDate.getTime() + 24 * 2 * 60 * 60 * 1000);
+      const nextAirdDateStr = `${nextAirdDate.getFullYear()}-${String(nextAirdDate.getMonth() + 1).padStart(
+        2,
+        '0'
+      )}-${String(nextAirdDate.getDate()).padStart(2, '0')}`;
+
+      await client.query(`INSERT INTO "public"."episodes" ("show_id", "name", "first_aired", "overview", "lastupdated", "episodenumber", "external_id_tvdb") VALUES
+        ('2', 'Fun episode', '${justAirdDateStr}', 'Some overview', '1520652290', '10008', '7121402'),
+        ('2', 'What?', '${nextAirdDateStr}', 'Walt and Jesse attempt to tie up loose ends.', '1520652296', '10009', '7121402'),
+        ('1', 'Yoo', '${nextAirdDateStr}', 'Something is happening', '1520652296', '30009', '7121402')
+      `);
+      await client.query(`INSERT INTO "public"."following" ("user_id", "show_id") VALUES ('2', '2'), ('2', '1')`);
+      const event = createGraphQlEvent(
+        `{
+        following {
+          showId
+          show {
+            name
+            upcomingEpisode {
+              name
+            }
+          }
+        }
+      }`,
+        '2'
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          following: [
+            {
+              showId: 2,
+              show: {
+                name: 'Breaking Bad',
+                upcomingEpisode: {
+                  name: 'What?'
+                }
+              }
+            },
+            {
+              show: {
+                name: 'Stranger Things',
+                upcomingEpisode: {
+                  name: 'Yoo'
+                }
+              },
+              showId: 1
             }
           ]
         }
