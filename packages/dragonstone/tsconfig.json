@@ -1,14 +1,10 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es2018",
-    "module": "commonjs",
-    "sourceMap": true,
+    "declaration": false,
     "outDir": "./dist",
     "importHelpers": true,
-    "strict": true,
-    "noUnusedLocals": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noUnusedParameters": false
   }
 }
