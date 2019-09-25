@@ -23,7 +23,7 @@
     "@types/jest": "24.0.17",
     "jest": "24.9.0",
     "simple-spy": "3.0.1",
-    "ts-jest": "24.0.2",
+    "ts-jest": "24.1.0",
     "typescript": "3.5.3"
   },
   "homepage": "https://github.com/episodehunter/episodehunter/packages/thetvdb",
