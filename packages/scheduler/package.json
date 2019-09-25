@@ -1,6 +1,6 @@
 {
   "name": "scheduler",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Scheduler for episodehunter",
   "main": "dist/index.js",
   "private": true,
@@ -25,7 +25,7 @@
   "author": "tjoskar <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@episodehunter/types": "^3.0.1",
+    "@episodehunter/types": "^3.0.2",
     "@types/aws-lambda": "8.10.31",
     "@types/jest": "24.0.17",
     "@types/node": "12.7.2",

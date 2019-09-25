@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/types",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Types for episodehunter",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
