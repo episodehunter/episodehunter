@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@episodehunter/types": "^3.0.2",
-    "@types/aws-lambda": "8.10.32",
+    "@types/aws-lambda": "8.10.33",
     "@types/dockerode": "2.5.20",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.5",
