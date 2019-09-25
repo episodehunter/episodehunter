@@ -1,4 +1,4 @@
-schema: ../types/dragonstone-schema.json
+schema: ./node_modules/@episodehunter/types/dragonstone-schema.json
 documents: 'src/dragonstone.util.ts'
 pluckConfig:
   modules:

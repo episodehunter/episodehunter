@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build": "lerna bootstrap",
+    "build": "lerna exec \"npm install\" && lerna link",
     "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
     "version": "lerna exec \"npm install --ignore-scripts --package-lock-only --no-audit\" && git add packages/*/package-lock.json"
   },
