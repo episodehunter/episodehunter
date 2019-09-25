@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "build": "lerna bootstrap",
-    "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types"
+    "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
+    "version": "lerna exec \"npm install --ignore-scripts --package-lock-only --no-audit\" && git add packages/*/package-lock.json"
   },
   "repository": {
     "type": "git",
