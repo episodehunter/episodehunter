@@ -7,18 +7,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js v10
-      uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-    - name: npm install, build, and test
-      run: |
-        npm install
-        npm run build
-        npm test
-      env:
-        CI: true
-    - uses: codecov/codecov-action@v1.0.2
-      with:
-        token: ${{secrets.CODECOV_TOKEN}}
+      - uses: actions/checkout@v1
+      - name: Use Node.js v10
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
+      - name: ⬇️ Install
+        run: npm install
+        env:
+          CI: true
+      - name: 🏗 Build
+        run: npm run build
+      - name: ✅ Test
+        run: npm run test
+      - uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
