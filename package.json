@@ -5,9 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build": "lerna exec \"npm install\" && lerna link",
+    "build": "lerna exec --stream \"npm install\" && lerna link",
     "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
-    "version": "lerna exec \"npm install --ignore-scripts --package-lock-only --no-audit\" && git add packages/*/package-lock.json"
+    "version": "lerna exec --stream \"npm install --ignore-scripts --package-lock-only --no-audit\" && git add packages/*/package-lock.json"
   },
   "repository": {
     "type": "git",

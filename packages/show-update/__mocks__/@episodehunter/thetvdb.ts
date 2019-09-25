@@ -14,7 +14,7 @@ export class TheTvDb {
       airsTime: '21:00'
     })
   );
-  fetchShowEpisodes = jest.fn((theTvDbId: number) =>
+  fetchShowEpisodes = jest.fn((_: /*theTvDbId*/ number) =>
     Promise.resolve([
       {
         airedSeason: 0,
