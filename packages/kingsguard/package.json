@@ -35,7 +35,7 @@
     "jest": "24.9.0",
     "simple-spy": "3.0.1",
     "ts-jest": "24.0.2",
-    "typescript": "3.5.3"
+    "typescript": "3.6.3"
   },
   "peerDependencies": {
     "@episodehunter/logger": "^4.1.2",
