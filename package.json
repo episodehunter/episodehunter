@@ -7,6 +7,7 @@
   "scripts": {
     "build": "lerna exec --stream \"npm install\" && lerna link",
     "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
+    "test:intergration": "lerna run --scope dragonstone test:all",
     "version": "lerna exec --stream \"npm install --ignore-scripts --package-lock-only --no-audit\" && git add packages/*/package-lock.json"
   },
   "repository": {
