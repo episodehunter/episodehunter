@@ -19,7 +19,7 @@ export async function scrobbleEpisode(
     episodeInfo.episode
   )
   const showId = await getShowId(episodeInfo.id, requestId, log)
-  const watchedEpisode: Dragonstone.WatchedEpisode.WatchedEpisodeInput = {
+  const watchedEpisode: Dragonstone.WatchedEpisodeInput = {
     episodenumber,
     showId,
     time: unixTimestamp(),

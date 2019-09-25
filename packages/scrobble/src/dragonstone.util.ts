@@ -87,7 +87,7 @@ const scrobbleEpisodeQuery = gql`
 `
 
 export async function scrobbleEpisode(
-  episode: Dragonstone.WatchedEpisode.WatchedEpisodeInput,
+  episode: Dragonstone.WatchedEpisodeInput,
   apiKey: string,
   username: string,
   requestId: string

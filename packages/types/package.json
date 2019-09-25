@@ -7,7 +7,7 @@
   "scripts": {
     "generate": "graphql-codegen",
     "build": "npm run generate && tsc -p tsconfig.build.json && ts-node build.ts",
-    "prepare": "npm run build && npm run generate"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
