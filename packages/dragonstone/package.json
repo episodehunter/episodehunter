@@ -37,7 +37,7 @@
     "@types/dockerode": "2.5.20",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.5",
-    "@types/pg": "7.11.1",
+    "@types/pg": "7.11.2",
     "aws-lambda": "0.1.2",
     "fast-check": "1.17.0",
     "jest": "24.9.0",
