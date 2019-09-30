@@ -41,7 +41,7 @@
     "aws-lambda": "0.1.2",
     "fast-check": "1.17.0",
     "jest": "24.9.0",
-    "testcontainers": "2.0.0",
+    "testcontainers": "2.1.0",
     "ts-jest": "24.1.0",
     "typescript": "3.6.3"
   },
