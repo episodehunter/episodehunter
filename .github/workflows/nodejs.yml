@@ -1,9 +1,6 @@
 name: Node CI
 
-on:
-  push:
-    branches:
-      - intergration-test
+on: ["push"]
 
 jobs:
   build:
@@ -31,7 +28,7 @@ jobs:
         env:
           CI: true
       - name: 🏗 Build
-        run: npm run build
+        run: npm run build:ci
       - name: ✅ Test
         run: npm run test
       - name: ✅ Intergration Test

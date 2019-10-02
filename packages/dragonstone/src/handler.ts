@@ -56,7 +56,7 @@ const server = new ApolloServer({
           message: err.originalError.message,
           path: err.path,
           stack: err.originalError.stack
-        }
+        };
         dangerousLogger.captureException(errorToLog);
       } else {
         dangerousLogger.captureException(err);
@@ -65,11 +65,12 @@ const server = new ApolloServer({
 
     if (err.originalError instanceof DatabaseError) {
       return {
-        message: 'Sorry but there was an internal server error. We could not handel you request for some reason. We will fix it ASAP',
+        message:
+          'Sorry but there was an internal server error. We could not handel you request for some reason. We will fix it ASAP',
         locations: err.locations,
         path: err.path,
         extensions: err.extensions
-      }
+      };
     } else {
       return err;
     }
@@ -111,6 +112,9 @@ export const graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((e
   });
 });
 
+/**
+ * Update an existing show. Will however not update the episodes
+ */
 export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
   (event, logger): Promise<Message.Dragonstone.UpdateShowResponse> => {
     try {
@@ -125,6 +129,10 @@ export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
   }
 );
 
+/**
+ * Update, add and remove episodes to a existing show.
+ * Gives a episode array and a start and a end episode number.
+ */
 export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEvent>(
   (event, logger): Promise<Message.Dragonstone.UpdateEpisodesResponse> => {
     try {
@@ -147,6 +155,9 @@ export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEven
   }
 );
 
+/**
+ * Add a new show to the database
+ */
 export const addShowHandler = gard<Message.Dragonstone.AddShowEvent>(
   (event, logger): Promise<Message.Dragonstone.AddShowResponse> => {
     assertShowInput(event.showInput);
