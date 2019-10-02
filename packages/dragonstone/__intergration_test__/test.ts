@@ -682,6 +682,48 @@ describe('Intergration test', () => {
       expect(result.statusCode).toBe(200);
     });
   });
+  describe('[GraphQL] Find show', () => {
+    test('Get null if we cant find the show', async () => {
+      // Arrange
+      const event = createGraphQlEvent(`{
+        findShow(theTvDbId: 81190) {
+          name
+        }
+      }`);
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          findShow: null
+        }
+      });
+    });
+    test('Find Breaking Bad', async () => {
+      // Arrange
+      const event = createGraphQlEvent(`{
+        findShow(theTvDbId: 81189) {
+          name
+        }
+      }`);
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          findShow: {
+            name: 'Breaking Bad'
+          }
+        }
+      });
+    });
+  });
   describe('[GraphQL] Season', () => {
     test('Get season 2 for Stranger Things', async () => {
       // Arrange

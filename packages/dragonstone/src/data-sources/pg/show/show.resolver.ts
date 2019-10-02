@@ -13,8 +13,19 @@ export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => 
     async getShow(id: ShowId): Promise<RootShow | null> {
       return showLoader.load(id).then(show => mapShow(show));
     },
+    async findShow(props: { theTvDbId?: number | null }): Promise<RootShow | null> {
+      if (props.theTvDbId) {
+        const dbResult = await client.query<ShowRecord>(
+          sql`SELECT * FROM shows WHERE external_id_tvdb = ${props.theTvDbId}`
+        );
+        return mapShow(dbResult.rows[0]);
+      }
+      return null;
+    },
     async getNumberOfFollowers(showId: ShowId): Promise<number> {
-      const dbResult = await client.query<{ c: number }>(sql`SELECT COUNT(*) as c FROM "following" WHERE show_id = ${showId};`);
+      const dbResult = await client.query<{ c: number }>(
+        sql`SELECT COUNT(*) as c FROM "following" WHERE show_id = ${showId};`
+      );
       return dbResult.rows[0].c;
     },
     async isFollowingShow(showId: ShowId, userId: number): Promise<boolean> {
@@ -47,7 +58,9 @@ export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => 
         return mapShow(dbResult.rows[0])!;
       }
       const newShow = mapShowInputToShow(showInput);
-      const dbInsertResult = await client.query<ShowRecord>(sql`INSERT INTO "shows" ${spreadInsert(newShow)} RETURNING *;`);
+      const dbInsertResult = await client.query<ShowRecord>(
+        sql`INSERT INTO "shows" ${spreadInsert(newShow)} RETURNING *;`
+      );
       return mapShow(dbInsertResult.rows[0])!;
     }
   };
