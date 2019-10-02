@@ -46,8 +46,8 @@ export function createJustAirdLoader(client: PgClient): UpcomingLoader {
       SELECT * FROM (
         SELECT episodes.show_id, MIN(episodes.episodenumber) as episodenumber
         FROM episodes
-        WHERE show_id IN (${uniqIds.join(
-          ', '
+        WHERE show_id IN (${sql.raw(
+          uniqIds.join(', ')
         )}) AND first_aired >= ${day} AND first_aired < ${today} GROUP BY episodes.show_id
       ) as i JOIN episodes as e ON e.show_id = i.show_id AND e.episodenumber = i.episodenumber;
     `);
