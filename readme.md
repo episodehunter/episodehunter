@@ -8,6 +8,8 @@
   </a>
 </p>
 
+[![codecov](https://codecov.io/gh/episodehunter/episodehunter/branch/master/graph/badge.svg)](https://codecov.io/gh/episodehunter/episodehunter)
+
 ## Into
 
 Episodehunter is a open source project to track what tv shows you are watching. Works with Plex, Kodi and Google Home.

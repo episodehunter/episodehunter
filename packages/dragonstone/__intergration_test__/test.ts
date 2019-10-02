@@ -11,13 +11,8 @@ interface GraphQLResult {
   headers: { [key: string]: string };
 }
 
-const pgContainer = new GenericContainer('postgres')
-  .withEnv('POSTGRES_USER', 'test')
-  .withEnv('POSTGRES_PASSWORD', 'test')
-  .withExposedPorts(5432);
-
 describe('Intergration test', () => {
-  let pg: StartedTestContainer;
+  let pg: StartedTestContainer | undefined;
   let client: Client;
   let handler: typeof import('../src/handler');
 
@@ -56,11 +51,19 @@ describe('Intergration test', () => {
   };
 
   beforeAll(async done => {
-    pg = await pgContainer.start();
-    process.env.PG_CONNECTION_URI = `postgres://test:test@localhost:${pg.getMappedPort(5432)}/test`;
-    // Start a local docker container with "docker run -p 54320:5432 -e POSTGRES_PASSWORD=test -e POSTGRES_USER=test postgres"
+    // When debuging, start a local docker container with "docker run -p 54320:5432 -e POSTGRES_PASSWORD=test -e POSTGRES_USER=test postgres"
     // and uncomment the following line:
-    // process.env.PG_CONNECTION_URI = `postgres://test:test@localhost:54320/test`;
+    // process.env.PG_DANGEROUS_TEST_CONNECTION_URI = `postgres://test:test@localhost:54320/test`;
+    if (!process.env.PG_DANGEROUS_TEST_CONNECTION_URI) {
+      const pgContainer = new GenericContainer('postgres')
+        .withEnv('POSTGRES_USER', 'test')
+        .withEnv('POSTGRES_PASSWORD', 'test')
+        .withExposedPorts(5432);
+      pg = await pgContainer.start();
+      process.env.PG_CONNECTION_URI = `postgres://test:test@localhost:${pg.getMappedPort(5432)}/test`;
+    } else {
+      process.env.PG_CONNECTION_URI = process.env.PG_DANGEROUS_TEST_CONNECTION_URI;
+    }
     process.env.FIREBASE_KEY = ``;
     process.env.ENGINE_API_KEY = ``;
     process.env.LOGDNA_KEY = ``;
@@ -85,7 +88,9 @@ describe('Intergration test', () => {
       if (sutClient) {
         await sutClient.end();
       }
-      await pg.stop();
+      if (pg) {
+        await pg.stop();
+      }
       done();
     } catch (error) {
       done(error);

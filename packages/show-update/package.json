@@ -17,12 +17,12 @@
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.31",
-    "@types/jest": "24.0.17",
-    "aws-sdk": "2.507.0",
+    "@types/aws-lambda": "8.10.33",
+    "@types/jest": "24.0.18",
+    "aws-sdk": "2.540.0",
     "jest": "24.9.0",
-    "ts-jest": "24.0.2",
-    "typescript": "3.5.3"
+    "ts-jest": "24.1.0",
+    "typescript": "3.6.3"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^5.0.1",

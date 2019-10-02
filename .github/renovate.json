@@ -1,0 +1,20 @@
+{
+  "extends": ["config:base"],
+  "assignees": ["tjoskar"],
+  "commitMessagePrefix": "⬆️",
+  "ignoreDeps": ["aws-lambda-multipart-parser"],
+  "masterIssue": true,
+  "prBodyNotes": [
+    "{{#if isMajor}}:warning: MAJOR MAJOR MAJOR :warning:{{/if}}"
+  ],
+  "reviewers": ["tjoskar"],
+  "packageRules": [
+    {
+      "depTypeList": ["devDependencies"],
+      "automerge": true,
+      "major": {
+        "automerge": false
+      }
+    }
+  ]
+}

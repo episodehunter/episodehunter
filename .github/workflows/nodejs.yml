@@ -5,6 +5,17 @@ on: ["push"]
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v1
@@ -17,9 +28,13 @@ jobs:
         env:
           CI: true
       - name: 🏗 Build
-        run: npm run build
+        run: npm run build:ci
       - name: ✅ Test
         run: npm run test
+      - name: ✅ Intergration Test
+        run: npm run test:intergration
+        env:
+          PG_DANGEROUS_TEST_CONNECTION_URI: postgres://test:test@localhost:${{ job.services.postgres.ports['5432'] }}/test
       - uses: codecov/codecov-action@v1.0.2
         with:
           token: ${{secrets.CODECOV_TOKEN}}

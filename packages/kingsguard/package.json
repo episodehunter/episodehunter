@@ -28,14 +28,14 @@
     "semi": false
   },
   "devDependencies": {
-    "@episodehunter/logger": "^4.1.4",
-    "@types/aws-lambda": "8.10.31",
+    "@episodehunter/logger": "4.1.4",
+    "@types/aws-lambda": "8.10.33",
     "@types/jest": "24.0.18",
-    "@types/node": "12.7.2",
+    "@types/node": "12.7.8",
     "jest": "24.9.0",
     "simple-spy": "3.0.1",
-    "ts-jest": "24.0.2",
-    "typescript": "3.5.3"
+    "ts-jest": "24.1.0",
+    "typescript": "3.6.3"
   },
   "peerDependencies": {
     "@episodehunter/logger": "^4.1.2",
