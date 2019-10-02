@@ -8,8 +8,7 @@
     "build": "lerna exec --stream \"npm install\" && lerna link",
     "build:ci": "lerna exec --stream \"npm ci\"",
     "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
-    "test:intergration": "lerna run --stream --scope dragonstone test:all",
-    "version": "lerna exec --stream \"npm install --ignore-scripts --package-lock-only --no-audit\" && git add packages/*/package-lock.json"
+    "test:intergration": "lerna run --stream --scope dragonstone test:all"
   },
   "engines": {
     "node" : ">=10.0.0 <11.0.0"
