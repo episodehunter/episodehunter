@@ -4,7 +4,7 @@
 type Show {
   airs: ShowAirs!
   ended: Boolean!
-  genre: [String]!
+  genre: [String!]!
   ids: ShowIds!
   language: String
   lastupdated: Int!
@@ -14,7 +14,7 @@ type Show {
   runtime: Int!
 
   # Extra lookup
-  seasons: [Int]!
+  seasons: [Int!]!
   followers: Int!
 
   # Time dependent

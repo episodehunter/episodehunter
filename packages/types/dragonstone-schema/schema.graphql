@@ -23,14 +23,14 @@ type RootQuery {
   following: [Following!]!
   titles: [Title!]!
   history(page: Int!): [History!]!
-  me: User
+  me: User!
 }
 
 type RootMutation {
   checkInEpisode(episode: WatchedEpisodeInput!, apiKey: String, username: String): NextToWatch
   checkInEpisodes(episodes: [WatchedEpisodeInput!]!): NextToWatch
   removeCheckedInEpisode(episode: UnwatchedEpisodeInput!): NextToWatch
-  followShow(showId: Int!): Boolean
-  unfollowShow(showId: Int!): Boolean
-  createUser(metadata: UserInput!): Boolean
+  followShow(showId: Int!): Boolean!
+  unfollowShow(showId: Int!): Boolean!
+  createUser(metadata: UserInput!): Boolean!
 }
