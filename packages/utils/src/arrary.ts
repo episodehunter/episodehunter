@@ -11,3 +11,13 @@ export function* groupArray<T>(arr: T[], size: number) {
     yield arr.splice(0, size);
   }
 }
+
+export function safeJoin(
+  arr: Array<number | boolean | string>,
+  delimiter?: string
+): string {
+  if (Array.isArray(arr)) {
+    return arr.join(delimiter);
+  }
+  return '';
+}
