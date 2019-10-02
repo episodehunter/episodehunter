@@ -18,7 +18,7 @@ const RootQuery: RootResolvers = {
     return context.pgResolver.show.getShow(args.id);
   },
   findShow(root, args, context) {
-    return null;
+    return context.pgResolver.show.findShow(args);
   },
   season(root, args, context) {
     return context.pgResolver.episode.getSeasonEpisodes(args.showId, args.season);
