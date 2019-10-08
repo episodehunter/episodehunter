@@ -36,7 +36,7 @@
     "@types/node": "12.7.9",
     "@typescript-eslint/eslint-plugin": "2.3.2",
     "@typescript-eslint/parser": "2.3.2",
-    "aws-sdk": "2.541.0",
+    "aws-sdk": "2.545.0",
     "eslint": "6.5.1",
     "eslint-plugin-graphql": "3.1.0",
     "graphql": "14.5.8",
