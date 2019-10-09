@@ -54,6 +54,9 @@ export function setupDatabas(client: Client) {
       "firebase_id" text NOT NULL UNIQUE,
       "name" text NOT NULL,
       "api_key" text NOT NULL,
+      "timezone" text,
+      "auto_follow" bool NOT NULL DEFAULT true,
+      "show_just_went" bool DEFAULT true,
       PRIMARY KEY ("id")
   );
 
