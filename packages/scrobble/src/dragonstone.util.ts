@@ -45,6 +45,11 @@ async function createShow(
       const result: Message.UpdateShow.AddShow.Response = JSON.parse(
         snsResult.Payload.toString()
       )
+      if (!result.id) {
+        throw new UnableToAddShowError(
+          `Did not receive any id for the new show. theTvDbId: ${theTvDbId}`
+        )
+      }
       return result.id
     })
 }

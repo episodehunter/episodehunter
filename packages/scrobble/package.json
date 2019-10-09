@@ -6,11 +6,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "prepare": "npm run build",
+    "prepare": "npm run generate && npm run build",
     "test": "npm run lint && jest",
     "preversion": "npm run build && npm run test",
     "lint": "eslint --ext .ts src",
-    "postinstall": "npm run generate",
     "generate": "graphql-codegen"
   },
   "repository": {
