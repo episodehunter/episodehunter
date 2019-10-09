@@ -1,12 +1,12 @@
 service: images
 
 custom:
-  stage: "${opt:stage, self:provider.stage}"
+  stage: '${opt:stage, self:provider.stage}'
   env: ${file(env.yml):${self:custom.stage}}
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: dev
   region: us-east-1
   versionFunctions: false
@@ -16,7 +16,7 @@ provider:
       Action:
         - s3:PutObject
         - s3:PutObjectAcl
-      Resource: "arn:aws:s3:::${self:custom.env.BUCKET_NAME}/*"
+      Resource: 'arn:aws:s3:::${self:custom.env.BUCKET_NAME}/*'
 
 package:
   exclude:

@@ -6,16 +6,21 @@ export interface ImageInformation {
   id: number;
 }
 
-export function imageInformation(path: string): ImageInformation {
+export function imageInformation(path: string): ImageInformation | null {
   const result = path.match(/(poster|fanart|episode)\/((\d+)x(\d+)\/)?(\d+)\..+/);
   if (!result) {
     return null;
   }
-  return {
+  const obj: ImageInformation = {
     key: result[0],
     type: result[1] as 'episode' | 'fanart' | 'poster',
-    width: result[3] && Number(result[3]),
-    height: result[4] && Number(result[4]),
     id: Number(result[5])
   };
+  if (result[3]) {
+    obj.width = Number(result[3]);
+  }
+  if (result[4]) {
+    obj.height = Number(result[4]);
+  }
+  return obj;
 }

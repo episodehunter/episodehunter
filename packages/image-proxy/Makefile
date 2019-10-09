@@ -1,22 +1,15 @@
-all: package
+all: deploy
 
-compile:
-        npx tsc
-        cp package-lock.json package.json serverless.yml env.yml dist
-
-image: compile
-        docker build --tag amazonlinux:nodejs .
-
-package: image
-        docker run --rm --volume ${PWD}/dist:/build amazonlinux:nodejs npm install --production
+compile: clean
+	npx tsc
+	cp package-lock.json package.json serverless.yml env.yml dist
+	docker run --rm --volume ${PWD}/dist:/build tjoskar/awsnode:10 npm install --production;
 
 deployfunction: compile
-        cd dist; serverless deploy function -f update
+	cd dist; serverless deploy function -f update
 
 deploy: compile
-        cd dist; serverless deploy
+	cd dist; serverless deploy
 
 clean:
-        rm -r dist
-        rm -r node_modules
-        docker rmi --force amazonlinux:nodejs
+	if [ -d "dist" ]; then rm -r dist; fi

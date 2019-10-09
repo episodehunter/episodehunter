@@ -1,15 +1,14 @@
 import { APIGatewayEvent } from 'aws-lambda';
 import { S3 } from 'aws-sdk';
 import * as sharp from 'sharp';
-import { guard, assertRequiredConfig, Logger } from '@episodehunter/kingsguard';
+import { createGuard, Logger } from '@episodehunter/kingsguard';
 import { TheTvDb, NotFound } from '@episodehunter/thetvdb';
 import { imageInformation, ImageInformation } from './util';
 import { BadRequest } from './custom-error';
 import { BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE, move } from './response';
+import { config } from './config';
 
-assertRequiredConfig('BUCKET_NAME', 'BUCKET_URL', 'THE_TV_DB_API_KEY');
-
-const theTvDb = new TheTvDb(process.env.THE_TV_DB_API_KEY);
+const theTvDb = new TheTvDb(config.theTvDbApiKey);
 const s3 = new S3();
 
 const ALLOWED_RESOLUTIONS = new Map([[185, 273], [216, 122]]); // [ width, height ]
@@ -46,7 +45,7 @@ function saveImage(logger: Logger, buffer: Buffer, key: string) {
   logger.log('Put image to disk: ' + key);
   return s3
     .putObject({
-      Bucket: process.env.BUCKET_NAME,
+      Bucket: config.bucketName,
       Key: key,
       Body: buffer,
       ContentType: 'image/jpeg',
@@ -65,6 +64,9 @@ function fetchAndSave(logger: Logger, image: ImageInformation) {
 }
 
 export function imageFetcher(event: APIGatewayEvent, logger: Logger) {
+  if (!event || !event.queryStringParameters || !event.queryStringParameters.key) {
+    return Promise.resolve(BAD_REQUEST_RESPONSE);
+  }
   const key = event.queryStringParameters.key;
   logger.log('Requesting: ' + key);
   const image = imageInformation(key);
@@ -91,5 +93,7 @@ export function imageFetcher(event: APIGatewayEvent, logger: Logger) {
       throw error;
     });
 }
+
+const guard = createGuard(config.sentryDsn, config.logdnaKey);
 
 export const handler = guard(imageFetcher);

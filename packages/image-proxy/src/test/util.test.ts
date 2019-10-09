@@ -8,8 +8,8 @@ test('Extract size information', () => {
   const result = imageInformation(str);
 
   // Assert
-  expect(result.width).toBe(20);
-  expect(result.height).toBe(40);
+  expect(result!.width).toBe(20);
+  expect(result!.height).toBe(40);
 });
 
 test('Extract type information', () => {
@@ -20,7 +20,7 @@ test('Extract type information', () => {
   const result = imageInformation(str);
 
   // Assert
-  expect(result.type).toBe('poster');
+  expect(result!.type).toBe('poster');
 });
 
 test('Extract id when requesting a size', () => {
@@ -31,7 +31,7 @@ test('Extract id when requesting a size', () => {
   const result = imageInformation(str);
 
   // Assert
-  expect(result.id).toBe(1234);
+  expect(result!.id).toBe(1234);
 });
 
 test('Extract id when not requesting a size', () => {
@@ -42,7 +42,7 @@ test('Extract id when not requesting a size', () => {
   const result = imageInformation(str);
 
   // Assert
-  expect(result.id).toBe(1234);
+  expect(result!.id).toBe(1234);
 });
 
 describe('Return null when invalid url', () => {

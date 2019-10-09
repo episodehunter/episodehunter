@@ -1,12 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "strict": false,
-    "pretty": true,
-    "noImplicitAny": true,
-    "types": ["node", "jest"],
-    "moduleResolution": "node"
+    "declaration": false,
+    "outDir": "./dist"
   }
 }
