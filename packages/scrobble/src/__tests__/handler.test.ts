@@ -118,7 +118,9 @@ describe('Kodi', () => {
       statusCode: '200'
     })
     expect(request.mock.calls[0][1]).toEqual({ theTvDbId: 15 })
-    expect(invoke.mock.calls[0][0].FunctionName).toBe('show-updater-prod-add')
+    expect(invoke.mock.calls[0][0].FunctionName).toBe(
+      'dragonstone-prod-addShow'
+    )
     expect(JSON.parse(invoke.mock.calls[0][0].Payload)).toEqual({
       theTvDbId: 15,
       requestStack: ['some-request-id']
