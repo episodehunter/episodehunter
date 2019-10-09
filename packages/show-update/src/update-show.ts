@@ -68,5 +68,9 @@ export async function updateEpisodes(
  */
 function filterEpisodesToUpdate(episodes: Message.Dragonstone.EpisodeInput[], lastupdate: Number) {
   const firstEpisodeIndex = episodes.findIndex(episode => episode.lastupdated > lastupdate);
+  if (firstEpisodeIndex === -1) {
+    // no match
+    return [];
+  }
   return episodes.slice(firstEpisodeIndex);
 }

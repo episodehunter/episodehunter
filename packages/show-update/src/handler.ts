@@ -17,8 +17,8 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
     logger.log(`Could not parse show id from ` + message);
     throw error;
   }
-  if (!ids.id || !ids.tvdbId) {
-    throw new Error('theTvDbId or id is not a valid id: ' + message);
+  if (!ids.id || !ids.tvdbId || !ids.lastupdated) {
+    throw new Error('theTvDbId, id or lastupdated is not a valid id: ' + message);
   }
   logger.log(`Will update the show (id=${ids.id}, theTvDbId=${ids.tvdbId}) and associated epesodes`);
 
