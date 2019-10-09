@@ -8,7 +8,8 @@
     "build": "lerna exec --stream \"npm install\" && lerna link",
     "build:ci": "lerna exec --stream \"npm ci\"",
     "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
-    "test:intergration": "lerna run --stream --scope dragonstone test:all"
+    "test:intergration": "lerna run --stream --scope dragonstone test:all",
+    "version": "lerna clean --yes && lerna exec \"npm install --ignore-scripts --package-lock-only --no-audit\" && git add packages/*/package-lock.json"
   },
   "engines": {
     "node" : ">=10.0.0 <11.0.0"
@@ -28,6 +29,6 @@
   },
   "homepage": "https://github.com/episodehunter/episodehunter#readme",
   "devDependencies": {
-    "lerna": "3.16.4"
+    "lerna": "3.16.5"
   }
 }
