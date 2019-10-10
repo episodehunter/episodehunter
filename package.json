@@ -29,6 +29,6 @@
   },
   "homepage": "https://github.com/episodehunter/episodehunter#readme",
   "devDependencies": {
-    "lerna": "3.16.5"
+    "lerna": "3.17.0"
   }
 }
