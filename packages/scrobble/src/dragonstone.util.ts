@@ -31,7 +31,7 @@ async function createShow(
   }
   return lambda
     .invoke({
-      FunctionName: config.addShowDragonstoneFunctionName,
+      FunctionName: config.addShowFunctionName,
       Payload: JSON.stringify(event)
     })
     .promise()
