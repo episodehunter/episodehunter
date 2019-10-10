@@ -160,6 +160,9 @@ export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEven
  */
 export const addShowHandler = gard<Message.Dragonstone.AddShowEvent>(
   (event, logger): Promise<Message.Dragonstone.AddShowResponse> => {
+    if (!event.showInput) {
+      throw new Error(`event.showInput do not exist. Event: ${JSON.stringify(event)}`);
+    }
     assertShowInput(event.showInput);
     return getPgResolver().show.addShow(event.showInput, logger);
   }
