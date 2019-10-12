@@ -114,10 +114,11 @@ export const kodi = guard<APIGatewayEvent>(
     }
 
     logger.log(`
-      Going to scrobbler for kodi.
+      Scrobbler for kodi.
       Username: ${event.username}
       Apikey: ${event.apikey}
       id: ${event.tvdb_id}
+      title: ${event.title}
       season: ${event.season}
       episode: ${event.episode}
     `)
