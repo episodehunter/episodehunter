@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/episodehunter/episodehunter/packages/kingsguard#readme",
   "engines": {
-    "node": "8.15.1"
+    "node": "10.x"
   },
   "prettier": {
     "singleQuote": true,
@@ -35,7 +35,7 @@
     "jest": "24.9.0",
     "simple-spy": "3.0.1",
     "ts-jest": "24.1.0",
-    "typescript": "3.6.3"
+    "typescript": "3.6.4"
   },
   "peerDependencies": {
     "@episodehunter/logger": "^4.1.2",
