@@ -1157,8 +1157,46 @@ describe('Intergration test', () => {
         }, apiKey: "hello", username: "tjoskar2") {
           madeMutation
         }
-      }`,
-        '2'
+      }`
+      );
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          checkInEpisode: {
+            madeMutation: true
+          }
+        }
+      });
+      expect(result.statusCode).toBe(200);
+      const dbResult = await client.query(`SELECT * FROM tv_watched`);
+      expect(dbResult.rows).toEqual([
+        {
+          id: 1,
+          user_id: 2,
+          show_id: 2,
+          time: 1000000000,
+          type: 2,
+          episodenumber: 10001
+        }
+      ]);
+    });
+    test('Check in episode with case insensitive api key', async () => {
+      // Arrange
+      const event = createGraphQlEvent(
+        `mutation {
+        checkInEpisode(episode: {
+          showId: 2
+          episodenumber: 10001
+          time: 1000000000
+          type: checkIn
+        }, apiKey: "hEllO", username: "tJoskAr2") {
+          madeMutation
+        }
+      }`
       );
 
       // Act

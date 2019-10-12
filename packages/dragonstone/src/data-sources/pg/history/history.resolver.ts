@@ -53,8 +53,8 @@ export const createHistoryResolver = (
     watchedEpisodeInput: WatchedEpisodeInput,
     logger: Logger
   ): Promise<WatchedEpisodeInput | null> {
-    const userResult = await client.query<{id: number}>(
-      sql`SELECT id FROM users WHERE name = ${username} AND api_key = ${apiKey} LIMIT 1`
+    const userResult = await client.query<{ id: number }>(
+      sql`SELECT id FROM users WHERE lower(name) = ${username.toLowerCase()} AND lower(api_key) = ${apiKey.toLowerCase()} LIMIT 1`
     );
     if (userResult.rowCount === 0) {
       logger.warn(`Could not find user with apiKey: ${apiKey} and username ${username}`);
