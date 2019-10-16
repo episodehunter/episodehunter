@@ -24,11 +24,13 @@ jobs:
         with:
           node-version: "10.x"
       - name: ⬇️ Install
-        run: npm install
+        run: npm ci
         env:
           CI: true
       - name: 🏗 Build
-        run: npm run build:ci
+        run: npx lerna bootstrap
+        env:
+          CI: true
       - name: ✅ Test
         run: npm run test
       - name: ✅ Intergration Test

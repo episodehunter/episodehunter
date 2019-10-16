@@ -5,8 +5,6 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna exec --stream \"npm install\" && lerna link",
-    "build:ci": "lerna exec --stream \"npm ci\"",
     "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
     "test:intergration": "lerna run --stream --scope dragonstone test:all"
   },
