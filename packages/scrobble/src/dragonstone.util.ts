@@ -37,7 +37,16 @@ async function createShow(
     .promise()
     .then(snsResult => {
       if (snsResult.FunctionError) {
-        throw new UnableToAddShowError(snsResult.FunctionError)
+        let error = snsResult.Payload && snsResult.Payload.toString()
+        if (!error && snsResult.LogResult) {
+          const buff = new Buffer(snsResult.LogResult, 'base64')
+          error = buff.toString()
+        } else if (!error) {
+          error = snsResult.FunctionError
+        } else {
+          error = 'unknown error'
+        }
+        throw new UnableToAddShowError(error)
       }
       if (!snsResult.Payload) {
         throw new TypeError(`Payload is empty: ${snsResult.LogResult}`)
