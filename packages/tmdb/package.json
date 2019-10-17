@@ -1,0 +1,43 @@
+{
+  "name": "@episodehunter/tmdb",
+  "description": "Helper lib for tmdb api",
+  "version": "0.1.0",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc",
+    "test": "jest",
+    "start": "tsc --watch"
+  },
+  "author": "tjoskar <kontakta@oskarkarlsson.nu>",
+  "bugs": {
+    "url": "https://github.com/episodehunter/episodehunter/issues",
+    "email": "kontakta@oskarkarlsson.nu"
+  },
+  "dependencies": {
+    "@types/node": "^12.7.9",
+    "@types/node-fetch": "^2.5.2",
+    "abort-controller": "^3.0.0",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.19",
+    "jest": "24.9.0",
+    "ts-jest": "24.1.0",
+    "typescript": "3.6.4"
+  },
+  "homepage": "https://github.com/episodehunter/episodehunter/packages/tmdb",
+  "keywords": [
+    "tmdb"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/episodehunter/episodehunter"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
+}
