@@ -20,3 +20,6 @@ flags:
   utils:
     paths:
       - packages/utils/
+  tmdb:
+    paths:
+      - packages/tmdb/
