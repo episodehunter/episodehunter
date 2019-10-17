@@ -26,7 +26,7 @@
     "@episodehunter/utils": "^1.1.0",
     "apollo-server-lambda": "2.9.6",
     "dataloader": "1.4.0",
-    "firebase-admin": "8.6.0",
+    "firebase-admin": "8.6.1",
     "graphql": "14.5.8",
     "pg": "7.12.1",
     "squid": "0.5.1",
