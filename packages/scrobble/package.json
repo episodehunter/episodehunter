@@ -30,7 +30,7 @@
     "@graphql-codegen/cli": "1.8.2",
     "@graphql-codegen/typescript": "1.8.2",
     "@graphql-codegen/typescript-operations": "1.8.2",
-    "@types/aws-lambda": "8.10.33",
+    "@types/aws-lambda": "8.10.34",
     "@types/jest": "24.0.19",
     "@types/node": "12.11.7",
     "@typescript-eslint/eslint-plugin": "2.5.0",
