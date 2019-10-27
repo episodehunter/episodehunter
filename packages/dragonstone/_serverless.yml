@@ -8,7 +8,7 @@ provider:
   runtime: nodejs10.x
   stage: prod
   region: us-east-1
-  timeout: 20
+  timeout: 10
   versionFunctions: true
   environment: ${file(env.yml):${self:custom.stage}}
 
@@ -39,4 +39,6 @@ functions:
       - http:
           path: graphql
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            maxAge: 86400
