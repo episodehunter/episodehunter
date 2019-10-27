@@ -4,7 +4,7 @@ compile: clean
 	npm run build
 	cp package-lock.json env.yml package.json dist
 	cp _serverless.yml dist/serverless.yml
-	cd dist; npm install --production
+	docker run --rm --volume ${PWD}/dist:/build tjoskar/awsnode:10 npm install --production;
 
 deployplex: compile
 	cd dist; serverless deploy function -f plex
