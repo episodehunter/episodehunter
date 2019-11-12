@@ -27,7 +27,7 @@
   "devDependencies": {
     "@episodehunter/types": "^3.0.3",
     "@types/aws-lambda": "8.10.35",
-    "@types/jest": "24.0.22",
+    "@types/jest": "24.0.23",
     "@types/node": "12.12.7",
     "aws-sdk": "2.570.0",
     "jest": "24.9.0",
