@@ -4,12 +4,12 @@ import { Tmdb } from '@episodehunter/tmdb';
 import { config } from './config';
 
 const theTvDb = new TheTvDb(config.theTvDbApiKey, {
-  timeout: 4000,
+  timeout: 8000,
   nextTimeout: t => {
-    if (t >= 6000) {
+    if (t >= 10000) {
       return null;
     }
-    return t + 1000
+    return t + 2000
   }
 });
 const tmdb = new Tmdb(config.tmdbApiKey);
