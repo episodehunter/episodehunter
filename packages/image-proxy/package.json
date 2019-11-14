@@ -1,8 +1,9 @@
 {
-  "name": "images",
+  "name": "image-proxy",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "private": true,
   "scripts": {
     "prepare": "npm run build",
     "build": "tsc",
