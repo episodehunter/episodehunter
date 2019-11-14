@@ -121,8 +121,9 @@ export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
       assertShowId(event.showId);
       assertShowInput(event.showInput);
     } catch (error) {
-      logger.log(`Show was not valid. Event: ${JSON.stringify(event)}`);
-      logger.captureException(error);
+      const e = new Error(`${error.message} For show: ${event.showId}. Event: ${JSON.stringify(event)}`)
+      e.stack = error.stack;
+      logger.captureException(e)
       return Promise.resolve(null);
     }
 
@@ -142,8 +143,10 @@ export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEven
       assertEpisodeNumber(event.lastEpisode);
       assertEpisodes(event.episodes);
     } catch (error) {
-      logger.log(`Episodes batch was not valid. Event: ${JSON.stringify(event)}`);
-      throw new Error(`${error.message} ${JSON.stringify(event)}`);
+      const e = new Error(`${error.message} For show: ${event.showId}. Event: ${JSON.stringify(event)}`)
+      e.stack = error.stack;
+      logger.captureException(e)
+      return Promise.resolve(false);
     }
 
     return getPgResolver().episode.updateEpisodes(

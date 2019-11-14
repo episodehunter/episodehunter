@@ -141,7 +141,7 @@ describe('Assert episode number', () => {
     return expect(() => assertEpisodeNumber(10000)).toThrow();
   });
 
-  test('Larger than 999999 is invalid', () => {
-    return expect(() => assertEpisodeNumber(1000000)).toThrow();
+  test('Larger than 99999999 is invalid', () => {
+    return expect(() => assertEpisodeNumber(100_000_000)).toThrow();
   });
 })

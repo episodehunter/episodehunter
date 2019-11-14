@@ -90,8 +90,8 @@ export function assertShowId(showId: ShowId) {
 export function assertEpisodeNumber(episodeNumber: number) {
   if (typeof episodeNumber !== 'number') {
     throw new Error(`Expected episodeNumber to be of type number but got ${printType(episodeNumber)}`);
-  } else if (episodeNumber < 10_000 + 1 || episodeNumber > 1_000_000 - 1) {
-    throw new Error(`Expected episodeNumber ]10000, 1000000[, but got ${episodeNumber}`);
+  } else if (episodeNumber < 10_000 + 1 || episodeNumber > 100_000_000 - 1) {
+    throw new Error(`Expected episodeNumber ]10_000, 100_000_000[, but got ${episodeNumber}`);
   }
 }
 
