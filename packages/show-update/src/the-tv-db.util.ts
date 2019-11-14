@@ -3,7 +3,15 @@ import { TheTvDb, NotFound } from '@episodehunter/thetvdb';
 import { Tmdb } from '@episodehunter/tmdb';
 import { config } from './config';
 
-const theTvDb = new TheTvDb(config.theTvDbApiKey);
+const theTvDb = new TheTvDb(config.theTvDbApiKey, {
+  timeout: 4000,
+  nextTimeout: t => {
+    if (t >= 6000) {
+      return null;
+    }
+    return t + 1000
+  }
+});
 const tmdb = new Tmdb(config.tmdbApiKey);
 
 export const fetchShow = (theTvDbId: number, logger: Logger) => theTvDb.fetchShow(theTvDbId, msg => logger.log(msg));
