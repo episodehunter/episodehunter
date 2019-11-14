@@ -9,7 +9,13 @@ import { mapTheTvShowToDefinition, mapTheTvEpisodesToDefinition } from './mapper
 export async function updateShow(event: Message.UpdateShow.UpdateShow.Event, logger: Logger, awsRequestId: string) {
   const updatingShow = fetchShow(event.tvdbId, logger)
     .then(show => mapTheTvShowToDefinition(show))
-    .then(showDef => updateShowRequest(event.id, showDef, awsRequestId));
+    .then(showDef => {
+      if (event.lastupdated >= showDef.lastupdate) {
+        logger.log(`Show has not been updated since last update id:${event.id} lastupdated:${event.lastupdated} tvdb:lastupdate:${showDef.lastupdate}`)
+        return null;
+      }
+      return updateShowRequest(event.id, showDef, awsRequestId)
+    });
 
   const updatingEpisodes = fetchShowEpisodes(event.tvdbId, logger)
     .then(episodes => mapTheTvEpisodesToDefinition(episodes))
