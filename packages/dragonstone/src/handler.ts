@@ -122,7 +122,8 @@ export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
       assertShowInput(event.showInput);
     } catch (error) {
       logger.log(`Show was not valid. Event: ${JSON.stringify(event)}`);
-      throw new Error(`${error.message} ${JSON.stringify(event)}`);
+      logger.captureException(error);
+      return Promise.resolve(null);
     }
 
     return getPgResolver().show.updateShow(event.showId, event.showInput, logger);
