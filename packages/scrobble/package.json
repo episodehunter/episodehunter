@@ -1,6 +1,6 @@
 {
   "name": "scrobble",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "",
   "private": true,
   "main": "dist/index.js",
@@ -44,10 +44,10 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@episodehunter/kingsguard": "^5.0.2",
-    "@episodehunter/logger": "^4.1.5",
-    "@episodehunter/types": "^3.0.3",
-    "@episodehunter/utils": "^1.1.0",
+    "@episodehunter/kingsguard": "^5.0.3",
+    "@episodehunter/logger": "^4.1.6",
+    "@episodehunter/types": "^3.0.4",
+    "@episodehunter/utils": "^1.1.1",
     "aws-lambda-multipart-parser": "0.1.2",
     "graphql-request": "1.8.2"
   },

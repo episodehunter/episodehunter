@@ -1,7 +1,7 @@
 {
   "name": "@episodehunter/tmdb",
   "description": "Helper lib for tmdb api",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "prepare": "npm run build",
     "build": "tsc",
