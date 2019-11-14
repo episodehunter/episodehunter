@@ -1,5 +1,5 @@
 import { createGuard } from '@episodehunter/kingsguard';
-import { TooManyEpisodes } from '@episodehunter/thetvdb';
+import { TooManyEpisodes, NotFound } from '@episodehunter/thetvdb';
 import { Message } from '@episodehunter/types';
 import { SNSEvent } from 'aws-lambda';
 import { config } from './config';
@@ -25,8 +25,8 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
   try {
     return await updateShow(ids, logger, context.awsRequestId);
   } catch (error) {
-    logger.warn(error && error.message);
-    if (error instanceof TooManyEpisodes || error instanceof InsufficientShowInformation) {
+    if (error instanceof TooManyEpisodes || error instanceof InsufficientShowInformation || error instanceof NotFound) {
+      logger.captureException(error);
       return Promise.resolve('Error but OK: ' + error.message);
     }
     return Promise.reject(error);
