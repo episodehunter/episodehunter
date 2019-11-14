@@ -15,7 +15,7 @@ export function mapTheTvShowToDefinition(tShow: TheTvDbShow): Message.Dragonston
     airsDayOfWeek: mapDayToNumber(tShow.airsDayOfWeek as keyof typeof dayOfWeekString),
     airsTime: tShow.airsTime,
     firstAired: tShow.firstAired,
-    genre: tShow.genre,
+    genre: tShow.genre || [],
     network: tShow.network,
     overview: tShow.overview,
     runtime: (tShow.runtime as any) | 0,
