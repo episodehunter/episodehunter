@@ -29,6 +29,6 @@ functions:
   update:
     handler: handler.update
     events:
-      - sns: ${self:custom.env.SNS_UPDATE_SHOW_TOPIC}
+      - sns: ${self:custom.env.EH_SNS_UPDATE_SHOW}
   add:
     handler: handler.add
