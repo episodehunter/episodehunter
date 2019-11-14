@@ -18,14 +18,50 @@ const logWrapper = (log: (msg: string) => void, msg: string) => <T>(
   return val
 }
 
+interface Options {
+  /**
+    First timeout
+  */
+  timeout?: number
+
+  /**
+    Canculate next timeout if the first timeout was met.
+    @example
+
+    const defaultNextTimeout = (currentTimeout: number) => {
+      if (currentTimeout > 10000) {
+        return null // Throw an timeout error
+      }
+      return currentTimeout + 1000 // timeout for the next try
+    }
+  */
+  nextTimeout?: (currentTimeout: number) => number | null
+
+  /**
+   * Custom fetch function
+   */
+  fetch?: typeof fetch
+}
+
 export class TheTvDb {
   private apikey: string
   private fetch: typeof fetch
+  private options: Required<Omit<Options, 'fetch'>>
   jwt: Promise<string> | undefined = undefined
 
-  constructor(apikey: string, _fetch = fetch) {
+  constructor(apikey: string, options?: Options) {
     this.apikey = apikey
-    this.fetch = _fetch
+    this.fetch = options?.fetch || fetch
+    const defaultNextTimeout = (currentTimeout: number) => {
+      if (currentTimeout > 4000) {
+        return null
+      }
+      return currentTimeout + 1000
+    }
+    this.options = {
+      timeout: options?.timeout || 2000,
+      nextTimeout: options?.nextTimeout || defaultNextTimeout
+    }
   }
 
   get token() {
@@ -149,7 +185,7 @@ export class TheTvDb {
   private async get(
     url: string,
     log: typeof noop,
-    timeout = 1000
+    timeout = this.options.timeout
   ): Promise<Response> {
     log('Making request to ' + url)
     const token = await this.token
@@ -169,11 +205,12 @@ export class TheTvDb {
       clearTimeout(timeoutId)
       if (error.name === 'AbortError') {
         log(`Did not recive any reposne within ${timeout} ms. url: ` + url)
-        if (timeout >= 3000) {
+        const nextTimeout = this.options.nextTimeout(timeout)
+        if (!nextTimeout) {
           log(`Giving up. url: ` + url)
           throw new Timeout(`Timeout after ${timeout} ms for url: ${url}`)
         }
-        return this.get(url, log, timeout + 1000)
+        return this.get(url, log, nextTimeout)
       }
       if (error) {
         log(

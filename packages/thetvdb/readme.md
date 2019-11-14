@@ -14,7 +14,7 @@ const theTvDb = new TheTvDb(apikey)
 
 ## API
 
-#### `constructor(apikey: string)`
+#### `constructor(apikey: string, options: Options)`
 
 Creates an instance of `TheTvDb`
 

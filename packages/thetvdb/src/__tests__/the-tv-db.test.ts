@@ -43,7 +43,7 @@ describe('Token', () => {
       json: () => Promise.resolve({ token })
     }
     const fetch = () => Promise.resolve(res)
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
 
     // Act
     const result = await theTvDb.token
@@ -60,7 +60,7 @@ describe('Token', () => {
       json: () => Promise.resolve({ token })
     }
     const fetch = () => Promise.resolve(res)
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('old token')
 
     // Act
@@ -79,7 +79,7 @@ test('Get show info from the tv db', async () => {
     json: () => Promise.resolve({ data: show })
   }
   const fetch = () => Promise.resolve(res)
-  const theTvDb = new TheTvDb('apikey', fetch as any)
+  const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
   theTvDb.jwt = Promise.resolve('token')
 
   // Act
@@ -97,7 +97,7 @@ test('Get updated show list', async () => {
     json: () => Promise.resolve({ data: [show] })
   }
   const fetch = () => Promise.resolve(res)
-  const theTvDb = new TheTvDb('apikey', fetch as any)
+  const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
   theTvDb.jwt = Promise.resolve('token')
 
   // Act
@@ -114,7 +114,7 @@ test('Return a not found error', () => {
     status: 404
   }
   const fetch = () => Promise.resolve(res)
-  const theTvDb = new TheTvDb('apikey', fetch as any)
+  const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
   theTvDb.jwt = Promise.resolve('token')
 
   // Act and Assert
@@ -143,7 +143,7 @@ describe('getTvDbShowEpisodes', () => {
       json: () => Promise.resolve(data)
     }
     const fetch = () => Promise.resolve(res)
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -160,7 +160,7 @@ describe('getTvDbShowEpisodes', () => {
       status: 404
     }
     const fetch = () => Promise.resolve(res)
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -177,7 +177,7 @@ describe('getTvDbShowEpisodes', () => {
       json: () => Promise.resolve({})
     }
     const fetch = () => Promise.resolve(res)
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -216,7 +216,7 @@ describe('getTvDbShowEpisodes', () => {
       const u = url.parse(path, true)
       return Promise.resolve(pages[Number(u.query.page) - 1])
     })
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -255,7 +255,7 @@ describe('getTvDbShowEpisodes', () => {
       const u = url.parse(path, true)
       return Promise.resolve(pages[Number(u.query.page) - 1])
     })
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -287,7 +287,7 @@ describe('getTvDbShowEpisodes', () => {
     }
 
     const fetch = () => Promise.resolve(res)
-    const theTvDb = new TheTvDb('apikey', fetch as any)
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act and Assert
@@ -353,7 +353,7 @@ describe('Episode image', () => {
         return Promise.resolve(res[1])
       }
     })
-    const theTvDb = new TheTvDb(apikey, fetch as any)
+    const theTvDb = new TheTvDb(apikey, { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -384,7 +384,7 @@ describe('Episode image', () => {
         return Promise.resolve(res[0])
       }
     })
-    const theTvDb = new TheTvDb(apikey, fetch as any)
+    const theTvDb = new TheTvDb(apikey, { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act and Assert
@@ -438,7 +438,7 @@ describe('Show poster', () => {
         return Promise.resolve(res[1])
       }
     })
-    const theTvDb = new TheTvDb(apikey, fetch as any)
+    const theTvDb = new TheTvDb(apikey, { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -469,7 +469,7 @@ describe('Show poster', () => {
         return Promise.resolve(res[0])
       }
     })
-    const theTvDb = new TheTvDb(apikey, fetch as any)
+    const theTvDb = new TheTvDb(apikey, { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act and Assert
@@ -523,7 +523,7 @@ describe('Show fanart', () => {
         return Promise.resolve(res[1])
       }
     })
-    const theTvDb = new TheTvDb(apikey, fetch as any)
+    const theTvDb = new TheTvDb(apikey, { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act
@@ -554,7 +554,7 @@ describe('Show fanart', () => {
         return Promise.resolve(res[0])
       }
     })
-    const theTvDb = new TheTvDb(apikey, fetch as any)
+    const theTvDb = new TheTvDb(apikey, { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
     // Act and Assert
