@@ -13,7 +13,7 @@ AWS.config.update({
 const sns = new AWS.SNS();
 const client = new GraphQLClient(config.dragonstoneUrl);
 
-export async function getTitles(context: Context, logger: Logger): Promise<Title[]> {
+export async function getTitles(context: Pick<Context, 'awsRequestId'>, logger: Pick<Logger, 'log'>): Promise<Title[]> {
   const query = `
     {
       titles {

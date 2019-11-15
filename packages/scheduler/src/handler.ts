@@ -51,3 +51,24 @@ export const update = guard(async (_, logger, context) => {
   logger.log('We are done with mass update of shows to show-update');
   return result.length;
 });
+
+export const updateAllShows = async (context: { awsRequestId: string }, logger: Pick<Logger, 'log'>) => {
+  logger.log('Start a mass update all shows to show-update');
+  const showsToUpdate: Title[] = await getTitles(context, logger);
+  logger.log(`We should update ${showsToUpdate.length} shows`);
+  const sleep = () => new Promise(r => setTimeout(r, 2000));
+  showsToUpdate.sort((a, b) => a.id - b.id)
+  for (const title of showsToUpdate) {
+    if (title.id <= 5000) {
+      continue;
+    } else if (title.id >= 7000) {
+      break;
+    }
+    console.log('Update ' + title.id)
+    await sleep();
+    await publishShowUpdate(title);
+    console.log('Publish ' + title.id)
+  }
+  logger.log('We are done with mass update of shows to show-update');
+  return showsToUpdate.length;
+};
