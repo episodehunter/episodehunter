@@ -8,7 +8,7 @@ export interface TheTvDbShow {
   firstAired: string // YYYY-MM-DD
   network: string
   runtime: string // eg. 55
-  genre: string[]
+  genre: string[] | null
   overview: string
   lastUpdated: number // unix timestamp
   airsDayOfWeek: string // eg. Sunday
