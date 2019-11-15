@@ -1,0 +1,43 @@
+{
+        "folders": [
+                {
+                        "path": "packages/dragonstone"
+                },
+                {
+                        "path": "packages/image-proxy"
+                },
+                {
+                        "path": "packages/kingsguard"
+                },
+                {
+                        "path": "packages/logger"
+                },
+                {
+                        "path": "packages/scheduler"
+                },
+                {
+                        "path": "packages/scrobble"
+                },
+                {
+                        "path": "packages/show-update"
+                },
+                {
+                        "path": "packages/thetvdb"
+                },
+                {
+                        "path": "packages/tmdb"
+                },
+                {
+                        "path": "packages/types"
+                },
+                {
+                        "path": "packages/utils"
+                },
+                {
+                        "path": "."
+                }
+        ],
+        "settings": {
+                "typescript.tsdk": "thetvdb/node_modules/typescript/lib"
+        }
+}
