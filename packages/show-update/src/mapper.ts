@@ -2,12 +2,14 @@ import { TheTvDbShow, TheTvDbShowEpisode } from '@episodehunter/thetvdb';
 import { Message } from '@episodehunter/types';
 import { safeFilter, safeMap, calculateEpisodeNumber } from '@episodehunter/utils';
 import { isValidEpisode } from './util';
+import { InsufficientShowInformation } from './custom-erros';
 
 export function mapTheTvEpisodesToDefinition(tEpisodes: TheTvDbShowEpisode[]): Message.Dragonstone.EpisodeInput[] {
   return safeMap(mapTheTvEpisodeToDefinition)(safeFilter(isValidEpisode)(tEpisodes));
 }
 
 export function mapTheTvShowToDefinition(tShow: TheTvDbShow): Message.Dragonstone.ShowInput {
+  assertValidShow(tShow);
   return {
     tvdbId: tShow.id,
     imdbId: tShow.imdbId,
@@ -33,6 +35,12 @@ function mapTheTvEpisodeToDefinition(tEpisodes: TheTvDbShowEpisode): Message.Dra
     overview: tEpisodes.overview,
     lastupdated: tEpisodes.lastUpdated
   };
+}
+
+function assertValidShow(show: TheTvDbShow): asserts show is TheTvDbShow & { seriesName: string } {
+  if (typeof show.seriesName !== 'string' || show.seriesName.length === 0) {
+    throw new InsufficientShowInformation(`Show (${show.id}) is missing its name`);
+  }
 }
 
 const dayOfWeekString = {

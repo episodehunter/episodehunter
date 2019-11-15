@@ -2,7 +2,7 @@
 
 export interface TheTvDbShow {
   id: number
-  seriesName: string
+  seriesName: string | null
   seriesId: string
   status: 'Continuing' | 'Ended'
   firstAired: string // YYYY-MM-DD
@@ -13,6 +13,6 @@ export interface TheTvDbShow {
   lastUpdated: number // unix timestamp
   airsDayOfWeek: string // eg. Sunday
   airsTime: string // 9:00 PM
-  imdbId: string
+  imdbId?: string
   zap2itId: string
 }
