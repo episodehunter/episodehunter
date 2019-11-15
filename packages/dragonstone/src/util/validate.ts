@@ -47,7 +47,7 @@ export function assertShowInput(input: Message.Dragonstone.ShowInput) {
       );
     }
   });
-  const validGenre = input.genre.every(g => typeof g === 'string');
+  const validGenre = input.genre?.every(g => typeof g === 'string');
   if (!validGenre) {
     throw new TypeError(`Genre is not a array of string: ${JSON.stringify(input.genre)}`);
   }
