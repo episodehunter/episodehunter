@@ -34,7 +34,7 @@
     "@types/node": "12.12.11",
     "jest": "24.9.0",
     "simple-spy": "3.0.1",
-    "ts-jest": "24.1.0",
+    "ts-jest": "24.2.0",
     "typescript": "3.7.2"
   },
   "peerDependencies": {
