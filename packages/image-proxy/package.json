@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/aws-lambda": "8.10.36",
     "@types/jest": "24.0.23",
-    "@types/node": "12.12.12",
+    "@types/node": "12.12.13",
     "@types/sharp": "0.23.0",
     "aws-sdk": "2.579.0",
     "jest": "24.9.0",
