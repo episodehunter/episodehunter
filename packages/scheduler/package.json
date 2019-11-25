@@ -28,7 +28,7 @@
     "@episodehunter/types": "^3.0.4",
     "@types/aws-lambda": "8.10.36",
     "@types/jest": "24.0.23",
-    "@types/node": "12.12.12",
+    "@types/node": "12.12.13",
     "aws-sdk": "2.579.0",
     "jest": "24.9.0",
     "ts-jest": "24.2.0",
