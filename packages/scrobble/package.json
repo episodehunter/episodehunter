@@ -32,7 +32,7 @@
     "@graphql-codegen/typescript-operations": "1.9.1",
     "@types/aws-lambda": "8.10.37",
     "@types/jest": "24.0.23",
-    "@types/node": "12.12.15",
+    "@types/node": "12.12.16",
     "@typescript-eslint/eslint-plugin": "2.11.0",
     "@typescript-eslint/parser": "2.11.0",
     "aws-sdk": "2.586.0",
