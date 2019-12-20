@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/aws-lambda": "8.10.37",
     "@types/node": "12.12.21",
-    "typescript": "3.7.3"
+    "typescript": "3.7.4"
   },
   "engines": {
     "node": "10.x"
