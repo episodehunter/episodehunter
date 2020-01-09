@@ -25,7 +25,7 @@
     "@episodehunter/types": "^3.0.4",
     "@episodehunter/utils": "^1.1.1",
     "apollo-server-lambda": "2.9.9",
-    "dataloader": "1.4.0",
+    "dataloader": "2.0.0",
     "firebase-admin": "8.9.0",
     "graphql": "14.5.8",
     "pg": "7.17.0",
