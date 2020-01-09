@@ -9,7 +9,7 @@ interface EpisodeKey {
 }
 
 export function createEpisodeLoader(client: PgClient) {
-  const getBatchEpisodes = async (lookupKey: EpisodeKey[]): Promise<(EpisodeRecord | null)[]> => {
+  const getBatchEpisodes = async (lookupKey: readonly EpisodeKey[]): Promise<(EpisodeRecord | null)[]> => {
     const keys = lookupKey.map(key => `(${key.show_id | 0}, ${key.episodenumber | 0})`).join(', ');
     const dbResult = await client.query<EpisodeRecord>(sql`
       SELECT * FROM episodes
