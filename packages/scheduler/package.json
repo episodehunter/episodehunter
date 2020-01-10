@@ -29,7 +29,7 @@
     "@types/aws-lambda": "8.10.37",
     "@types/jest": "24.0.25",
     "@types/node": "12.12.21",
-    "aws-sdk": "2.600.0",
+    "aws-sdk": "2.601.0",
     "jest": "24.9.0",
     "ts-jest": "24.3.0",
     "typescript": "3.7.4"
