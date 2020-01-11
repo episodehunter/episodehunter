@@ -2,14 +2,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { buildSchema, GraphQLSchema, graphqlSync, introspectionQuery } from 'graphql';
 import gql from 'graphql-tag';
 
-const fileContent = readFileSync('./dragonstone-schema.graphql').toString();
-const rawSchema = `
-schema {
-  query: RootQuery
-  mutation: RootMutation
-}
-${fileContent}
-`;
+const rawSchema = readFileSync('./dragonstone-schema.graphql').toString();
 
 function createImportableSchema() {
   const content = 'module.exports = `' + rawSchema + '`;';
