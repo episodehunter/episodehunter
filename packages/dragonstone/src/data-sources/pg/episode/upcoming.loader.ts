@@ -6,7 +6,7 @@ import { EpisodeRecord } from '../schema';
 import { createDataLoader, DataLoader } from '../util/data-loader';
 
 export function createUpcomingLoader(client: PgClient): UpcomingLoader {
-  const getBatchUpcoming = async (showIds: ShowId[]): Promise<(EpisodeRecord | null)[]> => {
+  const getBatchUpcoming = async (showIds: readonly ShowId[]): Promise<(EpisodeRecord | null)[]> => {
     const uniqIds = Array.from(new Set(showIds.map(Number).filter(Boolean)));
     const day = daysAgoOnFormatYYYYMMDD(0, new Date());
 
@@ -33,7 +33,7 @@ export function createUpcomingLoader(client: PgClient): UpcomingLoader {
 }
 
 export function createJustAirdLoader(client: PgClient): UpcomingLoader {
-  const getBatchUpcoming = async (showIds: ShowId[]): Promise<(EpisodeRecord | null)[]> => {
+  const getBatchUpcoming = async (showIds: readonly ShowId[]): Promise<(EpisodeRecord | null)[]> => {
     const uniqIds = Array.from(new Set(showIds.map(Number).filter(Boolean)));
     const day = daysAgoOnFormatYYYYMMDD(3, new Date());
     const today = daysAgoOnFormatYYYYMMDD(0, new Date());

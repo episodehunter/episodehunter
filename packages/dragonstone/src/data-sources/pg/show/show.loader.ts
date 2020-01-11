@@ -4,7 +4,7 @@ import { ShowRecord } from '../schema';
 import { createDataLoader, DataLoader } from '../util/data-loader';
 
 export function createShowLoader(client: PgClient): ShowLoader {
-  const getBatchShows = async (lookupKey: number[]): Promise<(ShowRecord | null)[]> => {
+  const getBatchShows = async (lookupKey: readonly number[]): Promise<(ShowRecord | null)[]> => {
     const keys = lookupKey.map(key => `${key | 0}`).join(', ');
     const dbResult = await client.query<ShowRecord>(sql`
       SELECT * FROM shows

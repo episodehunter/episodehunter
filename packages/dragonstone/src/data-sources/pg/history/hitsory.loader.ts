@@ -10,7 +10,7 @@ interface Key {
 }
 
 export function createHistoryLoader(client: PgClient): HistoryLoader {
-  const getBatchUpcoming = async (keys: Key[]): Promise<WatchedEpisodeRecord[][]> => {
+  const getBatchUpcoming = async (keys: readonly Key[]): Promise<WatchedEpisodeRecord[][]> => {
     const showId = keys[0].showId | 0;
     const userId = keys[0].userId | 0;
     const uniqIds = Array.from(new Set(keys.map(key => Number(key.episodenumber)).filter(Boolean)));
