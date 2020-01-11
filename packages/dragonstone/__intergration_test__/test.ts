@@ -25,7 +25,7 @@ describe('Intergration test', () => {
     logStreamName: 'log-stream-name',
     callbackWaitsForEmptyEventLoop: false,
     invokedFunctionArn: '',
-    memoryLimitInMB: 100,
+    memoryLimitInMB: '100',
     awsRequestId: '1',
     done: () => null,
     fail: () => null,
