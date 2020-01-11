@@ -38,7 +38,7 @@
     "@types/jest": "24.0.25",
     "@types/node": "12.12.21",
     "@types/pg": "7.14.1",
-    "aws-lambda": "0.1.2",
+    "aws-lambda": "1.0.5",
     "fast-check": "1.21.0",
     "jest": "24.9.0",
     "testcontainers": "2.2.0",
