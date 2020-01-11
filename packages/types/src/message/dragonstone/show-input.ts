@@ -12,4 +12,5 @@ export interface ShowInput {
   runtime: number;
   ended: boolean;
   lastupdate: number;
+  lastupdateCheck?: number;
 }

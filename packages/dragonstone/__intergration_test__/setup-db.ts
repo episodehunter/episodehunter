@@ -31,6 +31,7 @@ export function setupDatabas(client: Client) {
       "runtime" int2 NOT NULL,
       "ended" bool NOT NULL,
       "lastupdated" int4 NOT NULL,
+      "lastupdated_check" int4 NOT NULL DEFAULT 0,
       PRIMARY KEY ("id")
   );
 
@@ -61,14 +62,18 @@ export function setupDatabas(client: Client) {
   );
 
   CREATE VIEW "public"."titles" AS SELECT s.id,
-      s.name,
-      s.external_id_tvdb,
-      s.lastupdated,
-      count(f.id) AS followers
-     FROM (shows s
-       LEFT JOIN following f ON ((f.show_id = s.id)))
-    GROUP BY s.id
-    ORDER BY s.id;
+    s.name,
+    s.external_id_tvdb,
+    s.lastupdated,
+    count(f.id) AS followers,
+        CASE
+            WHEN (s.lastupdated_check > 0) THEN s.lastupdated_check
+            ELSE s.lastupdated
+        END AS lastupdated_check
+   FROM (shows s
+     LEFT JOIN following f ON ((f.show_id = s.id)))
+  GROUP BY s.id
+  ORDER BY s.id;
 
   DROP TABLE IF EXISTS "public"."episodes" cascade;
   CREATE TABLE "public"."episodes" (
@@ -88,7 +93,7 @@ export function setupDatabas(client: Client) {
   ALTER TABLE "public"."tv_watched" ADD FOREIGN KEY ("show_id") REFERENCES "public"."shows"("id");
   ALTER TABLE "public"."tv_watched" ADD FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE;
 
-  INSERT INTO "public"."shows" ("id", "name", "external_id_imdb", "external_id_tvdb", "airs_first", "airs_time", "airs_day", "genre", "language", "network", "overview", "runtime", "ended", "lastupdated") VALUES ('1', 'Stranger Things', 'tt4574334', '305288', '2016-07-15', '03:00', '4', '{Adventure,Drama,Fantasy,Mystery}', 'en', 'Netflix', 'When a young boy disappears, his mother, a police chief, and his friends must confront terrifying forces in order to get him back.', '50', 'f', '1555393924');
+  INSERT INTO "public"."shows" ("id", "name", "external_id_imdb", "external_id_tvdb", "airs_first", "airs_time", "airs_day", "genre", "language", "network", "overview", "runtime", "ended", "lastupdated", "lastupdated_check") VALUES ('1', 'Stranger Things', 'tt4574334', '305288', '2016-07-15', '03:00', '4', '{Adventure,Drama,Fantasy,Mystery}', 'en', 'Netflix', 'When a young boy disappears, his mother, a police chief, and his friends must confront terrifying forces in order to get him back.', '50', 'f', '1555393924', '1999999999');
   INSERT INTO "public"."episodes" ("show_id", "name", "first_aired", "overview", "lastupdated", "episodenumber", "external_id_tvdb") VALUES ('1', 'Chapter One: The Vanishing of Will Byers', '2016-07-15', 'On his way home from a friend''s house, young Will sees something terrifying. Nearby, a sinister secret lurks in the depths of a government lab.', '1555393839', '10001', '7121402'),
     ('1', 'Chapter Two: The Weirdo on Maple Street', '2016-07-15', 'Lucas, Mike and Dustin try to talk to the girl they found in the woods. Hopper questions an anxious Joyce about an unsettling phone call.', '1555393859', '10002', '7121402'),
     ('1', 'Chapter Three: Holly, Jolly', '2016-07-15', 'An increasingly concerned Nancy looks for Barb and finds out what Jonathan''s been up to. Joyce is convinced Will is trying to talk to her.', '1555393868', '10003', '7121402'),
@@ -115,7 +120,7 @@ export function setupDatabas(client: Client) {
     ('1', 'The Bite', '2019-07-04', NULL, '1553890559', '30007', '7121402'),
     ('1', 'The Battle of Starcourt', '2019-07-04', NULL, '1553890590', '30008', '7121402');
 
-  INSERT INTO "public"."shows" ("id", "name", "external_id_imdb", "external_id_tvdb", "airs_first", "airs_time", "airs_day", "genre", "language", "network", "overview", "runtime", "ended", "lastupdated") VALUES ('2', 'Breaking Bad', 'tt0903747', '81189', '2008-01-20', '21:00', '6', '{Crime,Drama,Suspense,Thriller}', 'en', 'AMC', 'Walter White, a struggling high school chemistry teacher, is diagnosed with advanced lung cancer. He turns to a life of crime, producing and selling methamphetamine accompanied by a former student, Jesse Pinkman, with the aim of securing his family''s financial future before he dies.', '45', 't', '1553807287');
+  INSERT INTO "public"."shows" ("id", "name", "external_id_imdb", "external_id_tvdb", "airs_first", "airs_time", "airs_day", "genre", "language", "network", "overview", "runtime", "ended", "lastupdated", "lastupdated_check") VALUES ('2', 'Breaking Bad', 'tt0903747', '81189', '2008-01-20', '21:00', '6', '{Crime,Drama,Suspense,Thriller}', 'en', 'AMC', 'Walter White, a struggling high school chemistry teacher, is diagnosed with advanced lung cancer. He turns to a life of crime, producing and selling methamphetamine accompanied by a former student, Jesse Pinkman, with the aim of securing his family''s financial future before he dies.', '45', 't', '1553807287', '1553807287');
   INSERT INTO "public"."episodes" ("show_id", "name", "first_aired", "overview", "lastupdated", "episodenumber", "external_id_tvdb") VALUES ('2', 'Pilot', '2008-01-20', 'When an unassuming high school chemistry teacher discovers he has a rare form of lung cancer, he decides to team up with a former student and create a top of the line crystal meth in a used RV, to provide for his family once he is gone.', '1520652290', '10001', '7121402'),
     ('2', 'Cat''s in the Bag...', '2008-01-27', 'Walt and Jesse attempt to tie up loose ends.', '1520652296', '10002', '7121402'),
     ('2', '...And the Bag''s in the River', '2008-02-10', 'Walter fights with Jesse over his drug use', '1520652300', '10003', '7121402'),

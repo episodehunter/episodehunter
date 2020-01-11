@@ -13,7 +13,8 @@ const knownShowProps: { [key in keyof Message.Dragonstone.ShowInput]: string[] }
   overview: ['string', 'undefined'],
   runtime: ['number'],
   ended: ['boolean'],
-  lastupdate: ['number']
+  lastupdate: ['number'],
+  lastupdateCheck: ['number', 'undefined'],
 };
 
 const knownEpisodeProps: { [key in keyof Message.Dragonstone.EpisodeInput]: string[] } = {

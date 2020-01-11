@@ -144,6 +144,7 @@ describe('Intergration test', () => {
         },
         language: 'en',
         lastupdated: 1555393924,
+        lastupdatedCheck: 1999999999,
         name: 'Stranger Things',
         network: 'Netflix',
         overview:
@@ -165,7 +166,8 @@ describe('Intergration test', () => {
           overview: 'Dexter Morgan is a Miami-based blood splatter expert',
           runtime: 50,
           ended: true,
-          lastupdate: 1554064896
+          lastupdate: 1554064896,
+          lastupdateCheck: 1554064897
         },
         requestStack: []
       };
@@ -192,7 +194,8 @@ describe('Intergration test', () => {
         overview: 'Dexter Morgan is a Miami-based blood splatter expert',
         runtime: 50,
         ended: true,
-        lastupdated: 1554064896
+        lastupdated: 1554064896,
+        lastupdated_check: 1554064897,
       });
       expect(result).toEqual({
         airs: {
@@ -209,6 +212,7 @@ describe('Intergration test', () => {
         },
         language: 'en',
         lastupdated: 1554064896,
+        lastupdatedCheck: 1554064897,
         name: 'Dexter',
         network: 'Showtime',
         overview: 'Dexter Morgan is a Miami-based blood splatter expert',
@@ -413,7 +417,8 @@ describe('Intergration test', () => {
           overview: 'Walter White!',
           runtime: 51,
           ended: false,
-          lastupdate: 1554064871
+          lastupdate: 1554064871,
+          lastupdateCheck: 1554064872
         },
         requestStack: []
       };
@@ -440,6 +445,7 @@ describe('Intergration test', () => {
         },
         language: 'en',
         lastupdated: 1554064871,
+        lastupdatedCheck: 1554064872,
         name: 'Breaking Bad!',
         network: 'Showtime',
         overview: 'Walter White!',
@@ -909,6 +915,72 @@ describe('Intergration test', () => {
               followers: 1,
               tvdbId: 81189,
               lastupdated: 1553807287
+            }
+          ]
+        }
+      });
+    });
+
+    test('Get list of the oldest updated shows', async () => {
+      // Arrange
+      const event = createGraphQlEvent(`{
+        oldestUpdatedShows(limit: 20) {
+          id
+          name
+          lastupdated
+          lastupdatedCheck
+        }
+      }`);
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          oldestUpdatedShows: [
+            {
+              id: 2,
+              name: 'Breaking Bad',
+              lastupdated: 1553807287,
+              lastupdatedCheck: 1553807287,
+            },
+            {
+              id: 1,
+              name: 'Stranger Things',
+              lastupdated: 1555393924,
+              lastupdatedCheck: 1999999999,
+            }
+          ]
+        }
+      });
+    });
+
+    test('Get the oldest updated show', async () => {
+      // Arrange
+      const event = createGraphQlEvent(`{
+        oldestUpdatedShows(limit: 1) {
+          id
+          name
+          lastupdated
+          lastupdatedCheck
+        }
+      }`);
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          oldestUpdatedShows: [
+            {
+              id: 2,
+              name: 'Breaking Bad',
+              lastupdated: 1553807287,
+              lastupdatedCheck: 1553807287,
             }
           ]
         }

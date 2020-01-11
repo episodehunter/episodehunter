@@ -22,6 +22,7 @@ type RootQuery {
   season(showId: Int!, season: Int!): [Episode!]!
   following: [Following!]!
   titles: [Title!]!
+  oldestUpdatedShows(limit: Int!): [Title!]!
   history(page: Int!): [History!]!
   me: User!
 }

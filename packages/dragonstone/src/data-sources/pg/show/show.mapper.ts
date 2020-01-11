@@ -1,4 +1,5 @@
 import { Message } from '@episodehunter/types';
+import { unixTimestamp } from '@episodehunter/utils';
 import { ShowRecord, NewShowRecord } from '../schema';
 import { RootShow } from '../../../resolvers/type';
 
@@ -21,6 +22,7 @@ export function mapShow(show?: ShowRecord | null): RootShow | null {
     },
     language: show.language,
     lastupdated: show.lastupdated,
+    lastupdatedCheck: show.lastupdated_check,
     name: show.name,
     network: show.network,
     overview: show.overview,
@@ -46,6 +48,7 @@ export function mapShowInputToShow(
     ended: showInput.ended,
     genre: showInput.genre,
     lastupdated: showInput.lastupdate,
+    lastupdated_check: showInput.lastupdateCheck || unixTimestamp(),
     name: showInput.name,
     runtime: showInput.runtime
   };

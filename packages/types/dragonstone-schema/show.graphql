@@ -8,6 +8,7 @@ type Show {
   ids: ShowIds!
   language: String
   lastupdated: Int!
+  lastupdatedCheck: Int!
   name: String!
   network: String
   overview: String
