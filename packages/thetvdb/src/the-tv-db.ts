@@ -1,5 +1,5 @@
 import fetch, { Response } from 'node-fetch'
-import { TooManyEpisodes, NotFound, Timeout } from './custom-erros'
+import { NotFound, Timeout } from './custom-erros'
 import AbortController from 'abort-controller'
 import {
   TheTvDbShow,
@@ -81,44 +81,63 @@ export class TheTvDb {
 
   async fetchShowEpisodes(
     theTvDbId: number,
-    page = 1,
     log = noop
   ): Promise<TheTvDbShowEpisode[]> {
     let episodes: TheTvDbShowEpisode[] = []
-    const response: TheTvDbShowEpisodePage = await this.get(
-      `https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`,
+    let nextPageToLoad = 1;
+    while (nextPageToLoad) {
+      const response = await this.fetchEpisodePage(
+        theTvDbId,
+        nextPageToLoad,
+        log
+      )
+      nextPageToLoad = response.links?.next;
+      episodes = [ ...episodes, ...response.data ];
+    }
+    return episodes;
+  }
+
+  /**
+   * Fetch the latest episodes.
+   * Will return somewhere between 0 and numberOfEpisodes + 99 episodes
+   */
+  async fetchLatestShowEpisodes(
+    theTvDbId: number,
+    numberOfEpisodes: number,
+    log = noop
+  ) {
+    const response = await this.fetchEpisodePage(
+      theTvDbId,
+      1,
       log
     )
-      .then(res => {
-        // The tv db API has a bug where the next page can give a 404
-        if (res.status === 404) {
-          return {
-            data: [],
-            links: {} as any
-          } as TheTvDbShowEpisodePage
-        }
-        handelHttpError(res)
-        return res.json()
-      })
-      .then(logWrapper(log, `Done, getting back`))
 
-    if (response.links && response.links.last && response.links.last > 10) {
-      throw new TooManyEpisodes(
-        `Number of episodes pages: ${response.links.last}`
+    const lastPage = response.links?.last || 1;
+
+    if (lastPage === 1) {
+      return response.data
+    } else if (lastPage === 2) {
+      const result = await this.fetchEpisodePage(
+        theTvDbId,
+        2,
+        log
       )
+      return [...response.data, ...result.data]
     }
 
-    if (Array.isArray(response.data)) {
-      episodes = response.data
-    }
-
-    if (response.links && response.links.next) {
-      episodes = episodes.concat(
-        await this.fetchShowEpisodes(theTvDbId, response.links.next, log)
+    let nextPageToLoad = lastPage;
+    let episodes: TheTvDbShowEpisode[] = []
+    while (episodes.length < numberOfEpisodes && nextPageToLoad) {
+      const result = await this.fetchEpisodePage(
+        theTvDbId,
+        nextPageToLoad,
+        log
       )
+      episodes = [...result.data, ...episodes];
+      nextPageToLoad = result.links.prev;
     }
 
-    return episodes
+    return episodes;
   }
 
   fetchLastUpdateShowsList(
@@ -171,6 +190,31 @@ export class TheTvDb {
       .then(rejectIfNot(new NotFound()))
       .then(image => image.fileName)
       .then(filename => this.fetchImage(filename, log))
+  }
+
+  private fetchEpisodePage(theTvDbId: number, page: number, log = noop): Promise<TheTvDbShowEpisodePage> {
+    return this.get(
+      `https://api.thetvdb.com/series/${theTvDbId}/episodes?page=${page}`,
+      log
+    )
+      .then(res => {
+        // The tv db API has a bug where the next page can give a 404
+        if (res.status === 404) {
+          return {
+            data: [],
+            links: {} as any
+          } as TheTvDbShowEpisodePage
+        }
+        handelHttpError(res)
+        return res.json()
+      })
+      .then(res => {
+        return {
+          data: ensureArray(res.data),
+          links: res.links
+        }
+      })
+      .then(logWrapper(log, `Done, getting back`))
   }
 
   private fetchImage(filename: string, log: typeof noop): Promise<Buffer> {

@@ -150,7 +150,7 @@ describe('getTvDbShowEpisodes', () => {
     const result = await theTvDb.fetchShowEpisodes(1)
 
     // Assert
-    expect(result).toBe(episodes)
+    expect(result).toEqual(episodes)
   })
 
   test('Return an empty array for 404', async () => {
@@ -272,29 +272,179 @@ describe('getTvDbShowEpisodes', () => {
       }
     ])
   })
+})
 
-  test('Throw an error if there is too many episodes', () => {
+describe('Fetch latest episodes', () => {
+  test('Get the first page if there is only one page', async () => {
     // Arrange
-    const res = {
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          data: [{ id: 1 }],
-          links: {
-            last: 11
-          }
-        })
-    }
+    const pages = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [{ id: 1 }],
+            links: {
+              fisrt: 1,
+              last: 1,
+              prev: null,
+              next: null
+            }
+          })
+      }
+    ]
 
-    const fetch = () => Promise.resolve(res)
+    const fetch = spy((path: string) => {
+      const u = url.parse(path, true)
+      return Promise.resolve(pages[Number(u.query.page) - 1])
+    })
     const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
     theTvDb.jwt = Promise.resolve('token')
 
-    // Act and Assert
-    return expect(theTvDb.fetchShowEpisodes(1)).rejects.toHaveProperty(
-      'message',
-      'Number of episodes pages: 11'
-    )
+    // Act
+    const result = await theTvDb.fetchLatestShowEpisodes(1, 5)
+
+    // Assert
+    expect(result).toEqual([
+      {
+        id: 1
+      }
+    ])
+  })
+
+  test('Get the two latest pages if there is only two pages', async () => {
+    // Arrange
+    const pages = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [{ id: 1 }, { id: 2 }],
+            links: {
+              fisrt: 1,
+              last: 2,
+              prev: null,
+              next: 2
+            }
+          })
+      },
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [{ id: 3 }],
+            links: {
+              fisrt: 1,
+              last: 2,
+              prev: 1,
+              next: null
+            }
+          })
+      }
+    ]
+
+    const fetch = spy((path: string) => {
+      const u = url.parse(path, true)
+      return Promise.resolve(pages[Number(u.query.page) - 1])
+    })
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act
+    const result = await theTvDb.fetchLatestShowEpisodes(1, 5)
+
+    // Assert
+    expect(result).toEqual([
+      {
+        id: 1
+      },
+      {
+        id: 2
+      },
+      {
+        id: 3
+      }
+    ])
+  })
+
+  test('Get the latest pages', async () => {
+    // Arrange
+    const pages = [
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [{ id: 1 }, { id: 2 }],
+            links: {
+              fisrt: 1,
+              last: 4,
+              prev: null,
+              next: 2
+            }
+          })
+      },
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [{ id: 3 }],
+            links: {
+              fisrt: 1,
+              last: 4,
+              prev: 1,
+              next: 3
+            }
+          })
+      },
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [{ id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }],
+            links: {
+              fisrt: 1,
+              last: 4,
+              prev: 2,
+              next: 4
+            }
+          })
+      },
+      {
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [{ id: 9 }, { id: 10 }, { id: 11 }, { id: 12 }],
+            links: {
+              fisrt: 1,
+              last: 4,
+              prev: 3,
+              next: null
+            }
+          })
+      }
+    ]
+
+    const fetch = spy((path: string) => {
+      const u = url.parse(path, true)
+      return Promise.resolve(pages[Number(u.query.page) - 1])
+    })
+    const theTvDb = new TheTvDb('apikey', { fetch: fetch as any })
+    theTvDb.jwt = Promise.resolve('token')
+
+    // Act
+    const result = await theTvDb.fetchLatestShowEpisodes(1, 5)
+
+    // Assert
+    expect(result).toEqual([
+      { id: 4 },
+      { id: 5 },
+      { id: 6 },
+      { id: 7 },
+      { id: 8 },
+      { id: 9 },
+      { id: 10 },
+      { id: 11 },
+      { id: 12 }
+    ])
   })
 })
 

@@ -26,7 +26,9 @@ Fetch a show with given id. See [the-tv-db-show.ts](src/types/the-tv-db-show.ts)
 
 Fetch all episodes for a given show id. See [TheTvDbShowEpisode in the-tv-db-show-episode.ts](src/types/the-tv-db-show-episode.ts) for the return type
 
-Will throw an error if there is more than 1000 episodes.
+#### `fetchLatestShowEpisodes(showId: number, numberOfEpisodes: number): Promise<Episode[]>`
+
+Fetch the latest episodes. Will return somewhere between 0 and numberOfEpisodes + 99 episodes.
 
 #### `fetchLastUpdateShowsList(time: number): Promise<Episode[]>`
 
