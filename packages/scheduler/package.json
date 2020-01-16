@@ -32,7 +32,7 @@
     "aws-sdk": "2.604.0",
     "jest": "24.9.0",
     "ts-jest": "24.3.0",
-    "typescript": "3.7.4"
+    "typescript": "3.7.5"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^5.0.3",
