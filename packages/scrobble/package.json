@@ -27,9 +27,9 @@
   "author": "tjoskar <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@graphql-codegen/cli": "1.9.1",
-    "@graphql-codegen/typescript": "1.9.1",
-    "@graphql-codegen/typescript-operations": "1.9.1",
+    "@graphql-codegen/cli": "1.11.2",
+    "@graphql-codegen/typescript": "1.11.2",
+    "@graphql-codegen/typescript-operations": "1.11.2",
     "@types/aws-lambda": "8.10.39",
     "@types/jest": "24.9.0",
     "@types/node": "12.12.21",
