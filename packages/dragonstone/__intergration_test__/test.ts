@@ -4,6 +4,7 @@ import { Message } from '@episodehunter/types';
 import { Client } from 'pg';
 import { setupDatabas } from './setup-db';
 import { EpisodeRecord, UserRecord } from '../src/data-sources/pg/schema';
+import { unixTimestamp } from '@episodehunter/utils';
 
 interface GraphQLResult {
   statusCode: 200;
@@ -196,6 +197,7 @@ describe('Intergration test', () => {
         ended: true,
         lastupdated: 1554064896,
         lastupdated_check: 1554064897,
+        update_disable: false
       });
       expect(result).toEqual({
         airs: {
@@ -484,6 +486,184 @@ describe('Intergration test', () => {
       expect(result).toBe(null);
     });
   });
+
+  describe('Next to update', () => {
+    test('Get list of the oldest updated shows', async () => {
+      // Arrange
+      const now = unixTimestamp()
+      const fiveDaysAgo = now - 5 * 24 * 60 * 60;
+      await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = false WHERE id=1`);
+      await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo - 1}, ended = false WHERE id=2`);
+      const event: Message.Dragonstone.NextToUpdateEvent = {
+        limit: 20,
+        requestStack: []
+      };
+
+      // Act
+      const result = ((await handler.nextToUpdateHandler(
+        event,
+        createContext()
+      )) as any) as Message.Dragonstone.NextToUpdateResponse;
+
+      // Assert
+      expect(result).toEqual({
+        shows: [
+          {
+            id: 2,
+            name: 'Breaking Bad',
+            tvdbId: 81189,
+            lastupdated: 1553807287,
+            lastupdatedCheck: fiveDaysAgo - 1
+          },
+          {
+            id: 1,
+            name: 'Stranger Things',
+            tvdbId: 305288,
+            lastupdated: 1555393924,
+            lastupdatedCheck: fiveDaysAgo
+          }
+        ]
+      });
+    });
+
+    test('Do not include ended shows', async () => {
+      // Arrange
+      const now = unixTimestamp()
+      const fiveDaysAgo = now - 5 * 24 * 60 * 60;
+      await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = false WHERE id=1`);
+      await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = true WHERE id=2`);
+      const event: Message.Dragonstone.NextToUpdateEvent = {
+        limit: 20,
+        requestStack: []
+      };
+
+      // Act
+      const result = ((await handler.nextToUpdateHandler(
+        event,
+        createContext()
+      )) as any) as Message.Dragonstone.NextToUpdateResponse;
+
+      // Assert
+      expect(result).toEqual({
+        shows: [
+          {
+            id: 1,
+            name: 'Stranger Things',
+            tvdbId: 305288,
+            lastupdated: 1555393924,
+            lastupdatedCheck: fiveDaysAgo
+          }
+        ]
+      });
+    });
+
+    test('Get the oldest updated show', async () => {
+      // Arrange
+      const now = unixTimestamp()
+      const twoDaysAgo = now - 2 * 24 * 60 * 60;
+      const fiveDaysAgo = now - 5 * 24 * 60 * 60;
+      await client.query(`UPDATE shows SET lastupdated_check = ${twoDaysAgo}, ended = false WHERE id=1`);
+      await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = false WHERE id=2`);
+      const event: Message.Dragonstone.NextToUpdateEvent = {
+        limit: 1,
+        requestStack: []
+      };
+
+      // Act
+      const result = ((await handler.nextToUpdateHandler(
+        event,
+        createContext()
+      )) as any) as Message.Dragonstone.NextToUpdateResponse;
+
+      // Assert
+      expect(result).toEqual({
+        shows: [
+          {
+            id: 2,
+            name: 'Breaking Bad',
+            tvdbId: 81189,
+            lastupdated: 1553807287,
+            lastupdatedCheck: fiveDaysAgo
+          }
+        ]
+      });
+    });
+
+    test('Return a empty list if we dont think we need to update anything', async () => {
+      // Arrange
+      const now = unixTimestamp()
+      const twoDaysAgo = now - 2 * 24 * 60 * 60;
+      await client.query(`UPDATE shows SET lastupdated_check = ${twoDaysAgo}, ended = false WHERE id=1`);
+      await client.query(`UPDATE shows SET lastupdated_check = ${twoDaysAgo}, ended = false WHERE id=2`);
+      const event: Message.Dragonstone.NextToUpdateEvent = {
+        limit: 1,
+        requestStack: []
+      };
+
+      // Act
+      const result = ((await handler.nextToUpdateHandler(
+        event,
+        createContext()
+      )) as any) as Message.Dragonstone.NextToUpdateResponse;
+
+      // Assert
+      expect(result).toEqual({
+        shows: []
+      });
+    });
+  });
+
+  describe('Update show meta data', () => {
+    test('Update metadata', async () => {
+      // Arrange
+      await client.query(`UPDATE shows SET lastupdated_check = 1, lastupdated = 1, update_disable = true WHERE id=1`);
+      const event: Message.Dragonstone.UpdateShowMetadataEvent = {
+        showId: 1,
+        metadata: {
+          disableUpdate: false,
+          lastupdate: 1000000000,
+          lastupdateCheck: 1000000001
+        },
+        requestStack: []
+      };
+
+      // Act
+      const result: Message.Dragonstone.UpdateShowMetadataResponse = (await handler.updateShowMetadataHandler(event, createContext())) as any;
+
+      // Assert
+      const dbResult = await client.query(`SELECT lastupdated_check, lastupdated, update_disable FROM shows WHERE id=1`);
+      expect(result).toBe(true);
+      expect(dbResult.rows[0]).toEqual({
+        lastupdated_check: 1000000001,
+        lastupdated: 1000000000,
+        update_disable: false
+      });
+    });
+
+    test('Only opdate lastupdate check ', async () => {
+      // Arrange
+      await client.query(`UPDATE shows SET lastupdated_check = 2, lastupdated = 3, update_disable = true WHERE id=1`);
+      const event: Message.Dragonstone.UpdateShowMetadataEvent = {
+        showId: 1,
+        metadata: {
+          lastupdateCheck: 1000000001
+        },
+        requestStack: []
+      };
+
+      // Act
+      const result: Message.Dragonstone.UpdateShowMetadataResponse = (await handler.updateShowMetadataHandler(event, createContext())) as any;
+
+      // Assert
+      const dbResult = await client.query(`SELECT lastupdated_check, lastupdated, update_disable FROM shows WHERE id=1`);
+      expect(result).toBe(true);
+      expect(dbResult.rows[0]).toEqual({
+        lastupdated_check: 1000000001,
+        lastupdated: 3,
+        update_disable: true
+      });
+    });
+  })
 
   describe('[GraphQL] Show', () => {
     test('Get a show', async () => {
@@ -915,72 +1095,6 @@ describe('Intergration test', () => {
               followers: 1,
               tvdbId: 81189,
               lastupdated: 1553807287
-            }
-          ]
-        }
-      });
-    });
-
-    test('Get list of the oldest updated shows', async () => {
-      // Arrange
-      const event = createGraphQlEvent(`{
-        oldestUpdatedShows(limit: 20) {
-          id
-          name
-          lastupdated
-          lastupdatedCheck
-        }
-      }`);
-
-      // Act
-      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
-
-      // Assert
-      expect(result.statusCode).toBe(200);
-      expect(JSON.parse(result.body)).toEqual({
-        data: {
-          oldestUpdatedShows: [
-            {
-              id: 2,
-              name: 'Breaking Bad',
-              lastupdated: 1553807287,
-              lastupdatedCheck: 1553807287,
-            },
-            {
-              id: 1,
-              name: 'Stranger Things',
-              lastupdated: 1555393924,
-              lastupdatedCheck: 1999999999,
-            }
-          ]
-        }
-      });
-    });
-
-    test('Get the oldest updated show', async () => {
-      // Arrange
-      const event = createGraphQlEvent(`{
-        oldestUpdatedShows(limit: 1) {
-          id
-          name
-          lastupdated
-          lastupdatedCheck
-        }
-      }`);
-
-      // Act
-      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
-
-      // Assert
-      expect(result.statusCode).toBe(200);
-      expect(JSON.parse(result.body)).toEqual({
-        data: {
-          oldestUpdatedShows: [
-            {
-              id: 2,
-              name: 'Breaking Bad',
-              lastupdated: 1553807287,
-              lastupdatedCheck: 1553807287,
             }
           ]
         }

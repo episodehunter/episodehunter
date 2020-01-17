@@ -5,12 +5,12 @@ import { ApolloServer } from 'apollo-server-lambda';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { config } from './config';
 import { createContext } from './context';
+import { createResolver, PgResolver } from './data-sources/pg';
 import { resolvers } from './resolvers/root';
 import { getFirebaseUidFromHeader } from './util/auth';
 import { createFirebase } from './util/firebase-app';
+import { createPostgresClient, DatabaseError, PgClient } from './util/pg';
 import { assertEpisodeNumber, assertEpisodes, assertShowId, assertShowInput } from './util/validate';
-import { createPostgresClient, PgClient, DatabaseError } from './util/pg';
-import { createResolver, PgResolver } from './data-sources/pg';
 
 const firebaseApp = createFirebase();
 let client: PgClient | undefined;
@@ -113,6 +113,20 @@ export const graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((e
 });
 
 /**
+ * Get a list of shows to update
+ */
+export const nextToUpdateHandler = gard<Message.Dragonstone.NextToUpdateEvent>(
+  async (event): Promise<Message.Dragonstone.NextToUpdateResponse> => {
+    const limit = Math.max(0, Math.min(event.limit || 50, 1000));
+
+    const shows = await getPgResolver().titles.nextToUpdate(limit);
+    return {
+      shows
+    };
+  }
+);
+
+/**
  * Update an existing show. Will however not update the episodes
  */
 export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
@@ -121,13 +135,29 @@ export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
       assertShowId(event.showId);
       assertShowInput(event.showInput);
     } catch (error) {
-      const e = new Error(`${error.message} For show: ${event.showId}. Event: ${JSON.stringify(event)}`)
+      const e = new Error(`${error.message} For show: ${event.showId}. Event: ${JSON.stringify(event)}`);
       e.stack = error.stack;
-      logger.captureException(e)
+      logger.captureException(e);
       return Promise.resolve(null);
     }
 
     return getPgResolver().show.updateShow(event.showId, event.showInput, logger);
+  }
+);
+
+/**
+ * Update metadata for an existing show.
+ */
+export const updateShowMetadataHandler = gard<Message.Dragonstone.UpdateShowMetadataEvent>(
+  (event, logger): Promise<Message.Dragonstone.UpdateShowMetadataResponse> => {
+    try {
+      assertShowId(event.showId);
+    } catch (error) {
+      logger.captureException(error);
+      return Promise.resolve(false);
+    }
+
+    return getPgResolver().show.updateShowMetadata(event.showId, event.metadata);
   }
 );
 
@@ -143,9 +173,9 @@ export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEven
       assertEpisodeNumber(event.lastEpisode);
       assertEpisodes(event.episodes);
     } catch (error) {
-      const e = new Error(`${error.message} For show: ${event.showId}. Event: ${JSON.stringify(event)}`)
+      const e = new Error(`${error.message} For show: ${event.showId}. Event: ${JSON.stringify(event)}`);
       e.stack = error.stack;
-      logger.captureException(e)
+      logger.captureException(e);
       return Promise.resolve(false);
     }
 

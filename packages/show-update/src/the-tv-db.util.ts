@@ -15,8 +15,12 @@ const theTvDb = new TheTvDb(config.theTvDbApiKey, {
 const tmdb = new Tmdb(config.tmdbApiKey);
 
 export const fetchShow = (theTvDbId: number, logger: Logger) => theTvDb.fetchShow(theTvDbId, msg => logger.log(msg));
-export const fetchShowEpisodes = (theTvDbId: number, logger: Logger) =>
-  theTvDb.fetchShowEpisodes(theTvDbId, undefined, msg => logger.log(msg));
+export const fetchShowEpisodes = (theTvDbId: number, logger: Logger) => theTvDb.fetchShowEpisodes(theTvDbId, msg => logger.log(msg));
+export const fetchLatestShowEpisodes = (theTvDbId: number, logger: Logger) => theTvDb.fetchLatestShowEpisodes(theTvDbId, 50, msg => logger.log(msg));
+
+/**
+ * Get all information there is about a show.
+ */
 export const getInformationFromTvDb = async (externalShowId: number, logger: Logger) => {
   const getShow = (id: number) => Promise.all([fetchShow(id, logger), fetchShowEpisodes(id, logger)]);
   try {

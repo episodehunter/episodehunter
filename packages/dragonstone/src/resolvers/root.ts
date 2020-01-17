@@ -29,10 +29,6 @@ const RootQuery: RootResolvers = {
   titles(root, args, context) {
     return context.pgResolver.titles.getTitles();
   },
-  oldestUpdatedShows(root, args, context) {
-    const limit = Math.min(args.limit, 1000);
-    return context.pgResolver.titles.oldestUpdatedShows(limit);
-  },
   async history(root, args, context) {
     const result = await context.pgResolver.history.getHistoryPage(context.getUid(), Math.max(args.page, 0));
     return result.map(watchedEpisode => ({ watchedEpisode }));

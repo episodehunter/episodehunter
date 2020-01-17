@@ -1,6 +1,6 @@
 import { Logger } from '@episodehunter/logger';
 import { Message, ShowId } from '@episodehunter/types';
-import { spreadInsert, sql } from 'squid/pg';
+import { spreadInsert, sql, spreadUpdate } from 'squid/pg';
 import { RootShow } from '../../../resolvers/type';
 import { PgClient } from '../../../util/pg';
 import { ShowRecord } from '../schema';
@@ -48,6 +48,24 @@ export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => 
       const newShow = mapShowInputToShow(showInput, showId);
       await client.query(update('shows', showId, newShow));
       return mapShow(newShow);
+    },
+    async updateShowMetadata(showId: number, metadataInput: Message.Dragonstone.ShowMetadata): Promise<boolean> {
+      const row: Partial<Pick<ShowRecord, 'lastupdated' | 'lastupdated_check' | 'update_disable'>> = {};
+      if (metadataInput.disableUpdate !== undefined) {
+        row.update_disable = metadataInput.disableUpdate;
+      }
+      if (metadataInput.lastupdate !== undefined) {
+        row.lastupdated = metadataInput.lastupdate;
+      }
+      if (metadataInput.lastupdateCheck !== undefined) {
+        row.lastupdated_check = metadataInput.lastupdateCheck;
+      }
+      if (Object.keys(row).length === 0) {
+        return false;
+      }
+      return client
+        .query<void>(sql`UPDATE shows SET ${spreadUpdate(row)} WHERE id=${showId} RETURNING id`)
+        .then(r => Boolean(r.rowCount));
     },
     async addShow(showInput: Message.Dragonstone.ShowInput, logger: Logger): Promise<RootShow> {
       const dbResult = await client.query<ShowRecord>(

@@ -1,17 +1,18 @@
 import { Logger } from '@episodehunter/logger';
 import { Message, ShowId } from '@episodehunter/types';
-import { groupArray } from '@episodehunter/utils';
+import { groupArray, unixTimestamp } from '@episodehunter/utils';
 import { fetchShow, fetchShowEpisodes, getInformationFromTvDb } from './the-tv-db.util';
 import { createPromiseBatch, sortEpisode } from './util';
-import { addShowRequest, updateEpisodesRequest, updateShowRequest } from './dragonstone.util';
+import { addShowRequest, updateEpisodesRequest, updateShowRequest, updateShowMetadataRequest } from './dragonstone.util';
 import { mapTheTvShowToDefinition, mapTheTvEpisodesToDefinition } from './mapper';
 
 export async function updateShow(event: Message.UpdateShow.UpdateShow.Event, logger: Logger, awsRequestId: string) {
   const updatingShow = fetchShow(event.tvdbId, logger)
     .then(show => mapTheTvShowToDefinition(show))
-    .then(showDef => {
+    .then(async showDef => {
       if (event.lastupdated >= showDef.lastupdate) {
         logger.log(`Show has not been updated since last update id:${event.id} lastupdated:${event.lastupdated} tvdb:lastupdate:${showDef.lastupdate}`)
+        await updateShowMetadataRequest(event.id, { lastupdateCheck: unixTimestamp() }, awsRequestId);
         return null;
       }
       return updateShowRequest(event.id, showDef, awsRequestId)

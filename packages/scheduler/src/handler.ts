@@ -3,7 +3,7 @@ import { TheTvDbUpdatedShowId } from '@episodehunter/thetvdb';
 import { Message } from '@episodehunter/types';
 import { unixTimestamp } from '@episodehunter/utils';
 import { config } from './config';
-import { getTitles, publishShowUpdate } from './dragonstone.util';
+import { getTitles, getShowsToUpdate, publishShowUpdate } from './dragonstone.util';
 import { theTvDb } from './the-tv-db.util';
 import { Title } from './types';
 
@@ -37,6 +37,14 @@ function findShowsToUpdate(
 }
 
 const guard = createGuard(config.sentryDns, config.logdnaKey);
+
+export const updateOldestShows = guard(async (_, logger) => {
+  logger.log('Start a mass update of the oldest shows to show-update');
+  const oldestShows = await getShowsToUpdate();
+  const result = await Promise.all(oldestShows.map(show => publishShowUpdate(show)));
+  logger.log('We are done with mass update of the oldest shows to show-update');
+  return result.length;
+});
 
 export const update = guard(async (_, logger, context) => {
   logger.log('Start a mass update of shows to show-update');

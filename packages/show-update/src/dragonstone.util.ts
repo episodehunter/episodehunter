@@ -76,3 +76,14 @@ export async function addShowRequest(showDef: Message.Dragonstone.ShowInput, aws
       return { id: result.ids.id };
     });
 }
+
+export async function updateShowMetadataRequest(showId: ShowId, metadata: Message.Dragonstone.ShowMetadata, awsRequestId: string): Promise<AWS.Lambda.Types.InvocationResponse> {
+  const event: Message.Dragonstone.UpdateShowMetadataEvent = { showId, metadata, requestStack: [awsRequestId] };
+  return lambda
+    .invoke({
+      FunctionName: config.updateShowDragonstoneFunctionName,
+      Payload: JSON.stringify(event),
+      InvocationType: 'Event'
+    })
+    .promise();
+}

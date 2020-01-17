@@ -36,7 +36,6 @@ export interface RootResolvers extends RootResolversKeys {
   titles: Resolver<void, void, Schema.Title[]>;
   history: Resolver<void, Schema.RootQueryHistoryArgs, RootHistory[]>;
   me: Resolver<void, void, Schema.User>;
-  oldestUpdatedShows: Resolver<void, Schema.RootQueryOldestUpdatedShowsArgs, Schema.Title[]>;
 }
 
 type ShowResolversKeys = {

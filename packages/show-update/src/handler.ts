@@ -1,5 +1,5 @@
 import { createGuard } from '@episodehunter/kingsguard';
-import { TooManyEpisodes, NotFound } from '@episodehunter/thetvdb';
+import { NotFound } from '@episodehunter/thetvdb';
 import { Message } from '@episodehunter/types';
 import { SNSEvent } from 'aws-lambda';
 import { config } from './config';
@@ -20,12 +20,12 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
   if (!ids.id || !ids.tvdbId || !ids.lastupdated) {
     throw new Error('theTvDbId, id or lastupdated is not a valid id: ' + message);
   }
-  logger.log(`Will update the show (id=${ids.id}, theTvDbId=${ids.tvdbId}) and associated epesodes`);
+  logger.log(`Will update the show ${ids.name} (id=${ids.id}, theTvDbId=${ids.tvdbId}) and associated epesodes`);
 
   try {
     return await updateShow(ids, logger, context.awsRequestId);
   } catch (error) {
-    if (error instanceof TooManyEpisodes || error instanceof InsufficientShowInformation || error instanceof NotFound) {
+    if (error instanceof InsufficientShowInformation || error instanceof NotFound) {
       error.message += ` For show ${ids.id}, ${ids.tvdbId}`;
       logger.captureException(error);
       return Promise.resolve('Error but OK: ' + error.message);

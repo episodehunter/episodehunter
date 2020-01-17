@@ -29,6 +29,12 @@ functions:
   updateEpisodes:
     timeout: 10
     handler: handler.updateEpisodesHandler
+  nextToUpdate:
+    timeout: 10
+    handler: handler.nextToUpdateHandler
+  updateShowMetadata:
+    timeout: 10
+    handler: handler.updateShowMetadataHandler
   addShow:
     timeout: 10
     handler: handler.addShowHandler

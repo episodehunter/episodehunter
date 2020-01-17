@@ -7,6 +7,11 @@ export interface Event {
   id: ShowId;
   tvdbId: number;
   /**
+   * Old name of the show
+   * Using primarily in debug purpose
+   */
+  name?: string;
+  /**
    * Unixtimestamp
    */
   lastupdated: number;

@@ -5,5 +5,4 @@ type Title {
   followers: Int!
   tvdbId: Int!
   lastupdated: Int!
-  lastupdatedCheck: Int!
 }

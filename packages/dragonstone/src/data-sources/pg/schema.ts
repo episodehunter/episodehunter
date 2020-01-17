@@ -51,6 +51,8 @@ const showTable = defineTable('shows', {
   lastupdated_check: Schema.Number,
   /** Last (unix)time the show was updated */
   lastupdated: Schema.Number,
+  /** Determines if the show should get updateds not not */
+  update_disable: Schema.Boolean,
   name: Schema.String,
   network: Schema.nullable(Schema.String),
   overview: Schema.nullable(Schema.String),
@@ -62,8 +64,7 @@ const titleTable = defineTable('titles', {
   name: Schema.String,
   external_id_tvdb: Schema.Number,
   lastupdated: Schema.Number,
-  followers: Schema.Number,
-  lastupdated_check: Schema.Number,
+  followers: Schema.Number
 });
 
 const usersTable = defineTable('users', {
