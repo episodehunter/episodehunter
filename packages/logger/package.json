@@ -30,7 +30,7 @@
     "typescript": "3.7.5"
   },
   "engines": {
-    "node": "10.x"
+    "node": "12.x"
   },
   "prettier": {
     "singleQuote": true,
