@@ -27,5 +27,8 @@
   "homepage": "https://github.com/episodehunter/episodehunter#readme",
   "devDependencies": {
     "lerna": "3.20.2"
+  },
+  "dependencies": {
+    "serverless": "^1.61.2"
   }
 }
