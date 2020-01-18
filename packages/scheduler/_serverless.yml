@@ -27,6 +27,6 @@ package:
 
 functions:
   showupdater:
-    handler: handler.update
+    handler: handler.updateOldestShows
     events:
-      - schedule: rate(2 hours)
+      - schedule: rate(15 minutes)
