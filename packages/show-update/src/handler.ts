@@ -26,7 +26,7 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
     return await updateShow(ids, logger, context.awsRequestId);
   } catch (error) {
     if (error instanceof InsufficientShowInformation || error instanceof NotFound) {
-      error.message += ` For show ${ids.id}, ${ids.tvdbId}`;
+      error.message += ` For show ${ids.name}. id=${ids.id}, tvdbId=${ids.tvdbId}`;
       logger.captureException(error);
       return Promise.resolve('Error but OK: ' + error.message);
     }
