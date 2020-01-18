@@ -13,11 +13,17 @@ provider:
   environment: ${self:custom.env}
   timeout: 20
   iamRoleStatements:
+    - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
     - Effect: 'Allow'
       Action:
         - 'sns:Publish'
       Resource:
         - ${self:custom.env.EH_SNS_UPDATE_SHOW}
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: 'arn:aws:lambda:us-east-1:*:function:*'
 
 package:
   include:
