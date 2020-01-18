@@ -131,6 +131,7 @@ export const nextToUpdateHandler = gard<Message.Dragonstone.NextToUpdateEvent>(
  */
 export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
   (event, logger): Promise<Message.Dragonstone.UpdateShowResponse> => {
+    logger.log(`Will update show: ${event?.showInput?.name}`);
     try {
       assertShowId(event.showId);
       assertShowInput(event.showInput);
@@ -150,6 +151,7 @@ export const updateShowHandler = gard<Message.Dragonstone.UpdateShowEvent>(
  */
 export const updateShowMetadataHandler = gard<Message.Dragonstone.UpdateShowMetadataEvent>(
   (event, logger): Promise<Message.Dragonstone.UpdateShowMetadataResponse> => {
+    logger.log(`Will update show metadata for show: ${event?.showId}`);
     try {
       assertShowId(event.showId);
     } catch (error) {
@@ -167,6 +169,7 @@ export const updateShowMetadataHandler = gard<Message.Dragonstone.UpdateShowMeta
  */
 export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEvent>(
   (event, logger): Promise<Message.Dragonstone.UpdateEpisodesResponse> => {
+    logger.log(`Will update ${event?.episodes?.length} number of episodes`);
     try {
       assertShowId(event.showId);
       assertEpisodeNumber(event.firstEpisode);
@@ -194,6 +197,7 @@ export const updateEpisodesHandler = gard<Message.Dragonstone.UpdateEpisodesEven
  */
 export const addShowHandler = gard<Message.Dragonstone.AddShowEvent>(
   (event, logger): Promise<Message.Dragonstone.AddShowResponse> => {
+    logger.log(`Will add a new show: ${event?.showInput?.name}`);
     if (!event.showInput) {
       throw new Error(`event.showInput do not exist. Event: ${JSON.stringify(event)}`);
     }
