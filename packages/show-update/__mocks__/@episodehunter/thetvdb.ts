@@ -62,4 +62,5 @@ export const fetchShowEpisodes = jest.fn((_: /*theTvDbId*/ number) =>
 export class TheTvDb {
   fetchShow = fetchShow;
   fetchShowEpisodes = fetchShowEpisodes;
+  fetchLatestShowEpisodes = fetchShowEpisodes;
 }

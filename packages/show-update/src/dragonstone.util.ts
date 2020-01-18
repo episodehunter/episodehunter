@@ -81,7 +81,7 @@ export async function updateShowMetadataRequest(showId: ShowId, metadata: Messag
   const event: Message.Dragonstone.UpdateShowMetadataEvent = { showId, metadata, requestStack: [awsRequestId] };
   return lambda
     .invoke({
-      FunctionName: config.updateShowDragonstoneFunctionName,
+      FunctionName: config.updateShowMetadataDragonstoneFunctionName,
       Payload: JSON.stringify(event),
       InvocationType: 'Event'
     })

@@ -6,6 +6,7 @@ interface Config {
   snsUpdateShow: string;
   addShowDragonstoneFunctionName: string;
   updateShowDragonstoneFunctionName: string;
+  updateShowMetadataDragonstoneFunctionName: string;
   updateEpisodesDragonstoneFunctionName: string;
 }
 
@@ -18,6 +19,7 @@ function createProdConfig(): Config {
     snsUpdateShow: process.env.EH_SNS_UPDATE_SHOW!,
     addShowDragonstoneFunctionName: process.env.ADD_SHOW_DRAGONSTONE_FUNCTION_NAME!,
     updateShowDragonstoneFunctionName: process.env.UPDATE_SHOW_DRAGONSTONE_FUNCTION_NAME!,
+    updateShowMetadataDragonstoneFunctionName: process.env.UPDATE_SHOW_METADATA_DRAGONSTONE_FUNCTION_NAME!,
     updateEpisodesDragonstoneFunctionName: process.env.UPDATE_EPISODES_DRAGONSTONE_FUNCTION_NAME!
   };
 }
@@ -31,6 +33,7 @@ function createTestConfig() {
     snsUpdateShow: 'EH_SNS_UPDATE_SHOW',
     addShowDragonstoneFunctionName: 'ADD_SHOW_DRAGONSTONE_FUNCTION_NAME',
     updateShowDragonstoneFunctionName: 'UPDATE_SHOW_DRAGONSTONE_FUNCTION_NAME',
+    updateShowMetadataDragonstoneFunctionName: 'UPDATE_SHOW_METADATA_DRAGONSTONE_FUNCTION_NAME',
     updateEpisodesDragonstoneFunctionName: 'UPDATE_EPISODES_DRAGONSTONE_FUNCTION_NAME'
   };
 }
