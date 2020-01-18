@@ -1,6 +1,6 @@
 {
   "name": "image-proxy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/index.js",
   "private": true,
@@ -36,9 +36,9 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
-    "@episodehunter/kingsguard": "^5.0.3",
-    "@episodehunter/logger": "^4.1.6",
-    "@episodehunter/thetvdb": "^3.2.0",
+    "@episodehunter/kingsguard": "^5.0.4",
+    "@episodehunter/logger": "^4.1.7",
+    "@episodehunter/thetvdb": "^4.0.0",
     "sharp": "0.23.4"
   },
   "prettier": {
