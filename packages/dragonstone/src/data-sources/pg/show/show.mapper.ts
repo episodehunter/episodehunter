@@ -49,6 +49,7 @@ export function mapShowInputToShow(
     genre: showInput.genre,
     lastupdated: showInput.lastupdate,
     lastupdated_check: showInput.lastupdateCheck || unixTimestamp(),
+    update_disable: false,
     name: showInput.name,
     runtime: showInput.runtime
   };
