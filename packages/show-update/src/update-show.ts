@@ -1,7 +1,7 @@
 import { Logger } from '@episodehunter/logger';
 import { Message, ShowId } from '@episodehunter/types';
 import { groupArray, unixTimestamp } from '@episodehunter/utils';
-import { fetchShow, fetchShowEpisodes, getInformationFromTvDb } from './the-tv-db.util';
+import { fetchShow, getInformationFromTvDb, fetchLatestShowEpisodes } from './the-tv-db.util';
 import { createPromiseBatch, sortEpisode } from './util';
 import { addShowRequest, updateEpisodesRequest, updateShowRequest, updateShowMetadataRequest } from './dragonstone.util';
 import { mapTheTvShowToDefinition, mapTheTvEpisodesToDefinition } from './mapper';
@@ -18,7 +18,7 @@ export async function updateShow(event: Message.UpdateShow.UpdateShow.Event, log
       return updateShowRequest(event.id, showDef, awsRequestId)
     });
 
-  const updatingEpisodes = fetchShowEpisodes(event.tvdbId, logger)
+  const updatingEpisodes = fetchLatestShowEpisodes(event.tvdbId, logger)
     .then(episodes => mapTheTvEpisodesToDefinition(episodes))
     .then(episodes => {
       sortEpisode(episodes);
