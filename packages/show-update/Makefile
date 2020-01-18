@@ -4,22 +4,13 @@ compile: clean
 	npm run build;
 	cp package-lock.json env.yml package.json dist;
 	cp _serverless.yml dist/serverless.yml;
-	docker run --rm --volume ${PWD}/dist:/build tjoskar/awsnode:10 npm install --production;
+	docker run --rm --volume ${PWD}/dist:/build tjoskar/awsnode:12 npm install --production;
 
 deploy: compile
-	cd dist; serverless deploy
-
-deploy-update: compile
-	cd dist; serverless deploy --function update
-
-deploy-add: compile
-	cd dist; serverless deploy --function add
-
-deployfunctions: compile
-	cd dist; serverless deploy --function update && serverless deploy --function add
+	cd dist; npx serverless deploy
 
 package: compile
-	cd dist; serverless package
+	cd dist; npx serverless package
 
 clean:
 	if [ -d "dist" ]; then rm -r dist; fi

@@ -13,7 +13,6 @@ provider:
   environment: ${self:custom.env}
   timeout: 20
   iamRoleStatements:
-    - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
     - Effect: 'Allow'
       Action:
         - 'sns:Publish'

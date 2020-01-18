@@ -7,13 +7,10 @@ compile: clean
 	docker run --rm --volume ${PWD}/dist:/build tjoskar/awsnode:12 npm install --production;
 
 deploy: compile
-	cd dist; serverless deploy
-
-deployfunctions: compile
-	cd dist; serverless deploy --function thetvdb && serverless deploy --function showupdater
+	cd dist; npx serverless deploy
 
 package: compile
-	cd dist; serverless package
+	cd dist; npx serverless package
 
 clean:
 	if [ -d "dist" ]; then rm -r dist; fi
