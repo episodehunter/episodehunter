@@ -23,6 +23,9 @@
                 },
                 {
                         "path": "packages/kingsguard"
+                },
+                {
+                        "path": "packages/image-proxy"
                 }
         ],
         "settings": {
