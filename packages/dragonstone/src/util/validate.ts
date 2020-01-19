@@ -1,20 +1,20 @@
 import { Message, ShowId } from '@episodehunter/types';
 
-const knownShowProps: { [key in keyof Message.Dragonstone.ShowInput]: string[] } = {
-  tvdbId: ['number'],
-  imdbId: ['string', 'undefined'],
-  name: ['string'],
-  airsDayOfWeek: ['number', 'undefined'],
-  airsTime: ['string', 'undefined'],
-  firstAired: ['string', 'undefined'],
-  genre: ['object'],
-  language: ['string', 'undefined'],
-  network: ['string', 'undefined'],
-  overview: ['string', 'undefined'],
-  runtime: ['number'],
-  ended: ['boolean'],
-  lastupdate: ['number'],
-  lastupdateCheck: ['number', 'undefined'],
+const knownShowProps: { [key in keyof Required<Message.Dragonstone.ShowInput>]: [string[], number?] } = {
+  tvdbId: [['number'], 2147483647],
+  imdbId: [['string', 'undefined'], 10],
+  name: [['string']],
+  airsDayOfWeek: [['number', 'undefined'], 6],
+  airsTime: [['string', 'undefined'], 10],
+  firstAired: [['string', 'undefined'], 10],
+  genre: [['object']],
+  language: [['string', 'undefined']],
+  network: [['string', 'undefined']],
+  overview: [['string', 'undefined']],
+  runtime: [['number'], 1000],
+  ended: [['boolean']],
+  lastupdate: [['number'], 2147483647],
+  lastupdateCheck: [['number', 'undefined'], 2147483647],
 };
 
 const knownEpisodeProps: { [key in keyof Message.Dragonstone.EpisodeInput]: string[] } = {
@@ -33,19 +33,27 @@ export function assertShowInput(input: Message.Dragonstone.ShowInput) {
       throw new TypeError(`${key} is not a valid key for a show`);
     }
   });
-  Object.entries(knownShowProps).forEach(([key, values]) => {
-    const validType = values!.some(type => {
+  Object.entries(knownShowProps).forEach(([key, [expectedTypes, maxLength]]) => {
+    const value = input[key as keyof Message.Dragonstone.ShowInput];
+    const validType = expectedTypes.some(type => {
       if (type === 'undefined') {
-        return input[key as keyof Message.Dragonstone.ShowInput] == null; // accept null or undefined
+        return value == null; // accept null or undefined
       }
-      return typeof input[key as keyof Message.Dragonstone.ShowInput] === type;
+      return typeof value === type;
     });
     if (!validType) {
       throw new TypeError(
-        `Expected type ${values!.join(' or ')} for ${key} but got ${printType(
-          input[key as keyof Message.Dragonstone.ShowInput]
+        `Expected type ${expectedTypes.join(' or ')} for ${key} but got ${printType(
+          value
         )} for show`
       );
+    }
+    if (typeof value === 'number' && isNaN(value)) {
+      throw new TypeError(`${key} is NaN but must be a value`);
+    } else if (typeof value === 'number' && maxLength && value > maxLength) {
+      throw new TypeError(`${key} must be max ${maxLength} but it is ${value}`);
+    } else if (typeof value === 'string' && maxLength && value.length > maxLength) {
+      throw new TypeError(`${key} must have a lengt of max ${maxLength} but it is ${value.length} (${value})`);
     }
   });
   const validGenre = input.genre?.every(g => typeof g === 'string');

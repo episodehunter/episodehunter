@@ -68,6 +68,69 @@ describe('Validate show', () => {
     // Act and assert
     expect(() => assertShowInput(showInput as any)).toThrow('airs is not a valid key for a show');
   });
+
+  test('Show with long airs time time is not valid', () => {
+    // Arrange
+    const showInput = {
+      tvdbId: 123,
+      imdbId: 'tt123',
+      name: 'Some show',
+      airsTime: '2018-02-011',
+      firstAired: '',
+      genre: ['action', 'drama'],
+      language: 'sv',
+      network: '',
+      overview: 'some overview',
+      runtime: 12,
+      ended: true,
+      lastupdate: 12
+    };
+
+    // Act and assert
+    expect(() => assertShowInput(showInput as any)).toThrow('airsTime must have a lengt of max 10 but it is 11 (2018-02-011)');
+  });
+
+  test('Show with NaN value is not valid', () => {
+    // Arrange
+    const showInput = {
+      tvdbId: 123,
+      imdbId: 'tt123',
+      name: 'Some show',
+      airsTime: '2018-02-01',
+      firstAired: '',
+      genre: ['action', 'drama'],
+      language: 'sv',
+      network: '',
+      overview: 'some overview',
+      runtime: NaN,
+      ended: true,
+      lastupdate: 12
+    };
+
+    // Act and assert
+    expect(() => assertShowInput(showInput as any)).toThrow('runtime is NaN but must be a value');
+  });
+
+  test('Show with long imdb id is not valid', () => {
+    // Arrange
+    const showInput = {
+      tvdbId: 123,
+      imdbId: 'tt123456789',
+      name: 'Some show',
+      airsTime: '2018-02-01',
+      firstAired: '',
+      genre: ['action', 'drama'],
+      language: 'sv',
+      network: '',
+      overview: 'some overview',
+      runtime: 4,
+      ended: true,
+      lastupdate: 12
+    };
+
+    // Act and assert
+    expect(() => assertShowInput(showInput as any)).toThrow('imdbId must have a lengt of max 10 but it is 11 (tt123456789)');
+  });
 });
 
 describe('Validate episode', () => {
