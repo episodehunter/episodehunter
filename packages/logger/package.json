@@ -25,7 +25,7 @@
     "logdna": "^3.3.3"
   },
   "devDependencies": {
-    "@types/aws-lambda": "8.10.39",
+    "@types/aws-lambda": "8.10.40",
     "@types/node": "12.12.21",
     "typescript": "3.7.5"
   },
