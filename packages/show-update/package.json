@@ -17,7 +17,7 @@
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.39",
+    "@types/aws-lambda": "8.10.40",
     "@types/jest": "24.9.0",
     "aws-sdk": "2.606.0",
     "jest": "24.9.0",
