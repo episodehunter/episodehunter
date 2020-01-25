@@ -28,7 +28,7 @@
     "@types/aws-lambda": "8.10.40",
     "@types/jest": "24.9.1",
     "@types/node": "12.12.21",
-    "@types/sharp": "0.23.1",
+    "@types/sharp": "0.24.0",
     "aws-sdk": "2.610.0",
     "jest": "25.1.0",
     "simple-spy": "3.0.1",
@@ -39,7 +39,7 @@
     "@episodehunter/kingsguard": "^5.0.4",
     "@episodehunter/logger": "^4.1.7",
     "@episodehunter/thetvdb": "^4.0.0",
-    "sharp": "0.23.4"
+    "sharp": "0.24.0"
   },
   "prettier": {
     "singleQuote": true,
