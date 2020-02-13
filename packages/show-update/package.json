@@ -19,7 +19,7 @@
   "devDependencies": {
     "@types/aws-lambda": "8.10.40",
     "@types/jest": "24.9.1",
-    "aws-sdk": "2.617.0",
+    "aws-sdk": "2.618.0",
     "jest": "25.1.0",
     "ts-jest": "25.2.0",
     "typescript": "3.7.5"
