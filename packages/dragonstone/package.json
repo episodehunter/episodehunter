@@ -33,7 +33,7 @@
     "tslib": "1.10.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "8.10.41",
+    "@types/aws-lambda": "8.10.42",
     "@types/dockerode": "2.5.23",
     "@types/jest": "24.9.1",
     "@types/node": "12.12.21",
