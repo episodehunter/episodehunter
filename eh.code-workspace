@@ -1,34 +1,43 @@
 {
-        "folders": [
-                {
-                        "path": "packages/dragonstone"
-                },
-                {
-                        "path": "packages/types"
-                },
-                {
-                        "path": "packages/scheduler"
-                },
-                {
-                        "path": "packages/utils"
-                },
-                {
-                        "path": "packages/show-update"
-                },
-                {
-                        "path": "packages/thetvdb"
-                },
-                {
-                        "path": "packages/logger"
-                },
-                {
-                        "path": "packages/kingsguard"
-                },
-                {
-                        "path": "packages/image-proxy"
-                }
-        ],
-        "settings": {
-                "typescript.tsdk": "show-update/node_modules/typescript/lib"
-        }
+  "folders": [
+    {
+      "path": "packages/dragonstone"
+    },
+    {
+      "path": "packages/types"
+    },
+    {
+      "path": "packages/scheduler"
+    },
+    {
+      "path": "packages/utils"
+    },
+    {
+      "path": "packages/show-update"
+    },
+    {
+      "path": "packages/thetvdb"
+    },
+    {
+      "path": "packages/logger"
+    },
+    {
+      "path": "packages/kingsguard"
+    },
+    {
+      "path": "packages/image-proxy"
+    },
+    {
+      "path": "packages/hugin"
+    },
+    {
+      "path": "."
+    },
+    {
+      "path": "packages/scrobble"
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "utils/node_modules/typescript/lib"
+  }
 }

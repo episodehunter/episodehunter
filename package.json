@@ -5,8 +5,12 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types",
-    "test:intergration": "lerna run --stream --scope dragonstone test:all"
+    "bootstrap": "lerna bootstrap",
+    "test": "lerna run test --ignore @episodehunter/logger --ignore @episodehunter/types --ignore @episodehunter/hugin",
+    "test:intergration": "lerna run --stream --scope dragonstone test:all",
+    "check": "npm run clean && npm run bootstrap && npm run test",
+    "publish": "npm run check && npx lerna publish --allow-branch master",
+    "clean": "rm -rf packages/*/dist"
   },
   "engines": {
     "node": ">=10.0.0 <11.0.0"
