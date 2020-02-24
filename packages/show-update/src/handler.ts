@@ -9,6 +9,7 @@ import { addShow, updateShow } from './update-show';
 const guard = createGuard(config.sentryDsn, config.logdnaKey);
 
 export const update = guard<SNSEvent>(async (event, logger, context) => {
+  logger.track({ type: 'event', category: 'show-update', action: 'update' });
   const message = event.Records[0].Sns.Message;
   let ids: Message.UpdateShow.UpdateShow.Event;
   try {
@@ -36,6 +37,7 @@ export const update = guard<SNSEvent>(async (event, logger, context) => {
 
 export const add = guard<Message.UpdateShow.AddShow.Event>(
   async (event, logger, context): Promise<Message.UpdateShow.AddShow.Response> => {
+    logger.track({ type: 'event', category: 'show-add', action: 'add' });
     const theTvDbId = event.theTvDbId | 0;
 
     logger.log(`Will add the show with theTvDbId: ${theTvDbId} and associated epesodes`);

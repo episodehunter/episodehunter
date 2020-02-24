@@ -5,7 +5,7 @@ import { getShowsToUpdate, publishShowUpdate } from './dragonstone.util';
 const guard = createGuard(config.sentryDns, config.logdnaKey);
 
 export const updateOldestShows = guard(async (_, logger, contenxt) => {
-  logger.track({ type: 'event', category: 'show-update', action: 'start mass update' });
+  logger.track({ type: 'event', category: 'schedular-show-update', action: 'start mass update' });
   logger.log('Start a mass update of the oldest shows to show-update');
   const oldestShows = await getShowsToUpdate(contenxt.awsRequestId);
   if (oldestShows.length === 0) {
