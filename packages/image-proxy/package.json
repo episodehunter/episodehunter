@@ -39,7 +39,7 @@
     "@episodehunter/kingsguard": "^5.1.0",
     "@episodehunter/logger": "^4.2.0",
     "@episodehunter/thetvdb": "^4.0.1",
-    "sharp": "0.24.0"
+    "sharp": "0.24.1"
   },
   "prettier": {
     "singleQuote": true,
