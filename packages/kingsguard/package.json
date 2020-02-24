@@ -1,6 +1,6 @@
 {
   "name": "@episodehunter/kingsguard",
-  "version": "5.0.4",
+  "version": "5.1.0",
   "description": "Kingsguard for episodehunter",
   "main": "dist/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "semi": false
   },
   "devDependencies": {
-    "@episodehunter/logger": "^4.1.7",
+    "@episodehunter/logger": "^4.2.0",
     "@types/aws-lambda": "8.10.44",
     "@types/jest": "24.9.1",
     "@types/node": "12.12.21",
