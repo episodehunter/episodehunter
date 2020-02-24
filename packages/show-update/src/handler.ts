@@ -6,7 +6,7 @@ import { config } from './config';
 import { InsufficientShowInformation } from './custom-erros';
 import { addShow, updateShow } from './update-show';
 
-const guard = createGuard(config.sentryDsn, config.logdnaKey);
+const guard = createGuard(config.sentryDsn, config.logdnaKey, config.trackingId);
 
 export const update = guard<SNSEvent>(async (event, logger, context) => {
   logger.track({ type: 'event', category: 'show-update', action: 'update' });

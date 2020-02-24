@@ -1,4 +1,5 @@
 interface Config {
+  trackingId: string;
   sentryDsn: string;
   logdnaKey: string;
   theTvDbApiKey: string;
@@ -12,6 +13,7 @@ interface Config {
 
 function createProdConfig(): Config {
   return {
+    trackingId: process.env.GA_TRACKING_ID!,
     sentryDsn: process.env.AWS_SENTRY_DSN!,
     logdnaKey: process.env.LOGDNA_KEY!,
     theTvDbApiKey: process.env.THE_TV_DB_API_KEY!,
@@ -26,6 +28,7 @@ function createProdConfig(): Config {
 
 function createTestConfig() {
   return {
+    trackingId: '',
     sentryDsn: 'sentry-dsn',
     logdnaKey: 'LOGDNA_KEY',
     theTvDbApiKey: 'THE_TV_DB_API_KEY',

@@ -2,7 +2,7 @@ import { createGuard } from '@episodehunter/kingsguard';
 import { config } from './config';
 import { getShowsToUpdate, publishShowUpdate } from './dragonstone.util';
 
-const guard = createGuard(config.sentryDns, config.logdnaKey);
+const guard = createGuard(config.sentryDns, config.logdnaKey, config.trackingId);
 
 export const updateOldestShows = guard(async (_, logger, contenxt) => {
   logger.track({ type: 'event', category: 'schedular-show-update', action: 'start mass update' });

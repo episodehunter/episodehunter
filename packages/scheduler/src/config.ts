@@ -1,9 +1,11 @@
 function assertEnv() {
-  ['AWS_SENTRY_DSN', 'LOGDNA_KEY', 'EH_SNS_UPDATE_SHOW', 'NEXT_TO_UPDATE_DRAGONSTONE_FUNCTION_NAME'].forEach(env => {
-    if (!process.env[env]) {
-      throw new Error('Can not read process.env.' + env);
+  ['AWS_SENTRY_DSN', 'LOGDNA_KEY', 'EH_SNS_UPDATE_SHOW', 'NEXT_TO_UPDATE_DRAGONSTONE_FUNCTION_NAME', 'GA_TRACKING_ID'].forEach(
+    env => {
+      if (!process.env[env]) {
+        throw new Error('Can not read process.env.' + env);
+      }
     }
-  });
+  );
 }
 
 function createConfig() {
@@ -11,6 +13,7 @@ function createConfig() {
     assertEnv();
   }
   return {
+    trackingId: process.env.GA_TRACKING_ID!,
     sentryDns: process.env.AWS_SENTRY_DSN!,
     logdnaKey: process.env.LOGDNA_KEY!,
     updateShowQueueName: process.env.EH_SNS_UPDATE_SHOW!,
