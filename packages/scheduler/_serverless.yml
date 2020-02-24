@@ -34,4 +34,4 @@ functions:
   showupdater:
     handler: handler.updateOldestShows
     events:
-      - schedule: rate(15 minutes)
+      - schedule: rate(30 minutes)

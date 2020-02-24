@@ -3,22 +3,21 @@
 Scheduler for show update and insertions.
 
 ```
-   +--------------------------+
-   | Emit event every 2 hours |
-   +------------+-------------+
+   +-----------------------------+
+   | Emit event every 30 minutes |
+   +------------+----------------+
                 |
                 |
                 v
 +-----------------------------------+
-| Fetch updated shows from TheTvDB  |
-| Fetch all titels from Dragonstone |
-| Compare and decide what to update |
+| Fetch the ten oldes shows from    |
+| Dragonstone                       |
 +----------------+------------------+
                  |
                  |
                  v
  +---------------+---------------+
- | Emit event to show-update for |
- | every show and episode list   |
+ | Emit a new event to           |
+ | show-update for each show     |
  +-------------------------------+
 ```
