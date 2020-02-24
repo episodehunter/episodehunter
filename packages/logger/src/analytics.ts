@@ -1,13 +1,22 @@
 import fetch from 'node-fetch';
 
-export type TrackEvent = {
+type Event = {
+  userAgent?: string;
+  cid?: number;
   category: string;
   action: string;
-  label: string;
-  value: string;
-  type?: 'event' | 'screenview' | 'pageview' | 'transaction' | 'item' | 'social' | 'exception' | 'timing';
-  cid?: string
+  type: 'event';
 }
+
+type PageViewEvent = {
+  userAgent?: string;
+  cid?: number;
+  url: string;
+  title?: string;
+  type: 'pageview';
+}
+
+export type TrackEvent = Event | PageViewEvent;
 
 export interface Analytics {
   trackEvent(event: TrackEvent): Promise<void>;
@@ -16,32 +25,44 @@ export interface Analytics {
 export function createAnalytics(trackId?: string): Analytics {
   return {
     trackEvent(event): Promise<void> {
-      const data = {
-        // API Version.
-        v: '1',
-        // Tracking ID / Property ID.
+      if (!trackId) {
+        return Promise.resolve();
+      }
+      let data: Record<string, string | number> = {
+        v: 1,
         tid: trackId,
-        // Anonymous Client Identifier. Ideally, this should be a UUID that
-        // is associated with particular user, device, or browser instance.
-        cid: event.cid,
-        // Event hit type.
-        t: event.type,
-        // Event category.
-        ec: event.category,
-        // Event action.
-        ea: event.action,
-        // Event label.
-        el: event.label,
-        // Event value.
-        ev: event.value
+        cid: event.cid || 555
       };
+      if (event.type === 'event') {
+        Object.assign(data, {
+          t: event.type,
+          ec: event.category,
+          ea: event.action
+        });
+      } else if (event.type === 'pageview') {
+        Object.assign(data, {
+          t: event.type,
+          dt: event.title,
+          dp: event.url
+        });
+      }
 
-      return fetch('http://www.google-analytics.com/collect', {
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'POST'
+      const payload = Object.entries(data).reduce((payload, [key, value]) => {
+        if (value == null) {
+          return payload;
+        }
+        return payload + '&' + key + '=' + encodeURIComponent(value);
+      }, '');
+
+      const headers: Record<string, string> = {};
+      if (event.userAgent) {
+        headers['User-Agent'] = event.userAgent;
+      }
+
+      return fetch('https://www.google-analytics.com/collect', {
+        body: payload,
+        method: 'POST',
+        headers
       }).then(
         () => undefined,
         () => undefined
