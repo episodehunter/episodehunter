@@ -1,0 +1,31 @@
+service: hugin
+
+custom:
+  stage: '${opt:stage, self:provider.stage}'
+  env: ${file(env.yml):${self:custom.stage}}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: prod
+  region: us-east-1
+  versionFunctions: false
+  environment: ${self:custom.env}
+  timeout: 10
+
+package:
+  include:
+    - node_modules/**
+  exclude:
+    - env.yml
+
+functions:
+  hugin:
+    handler: handler.handler
+    events:
+      - http:
+          path: hugin
+          method: post
+          cors:
+            origin: '*'
+            maxAge: 86400

@@ -1,0 +1,40 @@
+{
+  "name": "hugin",
+  "version": "1.0.0",
+  "description": "Analytics for episodehunter",
+  "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episodehunter/episodehunter.git"
+  },
+  "keywords": [
+    "serverless",
+    "episodehunter"
+  ],
+  "bugs": {
+    "url": "https://github.com/episodehunter/episodehunter/issues"
+  },
+  "homepage": "https://github.com/episodehunter/episodehunter#readme",
+  "author": "tjoskar <kontakta@oskarkarlsson.nu>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.39",
+    "@types/node": "12.12.21",
+    "aws-sdk": "2.606.0",
+    "typescript": "3.7.5"
+  },
+  "dependencies": {
+    "@episodehunter/kingsguard": "5.0.4",
+    "@episodehunter/logger": "4.1.7"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 130
+  }
+}

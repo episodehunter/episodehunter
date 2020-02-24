@@ -3,8 +3,8 @@ import { Context } from 'aws-lambda'
 
 type EventType = { [key: string]: any }
 
-function createGuard(ravenDsn?: string, logdnaKey?: string, _setupLogger = setupLogger) {
-  const createLogger = _setupLogger(ravenDsn, logdnaKey)
+function createGuard(ravenDsn?: string, logdnaKey?: string, trackId?: string, _setupLogger = setupLogger) {
+  const createLogger = _setupLogger(ravenDsn, logdnaKey, trackId)
   return function guard<T extends EventType>(
     fun: (event: T, logger: Logger, context: Context) => Promise<unknown>
   ) {

@@ -15,7 +15,7 @@ beforeEach(() => {
 test('Set up logger', async () => {
   // Arrange
   const setupLogger = spy((logdnaKey: string, sentry: string) => () => ({ flush: () => {} }))
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const fun = (event: any, logger: any, context: any) => Promise.resolve(null)
   const awsFun = guard(fun)
 
@@ -36,7 +36,7 @@ test('Pass args to lambda', async () => {
     captureException: () => {},
     flush: () => {}
   }))
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const mockEvenet = { id: 1 }
   const fun = (event: any, logger: any, cnx: any) => {
     expect(event).toBe(mockEvenet)
@@ -57,7 +57,7 @@ test('Pass the result to the callback', async () => {
     log: () => {},
     flush: () => {}
   }))
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const mockEvenet = { id: 1 }
   const myResult = { id: 1 }
   const fun = (event: any, logger: any, cnx: any) => {
@@ -77,7 +77,7 @@ test('Capture exception on failure', async () => {
     captureException,
     flush: () => {}
   })
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const mockEvenet = { id: 1 }
   const myError = new Error('Random error')
   const fun = (event: any, logger: any, cnx: any) => {
@@ -104,7 +104,7 @@ test('Capture a timeout error before timeout', async () => {
     captureException,
     flush: () => {}
   })
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const fun = (event: any, logger: any, cnx: any) => {
     return new Promise(resolve => {
       setTimeout(resolve, timeoutTime + 1)
@@ -134,7 +134,7 @@ test('Extract request stack from header', async () => {
     flush: () => {}
   }))
   const setupLogger = spy(() => createLogger)
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const fun = (event: any, logger: any, context: any) => Promise.resolve()
   const awsFun = guard(fun)
   const event = {
@@ -158,7 +158,7 @@ test('Extract request stack from event', async () => {
     flush: () => {}
   }))
   const setupLogger = spy(() => createLogger)
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const fun = (event: any, logger: any, context: any) => Promise.resolve()
   const awsFun = guard(fun)
   const event = {
@@ -179,7 +179,7 @@ test('Parse JSON event', async () => {
   const setupLogger = () => () => ({
     flush: () => {}
   })
-  const guard = createGuard('logdnaKey', 'dns', setupLogger as any)
+  const guard = createGuard('logdnaKey', 'dns', 'trackId', setupLogger as any)
   const fun = spy((event: any, logger: any, context: any) => {})
   const awsFun = guard(fun as any)
   const event = JSON.stringify({

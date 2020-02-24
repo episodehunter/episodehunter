@@ -1,6 +1,9 @@
 import { Context } from 'aws-lambda';
 import * as dnaLogger from 'logdna';
 import * as Sentry from '@sentry/node';
+import { createAnalytics, Analytics, TrackEvent } from './analytics';
+
+export { TrackEvent };
 
 export interface Logger {
   log(message: string): void;
@@ -9,25 +12,27 @@ export interface Logger {
   captureException(error: Error & { awsRequestId?: string }): void;
   eventStart(message: string, category?: string): void;
   flush(): void;
+  track: Analytics['trackEvent'];
 }
 
 export function setupLogger(
   ravenDns?: string,
-  logDnaApiKey?: string
+  logDnaApiKey?: string,
+  trackId?: string
 ): (context: Context, requestStack?: string[]) => Logger {
   if (process.env.NODE_ENV === 'test') {
     return createTestLogger;
-  }
-  if (!ravenDns || !logDnaApiKey) {
+  } else if (!ravenDns || !logDnaApiKey) {
     console.warn('Logger: Missing ravenDns and/or logDnaApiKey, using console only');
     return createLocalLogger;
   }
   installSentry(ravenDns);
   const dnaLogger = installLogdna(logDnaApiKey);
-  return createCreateSentryLogger(dnaLogger);
+  const analytics = createAnalytics(trackId);
+  return createCreateLogger(dnaLogger, analytics);
 }
 
-function createCreateSentryLogger(logdna: dnaLogger.DnaLogger) {
+function createCreateLogger(logdna: dnaLogger.DnaLogger, analytics: Analytics) {
   return (context: Context, requestStack: string[] = []): Logger => {
     const meta = {
       functionName: context.functionName,
@@ -92,7 +97,7 @@ function createCreateSentryLogger(logdna: dnaLogger.DnaLogger) {
       dnaLogger.flushAll();
     }
 
-    return { flush, log, warn, captureBreadcrumb, captureException, eventStart };
+    return { flush, log, warn, captureBreadcrumb, captureException, eventStart, track: analytics.trackEvent };
   };
 }
 
@@ -107,7 +112,8 @@ function createTestLogger(): Logger {
     eventStart: () => {
       return () => {}
     },
-    flush: () => {}
+    flush: () => {},
+    track: () => Promise.resolve(undefined)
   }
 }
 
@@ -153,8 +159,12 @@ function createLocalLogger(context: Context, requestStack: string[] = []): Logge
   const flush = () => {
     console.log('Flush');
   }
+  const track = (...args: any[]) => {
+    console.log('Tracking', ...args);
+    return Promise.resolve();
+  }
 
-  return { flush, log, warn, captureBreadcrumb, captureException, eventStart };
+  return { flush, log, warn, captureBreadcrumb, captureException, eventStart, track };
 }
 
 function installSentry(ravenDns: string) {
