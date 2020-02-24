@@ -15,7 +15,10 @@ export const handler = gard<APIGatewayProxyEvent>(async (event, logger) => {
   if (!eventToTrack) {
     return createOkResponse('Missing event');
   }
-  return logger.track(eventToTrack);
+  eventToTrack.userAgent = event.headers['User-Agent'];
+
+  await logger.track(eventToTrack);
+  return createOkResponse('OK');
 });
 
 export function parseJson<T = unknown>(jsonStr: string | null): T | null {
@@ -31,6 +34,6 @@ export function parseJson<T = unknown>(jsonStr: string | null): T | null {
 
 export const createOkResponse = (message: string) => ({
   statusCode: '200',
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
   body: JSON.stringify({ message })
 });
