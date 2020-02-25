@@ -65,6 +65,7 @@ describe('Intergration test', () => {
     } else {
       process.env.PG_CONNECTION_URI = process.env.PG_DANGEROUS_TEST_CONNECTION_URI;
     }
+    process.env.GA_TRACKING_ID = ``;
     process.env.FIREBASE_KEY = ``;
     process.env.ENGINE_API_KEY = ``;
     process.env.LOGDNA_KEY = ``;

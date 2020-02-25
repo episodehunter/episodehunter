@@ -13,7 +13,7 @@ import { UnableToAddShowError } from './custom-error'
 import { scrobbleEpisode } from './scrobbler.util'
 import { config } from './config'
 
-const guard = createGuard(config.sentryDsn, config.logdnaKey)
+const guard = createGuard(config.sentryDsn, config.logdnaKey, config.trackerId)
 
 export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
   const username =
@@ -37,6 +37,8 @@ export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
       season: ${episodeInfo && episodeInfo.season}
       episode: ${episodeInfo && episodeInfo.episode}
     `)
+
+  logger.track({ type: 'event', category: 'plex scrobble', action: `${mediaType} ${eventType}` });
 
   if (eventType !== 'media.scrobble') {
     const message = `Do not support event type ${eventType} yet. Exit`
@@ -98,12 +100,15 @@ export const kodi = guard<APIGatewayEvent>(
     }
 
     if (!isKodiEpisode(event)) {
+      logger.track({ type: 'event', category: 'kodi scrobble', action: `movie ${event.event_type}` });
       const message = `Do not support movies yet. Exit. ${JSON.stringify(
         event
       )}`
       logger.log(message)
       return createOkResponse(message)
     }
+
+    logger.track({ type: 'event', category: 'kodi scrobble', action: `episode ${event.event_type}` });
 
     if (event.event_type !== 'scrobble') {
       const message = `Do not support event type ${

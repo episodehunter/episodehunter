@@ -8,6 +8,7 @@ interface Config {
   sentryDns?: string;
   develop: boolean;
   pgConnectionUri: string;
+  trackId: string;
 }
 
 function createProductionConfig(): Config {
@@ -21,6 +22,8 @@ function createProductionConfig(): Config {
     throw new Error('AWS_SENTRY_DSN is missing!');
   } else if (!process.env.PG_CONNECTION_URI) {
     throw new Error('PG_CONNECTION_URI is missing!');
+  } else if (!process.env.GA_TRACKING_ID) {
+    throw new Error('GA_TRACKING_ID is missing!');
   }
 
   const serviceAccount = JSON.parse(Buffer.from(process.env.FIREBASE_KEY, 'base64').toString());
@@ -33,7 +36,8 @@ function createProductionConfig(): Config {
     logdnaKey: process.env.LOGDNA_KEY,
     sentryDns: process.env.AWS_SENTRY_DSN,
     develop: false,
-    pgConnectionUri: process.env.PG_CONNECTION_URI
+    pgConnectionUri: process.env.PG_CONNECTION_URI,
+    trackId: process.env.GA_TRACKING_ID
   };
 }
 
@@ -44,7 +48,8 @@ function createDevelopConfig(): Config {
     logdnaKey: process.env.LOGDNA_KEY,
     sentryDns: process.env.AWS_SENTRY_DSN,
     develop: true,
-    pgConnectionUri: process.env.PG_CONNECTION_URI || 'postgresql://user:123@localhost:3211/episodehunter-test'
+    pgConnectionUri: process.env.PG_CONNECTION_URI || 'postgresql://user:123@localhost:3211/episodehunter-test',
+    trackId: ''
   };
 }
 

@@ -139,12 +139,15 @@ const RootMutation: RootMutationResolvers = {
     return context.pgResolver.history.removeCheckedInEpisode(context.getUid(), args.episode);
   },
   followShow(root, args, context) {
+    context.logger.track({ type: 'event', category: 'show', action: 'follow' });
     return context.pgResolver.user.followShow(context.getUid(), args.showId);
   },
   unfollowShow(root, args, context) {
+    context.logger.track({ type: 'event', category: 'show', action: 'unfollow' });
     return context.pgResolver.user.unfollowShow(context.getUid(), args.showId);
   },
   createUser(root, args, context) {
+    context.logger.track({ type: 'event', category: 'user', action: 'new user' });
     return context.pgResolver.user.createUser(context.getFirebaseUid(), args.metadata);
   }
 };

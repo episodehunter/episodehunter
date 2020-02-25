@@ -5,7 +5,8 @@ export const createGuard = () => {
     const logger = {
       log: () => {},
       warn: console.warn,
-      captureException
+      captureException,
+      track: () => Promise.resolve()
     };
     return fn(event, logger, context).catch(error => {
       captureException(error)

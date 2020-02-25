@@ -83,7 +83,7 @@ const server = new ApolloServer({
 });
 
 const apolloHandler = server.createHandler();
-const gard = createGuard(config.sentryDns, config.logdnaKey);
+const gard = createGuard(config.sentryDns, config.logdnaKey, config.trackId);
 
 export const graphqlHandler = gard<APIGatewayProxyEvent & { logger: Logger }>((event, logger, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
