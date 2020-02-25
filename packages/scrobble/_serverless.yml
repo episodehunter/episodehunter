@@ -1,3 +1,5 @@
+org: tjoskar
+app: episodehunter
 service: scrobble
 
 custom:
@@ -5,7 +7,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs12.x
   stage: prod
   region: us-east-1
   timeout: 30
