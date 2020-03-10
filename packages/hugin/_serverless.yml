@@ -1,3 +1,5 @@
+org: tjoskar
+app: episodehunter
 service: hugin
 
 custom:
