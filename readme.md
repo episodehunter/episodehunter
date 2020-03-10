@@ -16,51 +16,61 @@ Episodehunter is a open source project to track what tv shows you are watching. 
 
 ## Services
 
+<p align="center">
+  <img alt="service map" src="images/map.png" width="500">
+</p>
+
 ### Dragonstone 🏯
 
 The heart of all data. This service expose an api to access and manipulate the stored data.
 
-### Scrobble 📺
+### Hugin 🦉
 
-Expose a api for plex and kodi to register what the user is watching
-
-### Logger 📗
-
-A simple log service
-
-### Kingsguard ⚔️
-
-A service for better error handling
-
-### TheTvDB 👽
-
-Helper lib for the tv db api
-
-### Types 🌀
-
-Share typescript types
-
-### Show update 🔄
-
-A service that adds and update tv shows
-
-### Scheduler ⏰
-
-Like cron job for episodehunter
+Track internal events
 
 ### Image proxy 🖼
 
 Fetching images and manipulate them on the fly
 
+### Scheduler ⏰
+
+Like cron job for episodehunter
+
+### Scrobble 📺
+
+Expose a api for plex and kodi to register what the user is watching
+
+### Show update 🔄
+
+A service that adds and update tv shows
+
+## Libraries
+
+### Kingsguard ⚔️
+
+A library for better error handling
+
+### Logger 📗
+
+A simple log library
+
+### TheTvDB 👽
+
+Helper library for the tv db api
+
+### TMDB 🛸
+
+Helper library for the movie db api
+
+### Types 🌀
+
+Shared typescript types
+
 ### Utils 🛠
 
 Util functions for episodehunter
 
-### Firebase fn
-
-Specific functions for firebase
-
-### Developing
+## Developing
 
 Bootstrap
 
