@@ -7,20 +7,25 @@ import { ShowRecord } from '../schema';
 import { update } from '../util/pg-util';
 import { ShowLoader } from './show.loader';
 import { mapShow, mapShowInputToShow } from './show.mapper';
+import { unixTimestamp } from '@episodehunter/utils';
 
 export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => {
   return {
     async getShow(id: ShowId): Promise<RootShow | null> {
       return showLoader.load(id).then(show => mapShow(show));
     },
-    async findShow(props: { theTvDbId?: number | null }): Promise<RootShow | null> {
-      if (props.theTvDbId) {
-        const dbResult = await client.query<ShowRecord>(
-          sql`SELECT * FROM shows WHERE external_id_tvdb = ${props.theTvDbId}`
-        );
-        return mapShow(dbResult.rows[0]);
-      }
-      return null;
+    async getPopular(): Promise<RootShow[]> {
+      const twoMonthAgo = unixTimestamp() - 5184000;
+      const dbResult = await client.query<ShowRecord>(
+        sql`SELECT s.* FROM tv_watched AS w JOIN shows as s ON s.id = w.show_id WHERE w.time > ${twoMonthAgo} GROUP BY w.show_id, s.name, s.id ORDER BY COUNT(w.show_id) DESC LIMIT 50;`
+      );
+      return dbResult.rows.map(r => mapShow(r));
+    },
+    async findShow(props: { theTvDbId: number | null }): Promise<RootShow | null> {
+      const dbResult = await client.query<ShowRecord>(
+        sql`SELECT * FROM shows WHERE external_id_tvdb = ${props.theTvDbId}`
+      );
+      return mapShow(dbResult.rows[0]);
     },
     async getNumberOfFollowers(showId: ShowId): Promise<number> {
       const dbResult = await client.query<{ c: number }>(

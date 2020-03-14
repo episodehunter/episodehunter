@@ -100,7 +100,11 @@ type MutationResolversKeys = {
 export interface RootMutationResolvers extends MutationResolversKeys {
   checkInEpisode: Resolver<void, Schema.RootMutationCheckInEpisodeArgs, Maybe<Schema.WatchedEpisodeInput>>;
   checkInEpisodes: Resolver<void, Schema.RootMutationCheckInEpisodesArgs, Maybe<Schema.WatchedEpisodeInput[]>>;
-  removeCheckedInEpisode: Resolver<void, Schema.RootMutationRemoveCheckedInEpisodeArgs, Maybe<Schema.UnwatchedEpisodeInput>>;
+  removeCheckedInEpisode: Resolver<
+    void,
+    Schema.RootMutationRemoveCheckedInEpisodeArgs,
+    Maybe<Schema.UnwatchedEpisodeInput>
+  >;
   followShow: Resolver<void, Schema.RootMutationFollowShowArgs, boolean>;
   unfollowShow: Resolver<void, Schema.RootMutationUnfollowShowArgs, boolean>;
   createUser: Resolver<void, Schema.RootMutationCreateUserArgs, boolean>;

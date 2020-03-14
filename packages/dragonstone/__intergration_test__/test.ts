@@ -491,7 +491,7 @@ describe('Intergration test', () => {
   describe('Next to update', () => {
     test('Get list of the oldest updated shows', async () => {
       // Arrange
-      const now = unixTimestamp()
+      const now = unixTimestamp();
       const fiveDaysAgo = now - 5 * 24 * 60 * 60;
       await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = false WHERE id=1`);
       await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo - 1}, ended = false WHERE id=2`);
@@ -529,7 +529,7 @@ describe('Intergration test', () => {
 
     test('Do not include ended shows', async () => {
       // Arrange
-      const now = unixTimestamp()
+      const now = unixTimestamp();
       const fiveDaysAgo = now - 5 * 24 * 60 * 60;
       await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = false WHERE id=1`);
       await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = true WHERE id=2`);
@@ -560,7 +560,7 @@ describe('Intergration test', () => {
 
     test('Get the oldest updated show', async () => {
       // Arrange
-      const now = unixTimestamp()
+      const now = unixTimestamp();
       const twoDaysAgo = now - 2 * 24 * 60 * 60;
       const fiveDaysAgo = now - 5 * 24 * 60 * 60;
       await client.query(`UPDATE shows SET lastupdated_check = ${twoDaysAgo}, ended = false WHERE id=1`);
@@ -592,7 +592,7 @@ describe('Intergration test', () => {
 
     test('Return a empty list if we dont think we need to update anything', async () => {
       // Arrange
-      const now = unixTimestamp()
+      const now = unixTimestamp();
       const twoDaysAgo = now - 2 * 24 * 60 * 60;
       await client.query(`UPDATE shows SET lastupdated_check = ${twoDaysAgo}, ended = false WHERE id=1`);
       await client.query(`UPDATE shows SET lastupdated_check = ${twoDaysAgo}, ended = false WHERE id=2`);
@@ -629,10 +629,15 @@ describe('Intergration test', () => {
       };
 
       // Act
-      const result: Message.Dragonstone.UpdateShowMetadataResponse = (await handler.updateShowMetadataHandler(event, createContext())) as any;
+      const result: Message.Dragonstone.UpdateShowMetadataResponse = (await handler.updateShowMetadataHandler(
+        event,
+        createContext()
+      )) as any;
 
       // Assert
-      const dbResult = await client.query(`SELECT lastupdated_check, lastupdated, update_disable FROM shows WHERE id=1`);
+      const dbResult = await client.query(
+        `SELECT lastupdated_check, lastupdated, update_disable FROM shows WHERE id=1`
+      );
       expect(result).toBe(true);
       expect(dbResult.rows[0]).toEqual({
         lastupdated_check: 1000000001,
@@ -653,10 +658,15 @@ describe('Intergration test', () => {
       };
 
       // Act
-      const result: Message.Dragonstone.UpdateShowMetadataResponse = (await handler.updateShowMetadataHandler(event, createContext())) as any;
+      const result: Message.Dragonstone.UpdateShowMetadataResponse = (await handler.updateShowMetadataHandler(
+        event,
+        createContext()
+      )) as any;
 
       // Assert
-      const dbResult = await client.query(`SELECT lastupdated_check, lastupdated, update_disable FROM shows WHERE id=1`);
+      const dbResult = await client.query(
+        `SELECT lastupdated_check, lastupdated, update_disable FROM shows WHERE id=1`
+      );
       expect(result).toBe(true);
       expect(dbResult.rows[0]).toEqual({
         lastupdated_check: 1000000001,
@@ -664,7 +674,7 @@ describe('Intergration test', () => {
         update_disable: true
       });
     });
-  })
+  });
 
   describe('[GraphQL] Show', () => {
     test('Get a show', async () => {
@@ -867,6 +877,93 @@ describe('Intergration test', () => {
         }
       });
       expect(result.statusCode).toBe(200);
+    });
+  });
+  describe('[GraphQL] Get popular shows', () => {
+    test('Get popular shows', async () => {
+      // Arrange
+      const now = (Date.now() / 1000) | 0;
+      await client.query(`INSERT INTO "public"."tv_watched" ("user_id", "show_id", "time", "type", "episodenumber") VALUES
+      ('2', '1', '${now - 100}', '0', '10001'),
+      ('2', '1', '${now - 200}', '0', '10002'),
+      ('2', '2', '${now - 300}', '0', '10003'),
+      ('2', '2', '${now - 400}', '0', '10004'),
+      ('2', '2', '${now - 500}', '0', '10005'),
+      ('2', '2', '${now - 600}', '0', '10006'),
+      ('2', '2', '${now - 700}', '0', '10007'),
+      ('2', '2', '${now - 800}', '0', '10008'),
+      ('3', '1', '${now - 900}', '0', '10009'),
+      ('3', '1', '${now - 1100}', '0', '10001'),
+      ('3', '1', '${now - 1200}', '0', '10002'),
+      ('3', '2', '${now - 1300}', '0', '10003'),
+      ('3', '2', '${now - 1400}', '0', '10004'),
+      ('3', '2', '${now - 500000}', '0', '10005');`);
+      const event = createGraphQlEvent(`{
+        popularShows {
+          name
+        }
+      }`);
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          popularShows: [
+            {
+              name: 'Breaking Bad'
+            },
+            {
+              name: 'Stranger Things'
+            }
+          ]
+        }
+      });
+    });
+    test('Do not count all watched episodes', async () => {
+      // Arrange
+      const now = (Date.now() / 1000) | 0;
+      const day61 = 5270400;
+      await client.query(`INSERT INTO "public"."tv_watched" ("user_id", "show_id", "time", "type", "episodenumber") VALUES
+      ('2', '1', '${now - 100}', '0', '10001'),
+      ('2', '1', '${now - 200}', '0', '10002'),
+      ('2', '2', '${now - 300}', '0', '10003'),
+      ('2', '2', '${now - 400}', '0', '10004'),
+      ('2', '2', '${now - day61}', '0', '10005'),
+      ('2', '2', '${now - day61}', '0', '10006'),
+      ('2', '2', '${now - day61}', '0', '10007'),
+      ('2', '2', '${now - day61}', '0', '10008'),
+      ('3', '1', '${now - 900}', '0', '10009'),
+      ('3', '1', '${now - 1100}', '0', '10001'),
+      ('3', '1', '${now - 1200}', '0', '10002'),
+      ('3', '2', '${now - day61}', '0', '10003'),
+      ('3', '2', '${now - day61}', '0', '10004'),
+      ('3', '2', '${now - day61}', '0', '10005');`);
+      const event = createGraphQlEvent(`{
+        popularShows {
+          name
+        }
+      }`);
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          popularShows: [
+            {
+              name: 'Stranger Things'
+            },
+            {
+              name: 'Breaking Bad'
+            }
+          ]
+        }
+      });
     });
   });
   describe('[GraphQL] Find show', () => {

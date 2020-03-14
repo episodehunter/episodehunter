@@ -3,6 +3,9 @@ import { unixTimestamp } from '@episodehunter/utils';
 import { ShowRecord, NewShowRecord } from '../schema';
 import { RootShow } from '../../../resolvers/type';
 
+export function mapShow(show: ShowRecord): RootShow;
+export function mapShow(show?: null): null;
+export function mapShow(show?: ShowRecord | null): RootShow | null;
 export function mapShow(show?: ShowRecord | null): RootShow | null {
   if (!show) {
     return null;

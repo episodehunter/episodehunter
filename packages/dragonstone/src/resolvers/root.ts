@@ -17,6 +17,9 @@ const RootQuery: RootResolvers = {
   show(root, args, context) {
     return context.pgResolver.show.getShow(args.id);
   },
+  popularShows(root, args, context) {
+    return context.pgResolver.show.getPopular();
+  },
   findShow(root, args, context) {
     return context.pgResolver.show.findShow(args);
   },
