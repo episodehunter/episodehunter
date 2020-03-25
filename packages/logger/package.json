@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.46",
-    "@types/node": "12.12.21",
+    "@types/node": "12.12.31",
     "@types/node-fetch": "2.5.5",
     "typescript": "3.8.3"
   },
