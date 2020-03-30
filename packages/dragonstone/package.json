@@ -42,7 +42,7 @@
     "fast-check": "1.23.0",
     "jest": "25.2.4",
     "testcontainers": "2.6.0",
-    "ts-jest": "25.2.1",
+    "ts-jest": "25.3.0",
     "typescript": "3.8.3"
   },
   "prettier": {
