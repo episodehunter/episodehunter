@@ -1,13 +1,13 @@
 import { Logger } from '@episodehunter/logger';
 import { Message, ShowId } from '@episodehunter/types';
-import { spreadInsert, sql, spreadUpdate } from 'squid/pg';
+import { unixTimestamp } from '@episodehunter/utils';
+import { spreadInsert, spreadUpdate, sql } from 'squid/pg';
 import { RootShow } from '../../../resolvers/type';
 import { PgClient } from '../../../util/pg';
 import { ShowRecord } from '../schema';
 import { update } from '../util/pg-util';
 import { ShowLoader } from './show.loader';
 import { mapShow, mapShowInputToShow } from './show.mapper';
-import { unixTimestamp } from '@episodehunter/utils';
 
 export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => {
   return {
@@ -17,7 +17,7 @@ export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => 
     async getPopular(): Promise<RootShow[]> {
       const twoMonthAgo = unixTimestamp() - 5184000;
       const dbResult = await client.query<ShowRecord>(
-        sql`SELECT s.* FROM tv_watched AS w JOIN shows as s ON s.id = w.show_id WHERE w.time > ${twoMonthAgo} GROUP BY w.show_id, s.name, s.id ORDER BY COUNT(w.show_id) DESC LIMIT 50;`
+        sql`SELECT s.* FROM tv_watched AS w JOIN shows as s ON s.id = w.show_id WHERE w.time > ${twoMonthAgo} GROUP BY w.show_id, s.name, s.id ORDER BY (count(w.show_id) * count(DISTINCT w.user_id)) DESC LIMIT 50;`
       );
       return dbResult.rows.map(r => mapShow(r));
     },
@@ -85,6 +85,6 @@ export const createShowResolver = (client: PgClient, showLoader: ShowLoader) => 
         sql`INSERT INTO "shows" ${spreadInsert(newShow)} RETURNING *;`
       );
       return mapShow(dbInsertResult.rows[0])!;
-    }
+    },
   };
 };

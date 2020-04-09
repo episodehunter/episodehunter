@@ -30,24 +30,24 @@ describe('Intergration test', () => {
     awsRequestId: '1',
     done: () => null,
     fail: () => null,
-    succeed: () => null
+    succeed: () => null,
   });
 
   const createGraphQlEvent = (query: string, token = '') => {
     return {
       httpMethod: 'POST',
       body: JSON.stringify({
-        query
+        query,
       }),
       path: 'http://localhost:8080',
       requestContext: {
-        path: '/'
+        path: '/',
       },
       headers: token
         ? {
-            Authorization: `B ${token}`
+            Authorization: `B ${token}`,
           }
-        : {}
+        : {},
     };
   };
 
@@ -116,9 +116,9 @@ describe('Intergration test', () => {
           overview: 'Dexter Morgan is a Miami-based blood splatter expert',
           runtime: 50,
           ended: true,
-          lastupdate: 1554064896
+          lastupdate: 1554064896,
         },
-        requestStack: []
+        requestStack: [],
       };
       const getDexterQuery = `SELECT * FROM shows WHERE name='Dexter'`;
       let dbResult = await client.query(getDexterQuery);
@@ -135,14 +135,14 @@ describe('Intergration test', () => {
         airs: {
           first: '2016-07-15',
           time: '03:00',
-          day: 4
+          day: 4,
         },
         ended: false,
         genre: ['Adventure', 'Drama', 'Fantasy', 'Mystery'],
         ids: {
           id: 1,
           imdb: 'tt4574334',
-          tvdb: 305288
+          tvdb: 305288,
         },
         language: 'en',
         lastupdated: 1555393924,
@@ -151,7 +151,7 @@ describe('Intergration test', () => {
         network: 'Netflix',
         overview:
           'When a young boy disappears, his mother, a police chief, and his friends must confront terrifying forces in order to get him back.',
-        runtime: 50
+        runtime: 50,
       });
     });
     test('Add a new, ended, show: Dexter', async () => {
@@ -169,9 +169,9 @@ describe('Intergration test', () => {
           runtime: 50,
           ended: true,
           lastupdate: 1554064896,
-          lastupdateCheck: 1554064897
+          lastupdateCheck: 1554064897,
         },
-        requestStack: []
+        requestStack: [],
       };
       const getDexterQuery = `SELECT * FROM shows WHERE name='Dexter'`;
 
@@ -198,20 +198,20 @@ describe('Intergration test', () => {
         ended: true,
         lastupdated: 1554064896,
         lastupdated_check: 1554064897,
-        update_disable: false
+        update_disable: false,
       });
       expect(result).toEqual({
         airs: {
           first: '2006-10-01',
           time: null,
-          day: null
+          day: null,
         },
         ended: true,
         genre: ['Crime', 'Drama', 'Mystery', 'Suspense', 'Thriller'],
         ids: {
           id: 3,
           imdb: 'tt0773262',
-          tvdb: 79349
+          tvdb: 79349,
         },
         language: 'en',
         lastupdated: 1554064896,
@@ -219,7 +219,7 @@ describe('Intergration test', () => {
         name: 'Dexter',
         network: 'Showtime',
         overview: 'Dexter Morgan is a Miami-based blood splatter expert',
-        runtime: 50
+        runtime: 50,
       });
     });
   });
@@ -238,7 +238,7 @@ describe('Intergration test', () => {
             lastupdated: 1520652296,
             name: '10002',
             overview: '',
-            tvdbId: 2
+            tvdbId: 2,
           },
           {
             episodenumber: 10003,
@@ -246,7 +246,7 @@ describe('Intergration test', () => {
             lastupdated: 1520652300,
             name: '10003',
             overview: '',
-            tvdbId: 3
+            tvdbId: 3,
           },
           {
             episodenumber: 10004,
@@ -254,10 +254,10 @@ describe('Intergration test', () => {
             lastupdated: 1520652305, // later than db
             name: 'Cancer Man!',
             overview: 'Updated text',
-            tvdbId: 7121403
-          }
+            tvdbId: 7121403,
+          },
         ],
-        requestStack: []
+        requestStack: [],
       };
       const oldEpisodes = await client.query(`SELECT * FROM episodes`);
 
@@ -277,7 +277,7 @@ describe('Intergration test', () => {
         overview: 'Updated text',
         lastupdated: 1520652305,
         episodenumber: 10004,
-        external_id_tvdb: 7121403
+        external_id_tvdb: 7121403,
       });
     });
 
@@ -294,7 +294,7 @@ describe('Intergration test', () => {
             lastupdated: 1520652311,
             name: '10006',
             overview: '',
-            tvdbId: 6
+            tvdbId: 6,
           },
           {
             episodenumber: 10007,
@@ -302,14 +302,14 @@ describe('Intergration test', () => {
             lastupdated: 1520652316,
             name: 'Cancer Man!',
             overview: 'Updated text',
-            tvdbId: 7
+            tvdbId: 7,
           },
           {
             episodenumber: 10008,
             firstAired: '2008-02-19',
             lastupdated: 1520652316,
             name: 'New episode',
-            tvdbId: 8
+            tvdbId: 8,
           },
           {
             episodenumber: 10009,
@@ -317,17 +317,17 @@ describe('Intergration test', () => {
             lastupdated: 1520652317,
             name: 'New episode2',
             overview: 'Some text2',
-            tvdbId: 9
+            tvdbId: 9,
           },
           {
             episodenumber: 10010,
             firstAired: '2008-02-21',
             lastupdated: 1520652318,
             name: 'New episode3',
-            tvdbId: 10
-          }
+            tvdbId: 10,
+          },
         ],
-        requestStack: []
+        requestStack: [],
       };
       const oldEpisodes = await client.query(`SELECT * FROM episodes`);
 
@@ -348,7 +348,7 @@ describe('Intergration test', () => {
           lastupdated: 1520652316,
           episodenumber: 10008,
           external_id_tvdb: 8,
-          overview: null
+          overview: null,
         },
         {
           show_id: 2,
@@ -357,7 +357,7 @@ describe('Intergration test', () => {
           overview: 'Some text2',
           lastupdated: 1520652317,
           external_id_tvdb: 9,
-          episodenumber: 10009
+          episodenumber: 10009,
         },
         {
           show_id: 2,
@@ -366,8 +366,8 @@ describe('Intergration test', () => {
           lastupdated: 1520652318,
           name: 'New episode3',
           external_id_tvdb: 10,
-          overview: null
-        }
+          overview: null,
+        },
       ]);
     });
 
@@ -384,10 +384,10 @@ describe('Intergration test', () => {
             lastupdated: 1520652311,
             name: '10006',
             overview: '',
-            tvdbId: 6
-          }
+            tvdbId: 6,
+          },
         ],
-        requestStack: []
+        requestStack: [],
       };
       const oldEpisodes = await client.query(`SELECT * FROM episodes`);
 
@@ -421,9 +421,9 @@ describe('Intergration test', () => {
           runtime: 51,
           ended: false,
           lastupdate: 1554064871,
-          lastupdateCheck: 1554064872
+          lastupdateCheck: 1554064872,
         },
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -437,14 +437,14 @@ describe('Intergration test', () => {
         airs: {
           first: '2008-01-21',
           time: '03:15',
-          day: 1
+          day: 1,
         },
         ended: false,
         genre: ['Crime', 'Drama', 'Mystery', 'Suspense', 'Thriller'],
         ids: {
           id: 2,
           imdb: 'tt0903748',
-          tvdb: 81180
+          tvdb: 81180,
         },
         language: 'en',
         lastupdated: 1554064871,
@@ -452,7 +452,7 @@ describe('Intergration test', () => {
         name: 'Breaking Bad!',
         network: 'Showtime',
         overview: 'Walter White!',
-        runtime: 51
+        runtime: 51,
       });
     });
     test(`Update a show that dont exist`, async () => {
@@ -472,9 +472,9 @@ describe('Intergration test', () => {
           overview: 'Walter White!',
           runtime: 51,
           ended: false,
-          lastupdate: 1554064871
+          lastupdate: 1554064871,
         },
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -497,7 +497,7 @@ describe('Intergration test', () => {
       await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo - 1}, ended = false WHERE id=2`);
       const event: Message.Dragonstone.NextToUpdateEvent = {
         limit: 20,
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -514,16 +514,16 @@ describe('Intergration test', () => {
             name: 'Breaking Bad',
             tvdbId: 81189,
             lastupdated: 1553807287,
-            lastupdatedCheck: fiveDaysAgo - 1
+            lastupdatedCheck: fiveDaysAgo - 1,
           },
           {
             id: 1,
             name: 'Stranger Things',
             tvdbId: 305288,
             lastupdated: 1555393924,
-            lastupdatedCheck: fiveDaysAgo
-          }
-        ]
+            lastupdatedCheck: fiveDaysAgo,
+          },
+        ],
       });
     });
 
@@ -535,7 +535,7 @@ describe('Intergration test', () => {
       await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = true WHERE id=2`);
       const event: Message.Dragonstone.NextToUpdateEvent = {
         limit: 20,
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -552,9 +552,9 @@ describe('Intergration test', () => {
             name: 'Stranger Things',
             tvdbId: 305288,
             lastupdated: 1555393924,
-            lastupdatedCheck: fiveDaysAgo
-          }
-        ]
+            lastupdatedCheck: fiveDaysAgo,
+          },
+        ],
       });
     });
 
@@ -567,7 +567,7 @@ describe('Intergration test', () => {
       await client.query(`UPDATE shows SET lastupdated_check = ${fiveDaysAgo}, ended = false WHERE id=2`);
       const event: Message.Dragonstone.NextToUpdateEvent = {
         limit: 1,
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -584,9 +584,9 @@ describe('Intergration test', () => {
             name: 'Breaking Bad',
             tvdbId: 81189,
             lastupdated: 1553807287,
-            lastupdatedCheck: fiveDaysAgo
-          }
-        ]
+            lastupdatedCheck: fiveDaysAgo,
+          },
+        ],
       });
     });
 
@@ -598,7 +598,7 @@ describe('Intergration test', () => {
       await client.query(`UPDATE shows SET lastupdated_check = ${twoDaysAgo}, ended = false WHERE id=2`);
       const event: Message.Dragonstone.NextToUpdateEvent = {
         limit: 1,
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -609,7 +609,7 @@ describe('Intergration test', () => {
 
       // Assert
       expect(result).toEqual({
-        shows: []
+        shows: [],
       });
     });
   });
@@ -623,9 +623,9 @@ describe('Intergration test', () => {
         metadata: {
           disableUpdate: false,
           lastupdate: 1000000000,
-          lastupdateCheck: 1000000001
+          lastupdateCheck: 1000000001,
         },
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -642,7 +642,7 @@ describe('Intergration test', () => {
       expect(dbResult.rows[0]).toEqual({
         lastupdated_check: 1000000001,
         lastupdated: 1000000000,
-        update_disable: false
+        update_disable: false,
       });
     });
 
@@ -652,9 +652,9 @@ describe('Intergration test', () => {
       const event: Message.Dragonstone.UpdateShowMetadataEvent = {
         showId: 1,
         metadata: {
-          lastupdateCheck: 1000000001
+          lastupdateCheck: 1000000001,
         },
-        requestStack: []
+        requestStack: [],
       };
 
       // Act
@@ -671,7 +671,7 @@ describe('Intergration test', () => {
       expect(dbResult.rows[0]).toEqual({
         lastupdated_check: 1000000001,
         lastupdated: 3,
-        update_disable: true
+        update_disable: true,
       });
     });
   });
@@ -717,14 +717,14 @@ describe('Intergration test', () => {
             airs: {
               first: '2008-01-20',
               time: '21:00',
-              day: 6
+              day: 6,
             },
             ended: true,
             genre: ['Crime', 'Drama', 'Suspense', 'Thriller'],
             ids: {
               id: 2,
               imdb: 'tt0903747',
-              tvdb: 81189
+              tvdb: 81189,
             },
             language: 'en',
             lastupdated: 1553807287,
@@ -732,9 +732,9 @@ describe('Intergration test', () => {
             overview: `Walter White, a struggling high school chemistry teacher, is diagnosed with advanced lung cancer. He turns to a life of crime, producing and selling methamphetamine accompanied by a former student, Jesse Pinkman, with the aim of securing his family's financial future before he dies.`,
             runtime: 45,
             seasons: [1],
-            followers: 1
-          }
-        }
+            followers: 1,
+          },
+        },
       });
     });
     test('Get upcoming episode for braking bad', async () => {
@@ -778,14 +778,14 @@ describe('Intergration test', () => {
           show: {
             name: 'Breaking Bad',
             upcomingEpisode: {
-              name: 'What?'
+              name: 'What?',
             },
             justAirdEpisode: {
-              name: 'Fun episode'
+              name: 'Fun episode',
             },
-            numberOfAiredEpisodes: 8
-          }
-        }
+            numberOfAiredEpisodes: 8,
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
     });
@@ -820,11 +820,11 @@ describe('Intergration test', () => {
             nextToWatch: {
               numberOfEpisodesToWatch: 5,
               episode: {
-                name: 'Cancer Man'
-              }
-            }
-          }
-        }
+                name: 'Cancer Man',
+              },
+            },
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
     });
@@ -848,9 +848,9 @@ describe('Intergration test', () => {
       expect(JSON.parse(result.body)).toEqual({
         data: {
           show: {
-            isFollowing: true
-          }
-        }
+            isFollowing: true,
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
     });
@@ -872,9 +872,9 @@ describe('Intergration test', () => {
       expect(JSON.parse(result.body)).toEqual({
         data: {
           show: {
-            isFollowing: false
-          }
-        }
+            isFollowing: false,
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
     });
@@ -913,13 +913,13 @@ describe('Intergration test', () => {
         data: {
           popularShows: [
             {
-              name: 'Breaking Bad'
+              name: 'Breaking Bad',
             },
             {
-              name: 'Stranger Things'
-            }
-          ]
-        }
+              name: 'Stranger Things',
+            },
+          ],
+        },
       });
     });
     test('Do not count all watched episodes', async () => {
@@ -956,13 +956,46 @@ describe('Intergration test', () => {
         data: {
           popularShows: [
             {
-              name: 'Stranger Things'
+              name: 'Stranger Things',
             },
             {
-              name: 'Breaking Bad'
-            }
-          ]
+              name: 'Breaking Bad',
+            },
+          ],
+        },
+      });
+    });
+    test('Count a episode that was been seen by many users higher', async () => {
+      // Arrange
+      const now = (Date.now() / 1000) | 0;
+      await client.query(`INSERT INTO "public"."tv_watched" ("user_id", "show_id", "time", "type", "episodenumber") VALUES
+      ('2', '1', '${now}', '0', '10001'),
+      ('2', '1', '${now}', '0', '10001'),
+      ('2', '1', '${now}', '0', '10001'),
+      ('2', '2', '${now}', '0', '10002'),
+      ('3', '2', '${now}', '0', '10002');`);
+      const event = createGraphQlEvent(`{
+        popularShows {
+          name
         }
+      }`);
+
+      // Act
+      const result: GraphQLResult = (await handler.graphqlHandler(event as any, createContext())) as any;
+
+      // Assert
+      expect(result.statusCode).toBe(200);
+      expect(JSON.parse(result.body)).toEqual({
+        data: {
+          popularShows: [
+            {
+              name: 'Breaking Bad',
+            },
+            {
+              name: 'Stranger Things',
+            },
+          ],
+        },
       });
     });
   });
@@ -982,8 +1015,8 @@ describe('Intergration test', () => {
       expect(result.statusCode).toBe(200);
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          findShow: null
-        }
+          findShow: null,
+        },
       });
     });
     test('Find Breaking Bad', async () => {
@@ -1002,9 +1035,9 @@ describe('Intergration test', () => {
       expect(JSON.parse(result.body)).toEqual({
         data: {
           findShow: {
-            name: 'Breaking Bad'
-          }
-        }
+            name: 'Breaking Bad',
+          },
+        },
       });
     });
   });
@@ -1026,34 +1059,34 @@ describe('Intergration test', () => {
         data: {
           season: [
             {
-              name: 'Chapter One: MADMAX'
+              name: 'Chapter One: MADMAX',
             },
             {
-              name: 'Chapter Two: Trick or Treat, Freak'
+              name: 'Chapter Two: Trick or Treat, Freak',
             },
             {
-              name: 'Chapter Three: The Pollywog'
+              name: 'Chapter Three: The Pollywog',
             },
             {
-              name: 'Chapter Four: Will the Wise'
+              name: 'Chapter Four: Will the Wise',
             },
             {
-              name: 'Chapter Five: Dig Dug'
+              name: 'Chapter Five: Dig Dug',
             },
             {
-              name: 'Chapter Six: The Spy'
+              name: 'Chapter Six: The Spy',
             },
             {
-              name: 'Chapter Seven: The Lost Sister'
+              name: 'Chapter Seven: The Lost Sister',
             },
             {
-              name: 'Chapter Eight: The Mind Flayer'
+              name: 'Chapter Eight: The Mind Flayer',
             },
             {
-              name: 'Chapter Nine: The Gate'
-            }
-          ]
-        }
+              name: 'Chapter Nine: The Gate',
+            },
+          ],
+        },
       });
     });
   });
@@ -1084,11 +1117,11 @@ describe('Intergration test', () => {
             {
               showId: 2,
               show: {
-                name: 'Breaking Bad'
-              }
-            }
-          ]
-        }
+                name: 'Breaking Bad',
+              },
+            },
+          ],
+        },
       });
     });
     test('[regression bug] Get list of upcoming episodes for folloing shows', async () => {
@@ -1140,21 +1173,21 @@ describe('Intergration test', () => {
               show: {
                 name: 'Breaking Bad',
                 upcomingEpisode: {
-                  name: 'What?'
-                }
-              }
+                  name: 'What?',
+                },
+              },
             },
             {
               show: {
                 name: 'Stranger Things',
                 upcomingEpisode: {
-                  name: 'Yoo'
-                }
+                  name: 'Yoo',
+                },
               },
-              showId: 1
-            }
-          ]
-        }
+              showId: 1,
+            },
+          ],
+        },
       });
     });
   });
@@ -1185,17 +1218,17 @@ describe('Intergration test', () => {
               name: 'Stranger Things',
               followers: 0,
               tvdbId: 305288,
-              lastupdated: 1555393924
+              lastupdated: 1555393924,
             },
             {
               id: 2,
               name: 'Breaking Bad',
               followers: 1,
               tvdbId: 81189,
-              lastupdated: 1553807287
-            }
-          ]
-        }
+              lastupdated: 1553807287,
+            },
+          ],
+        },
       });
     });
   });
@@ -1234,50 +1267,50 @@ describe('Intergration test', () => {
           history: [
             {
               watchedEpisode: {
-                time: 1000000003
+                time: 1000000003,
               },
               show: {
-                name: 'Stranger Things'
+                name: 'Stranger Things',
               },
               episode: {
-                episodenumber: 10001
-              }
+                episodenumber: 10001,
+              },
             },
             {
               watchedEpisode: {
-                time: 1000000002
+                time: 1000000002,
               },
               show: {
-                name: 'Breaking Bad'
+                name: 'Breaking Bad',
               },
               episode: {
-                episodenumber: 10003
-              }
+                episodenumber: 10003,
+              },
             },
             {
               watchedEpisode: {
-                time: 1000000001
+                time: 1000000001,
               },
               show: {
-                name: 'Breaking Bad'
+                name: 'Breaking Bad',
               },
               episode: {
-                episodenumber: 10002
-              }
+                episodenumber: 10002,
+              },
             },
             {
               watchedEpisode: {
-                time: 1000000000
+                time: 1000000000,
               },
               show: {
-                name: 'Breaking Bad'
+                name: 'Breaking Bad',
               },
               episode: {
-                episodenumber: 10001
-              }
-            }
-          ]
-        }
+                episodenumber: 10001,
+              },
+            },
+          ],
+        },
       });
     });
     test('Get history of one episode', async () => {
@@ -1312,47 +1345,47 @@ describe('Intergration test', () => {
               episodenumber: 10001,
               watched: [
                 {
-                  time: 1000000000
-                }
-              ]
+                  time: 1000000000,
+                },
+              ],
             },
             {
               episodenumber: 10002,
               watched: [
                 {
-                  time: 1000000001
-                }
-              ]
+                  time: 1000000001,
+                },
+              ],
             },
             {
               episodenumber: 10003,
               watched: [
                 {
-                  time: 1000000002
+                  time: 1000000002,
                 },
                 {
-                  time: 1000000004
-                }
-              ]
+                  time: 1000000004,
+                },
+              ],
             },
             {
               episodenumber: 10004,
-              watched: []
+              watched: [],
             },
             {
               episodenumber: 10005,
-              watched: []
+              watched: [],
             },
             {
               episodenumber: 10006,
-              watched: []
+              watched: [],
             },
             {
               episodenumber: 10007,
-              watched: []
-            }
-          ]
-        }
+              watched: [],
+            },
+          ],
+        },
       });
     });
   });
@@ -1378,9 +1411,9 @@ describe('Intergration test', () => {
         data: {
           me: {
             username: 'tjoskar2',
-            apikey: 'hello'
-          }
-        }
+            apikey: 'hello',
+          },
+        },
       });
     });
   });
@@ -1411,10 +1444,10 @@ describe('Intergration test', () => {
         data: {
           checkInEpisode: {
             episode: {
-              episodenumber: 10002
-            }
-          }
-        }
+              episodenumber: 10002,
+            },
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM tv_watched`);
@@ -1425,8 +1458,8 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000000,
           type: 2,
-          episodenumber: 10001
-        }
+          episodenumber: 10001,
+        },
       ]);
     });
     test('Check in episode with api key', async () => {
@@ -1451,9 +1484,9 @@ describe('Intergration test', () => {
       expect(JSON.parse(result.body)).toEqual({
         data: {
           checkInEpisode: {
-            madeMutation: true
-          }
-        }
+            madeMutation: true,
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM tv_watched`);
@@ -1464,8 +1497,8 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000000,
           type: 2,
-          episodenumber: 10001
-        }
+          episodenumber: 10001,
+        },
       ]);
     });
     test('Check in episode with case insensitive api key', async () => {
@@ -1490,9 +1523,9 @@ describe('Intergration test', () => {
       expect(JSON.parse(result.body)).toEqual({
         data: {
           checkInEpisode: {
-            madeMutation: true
-          }
-        }
+            madeMutation: true,
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM tv_watched`);
@@ -1503,8 +1536,8 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000000,
           type: 2,
-          episodenumber: 10001
-        }
+          episodenumber: 10001,
+        },
       ]);
     });
     test('Check in episodes', async () => {
@@ -1538,10 +1571,10 @@ describe('Intergration test', () => {
         data: {
           checkInEpisodes: {
             episode: {
-              episodenumber: 10003
-            }
-          }
-        }
+              episodenumber: 10003,
+            },
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM tv_watched`);
@@ -1552,7 +1585,7 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000000,
           type: 2,
-          episodenumber: 10001
+          episodenumber: 10001,
         },
         {
           id: 2,
@@ -1560,8 +1593,8 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000001,
           type: 2,
-          episodenumber: 10002
-        }
+          episodenumber: 10002,
+        },
       ]);
     });
     test('Remove check in', async () => {
@@ -1596,10 +1629,10 @@ describe('Intergration test', () => {
         data: {
           removeCheckedInEpisode: {
             episode: {
-              episodenumber: 10003 // Next exposode to watch
-            }
-          }
-        }
+              episodenumber: 10003, // Next exposode to watch
+            },
+          },
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM tv_watched`);
@@ -1610,7 +1643,7 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000000,
           type: 2,
-          episodenumber: 10001
+          episodenumber: 10001,
         },
         {
           id: 2,
@@ -1618,7 +1651,7 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000001,
           type: 2,
-          episodenumber: 10002
+          episodenumber: 10002,
         },
         {
           id: 5,
@@ -1626,8 +1659,8 @@ describe('Intergration test', () => {
           show_id: 2,
           time: 1000000003,
           type: 2,
-          episodenumber: 10003
-        }
+          episodenumber: 10003,
+        },
       ]);
     });
     test('Follow show', async () => {
@@ -1647,8 +1680,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          followShow: true
-        }
+          followShow: true,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM "following"`);
@@ -1656,8 +1689,8 @@ describe('Intergration test', () => {
         {
           id: 1,
           user_id: 2,
-          show_id: 2
-        }
+          show_id: 2,
+        },
       ]);
     });
     test('Follow show that somebody else is following', async () => {
@@ -1676,8 +1709,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          followShow: true
-        }
+          followShow: true,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM "following"`);
@@ -1685,13 +1718,13 @@ describe('Intergration test', () => {
         {
           id: 1,
           user_id: 3,
-          show_id: 2
+          show_id: 2,
         },
         {
           id: 2,
           user_id: 2,
-          show_id: 2
-        }
+          show_id: 2,
+        },
       ]);
     });
     test('Try to follow show that dont exist', async () => {
@@ -1711,8 +1744,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          followShow: false
-        }
+          followShow: false,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM "following"`);
@@ -1736,8 +1769,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          followShow: false
-        }
+          followShow: false,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM "following"`);
@@ -1745,8 +1778,8 @@ describe('Intergration test', () => {
         {
           id: 1,
           user_id: 2,
-          show_id: 2
-        }
+          show_id: 2,
+        },
       ]);
     });
     test('Unfollow show', async () => {
@@ -1767,8 +1800,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          unfollowShow: true
-        }
+          unfollowShow: true,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM "following"`);
@@ -1776,8 +1809,8 @@ describe('Intergration test', () => {
         {
           id: 2,
           user_id: 3,
-          show_id: 2
-        }
+          show_id: 2,
+        },
       ]);
     });
     test('Try to unfollow a show that we dont follow', async () => {
@@ -1797,8 +1830,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          followShow: false
-        }
+          followShow: false,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM "following"`);
@@ -1819,8 +1852,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          createUser: true
-        }
+          createUser: true,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResult = await client.query(`SELECT * FROM "users"`);
@@ -1847,8 +1880,8 @@ describe('Intergration test', () => {
       // Assert
       expect(JSON.parse(result.body)).toEqual({
         data: {
-          createUser: true
-        }
+          createUser: true,
+        },
       });
       expect(result.statusCode).toBe(200);
       const dbResultAfter = await client.query(`SELECT * FROM "users"`);
