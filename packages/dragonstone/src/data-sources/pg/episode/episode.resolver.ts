@@ -68,12 +68,14 @@ export const createEpisodeResolver = (client: PgClient, episodeLoader: EpisodeLo
       return false;
     }
     logger.log(`Start updating episodes for show with id: ${showId}. ${episodes.length} number of episodes`);
-    const batch = createEpisodeBatch(client);
 
     const episodesDbResult = await client.query<EpisodeRecord>(
       sql`SELECT * FROM episodes WHERE episodenumber >= ${first} AND episodenumber <= ${last} AND show_id = ${showId}`
     );
     const knownEpisodes = new Set<number>();
+
+    const batch = createEpisodeBatch(client);
+    batch.begin();
 
     // See if we should update or remove any existed episodes
     for (let currentEpisode of episodesDbResult.rows) {
@@ -96,7 +98,7 @@ export const createEpisodeResolver = (client: PgClient, episodeLoader: EpisodeLo
       await batch.insert(mappedEpisode);
     }
     const stat = await batch.commit();
-    logger.log(`Done with updating episodes for show with id: ${showId}. ${stat}`);
+    logger.log(`Done with updating episodes for show with id: ${showId}. ${JSON.stringify(stat)}`);
     return true;
   }
 });
