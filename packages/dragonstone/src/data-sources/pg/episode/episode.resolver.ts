@@ -67,7 +67,7 @@ export const createEpisodeResolver = (client: PgClient, episodeLoader: EpisodeLo
       logger.log(`Show with id "${showId}" do not exist. Do not update episodes.`);
       return false;
     }
-    logger.log(`Start updating episodes for show with id: ${showId}. ${episodes.length} number of episodes`);
+    logger.log(`Start updating episodes for show with id: ${showId}. ${episodes.length} number of episodes. First: ${first}. Last: ${last}`);
 
     const episodesDbResult = await client.query<EpisodeRecord>(
       sql`SELECT * FROM episodes WHERE episodenumber >= ${first} AND episodenumber <= ${last} AND show_id = ${showId}`
