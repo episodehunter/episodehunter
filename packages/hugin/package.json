@@ -24,7 +24,7 @@
   "author": "tjoskar <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.50",
+    "@types/aws-lambda": "8.10.51",
     "@types/node": "12.12.31",
     "aws-sdk": "2.661.0",
     "typescript": "3.8.3"
