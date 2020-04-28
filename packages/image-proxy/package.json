@@ -30,7 +30,7 @@
     "@types/node": "12.12.31",
     "@types/sharp": "0.24.0",
     "aws-sdk": "2.665.0",
-    "jest": "25.4.0",
+    "jest": "25.5.0",
     "simple-spy": "3.0.1",
     "ts-jest": "25.4.0",
     "typescript": "3.8.3"
