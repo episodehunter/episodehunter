@@ -40,7 +40,7 @@
     "@types/pg": "7.14.3",
     "aws-lambda": "1.0.6",
     "fast-check": "1.24.2",
-    "jest": "25.5.2",
+    "jest": "25.5.3",
     "testcontainers": "2.8.1",
     "ts-jest": "25.4.0",
     "typescript": "3.8.3"
