@@ -32,7 +32,7 @@
     "aws-sdk": "2.673.0",
     "jest": "25.5.4",
     "simple-spy": "3.0.1",
-    "ts-jest": "25.4.0",
+    "ts-jest": "25.5.1",
     "typescript": "3.8.3"
   },
   "dependencies": {
