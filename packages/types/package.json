@@ -31,7 +31,7 @@
     "@types/node": "13.13.5",
     "graphql": "14.6.0",
     "ts-node": "8.10.1",
-    "typescript": "3.8.3"
+    "typescript": "3.9.2"
   },
   "prettier": {
     "singleQuote": true,
