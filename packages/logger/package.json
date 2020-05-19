@@ -29,7 +29,7 @@
     "@types/aws-lambda": "8.10.51",
     "@types/node": "12.12.31",
     "@types/node-fetch": "2.5.7",
-    "typescript": "3.9.2"
+    "typescript": "3.9.3"
   },
   "engines": {
     "node": "12.x"
