@@ -31,7 +31,7 @@
     "@types/node": "12.12.31",
     "aws-sdk": "2.686.0",
     "jest": "25.5.4",
-    "ts-jest": "25.5.1",
+    "ts-jest": "26.1.0",
     "typescript": "3.9.3"
   },
   "dependencies": {
