@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.51",
-    "@types/dockerode": "2.5.30",
+    "@types/dockerode": "2.5.31",
     "@types/jest": "25.2.3",
     "@types/node": "12.12.31",
     "@types/pg": "7.14.3",
