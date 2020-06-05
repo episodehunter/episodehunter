@@ -30,7 +30,7 @@
     "graphql": "14.6.0",
     "pg": "8.2.1",
     "squid": "0.5.1",
-    "tslib": "1.13.0"
+    "tslib": "2.0.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.52",
