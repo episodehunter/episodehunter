@@ -24,7 +24,7 @@
     "jest": "25.5.4",
     "simple-spy": "3.0.1",
     "ts-jest": "26.1.0",
-    "typescript": "3.9.3"
+    "typescript": "3.9.5"
   },
   "homepage": "https://github.com/episodehunter/episodehunter/packages/thetvdb",
   "keywords": [

@@ -27,7 +27,7 @@
     "@types/aws-lambda": "8.10.52",
     "@types/node": "12.12.31",
     "aws-sdk": "2.690.0",
-    "typescript": "3.9.3"
+    "typescript": "3.9.5"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^5.1.2",
