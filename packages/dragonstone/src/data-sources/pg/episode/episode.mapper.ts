@@ -22,7 +22,7 @@ export function mapEpisode(episode?: EpisodeRecord | null): Omit<Dragonstone.Epi
     episodenumber: episode.episodenumber,
     lastupdated: episode.lastupdated,
     name: episode.name,
-    overview: episode.overview || undefined
+    overview: episode.overview || null
   };
 }
 

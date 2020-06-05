@@ -1,5 +1,5 @@
 import { Dragonstone } from '@episodehunter/types';
-import { WatchEpisodeType } from '@episodehunter/types/extra-types';
+import { WatchedEnum } from '@episodehunter/types/extra-types';
 import { ApolloError } from 'apollo-server-lambda';
 import { Context } from '../context';
 import { unixTimestampType } from './timestamp';
@@ -163,7 +163,7 @@ export const resolvers = {
     checkIn: 2,
     checkInSeason: 3,
     plexScrobble: 4
-  } as { [K in Dragonstone.WatchedEnum]: WatchEpisodeType },
+  } as { [K in Dragonstone.WatchedEnum]: WatchedEnum },
   RootQuery: RootQuery,
   RootMutation: RootMutation,
   History,
