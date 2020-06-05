@@ -41,7 +41,7 @@
     "graphql": "14.6.0",
     "jest": "25.5.4",
     "ts-jest": "26.1.0",
-    "typescript": "3.9.3"
+    "typescript": "3.9.5"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^5.1.2",
