@@ -9,8 +9,6 @@
 # import WatchedEpisodeInput from "watched-episode.graphql"
 # import UnwatchedEpisodeInput from "watched-episode.graphql"
 
-scalar Timestamp
-
 schema {
   query: RootQuery
   mutation: RootMutation

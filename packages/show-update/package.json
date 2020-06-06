@@ -31,7 +31,7 @@
     "@episodehunter/tmdb": "^0.1.4",
     "@episodehunter/types": "^3.0.7",
     "@episodehunter/utils": "^1.1.4",
-    "graphql-request": "1.8.2"
+    "graphql-request": "2.0.0"
   },
   "prettier": {
     "singleQuote": true,

@@ -6,6 +6,7 @@ generates:
     config:
       skipTypename: true
       enumsAsTypes: true
+      avoidOptionals: true
   ./dragonstone-schema.graphql:
     plugins:
       - schema-ast
@@ -17,5 +18,6 @@ generates:
       skipTypename: true
       enumsAsTypes: true
       showUnusedMappers: true
+      avoidOptionals: true
       enumValues:
-        WatchedEnum: ./extra-types#WatchEpisodeType
+        WatchedEnum: ./extra-types#WatchedEnum

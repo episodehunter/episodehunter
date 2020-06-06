@@ -1,3 +1,4 @@
+scalar Timestamp
 
 type WatchedEpisode {
   episodenumber: Int!
