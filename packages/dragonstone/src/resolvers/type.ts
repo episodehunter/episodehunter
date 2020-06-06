@@ -39,7 +39,7 @@ export interface RootResolvers extends RootResolversKeys {
 }
 
 type ShowResolversKeys = {
-  [P in keyof Omit<Required<Schema.ShowResolvers>, keyof RootShow>]: Resolver<any, any, any>;
+  [P in keyof Omit<Schema.ShowResolvers, keyof RootShow>]: Resolver<any, any, any>;
 };
 type ShowResolver<T> = Resolver<RootShow, void, T>;
 
@@ -54,7 +54,7 @@ export interface ShowResolvers extends ShowResolversKeys {
 }
 
 type NextToWatchResolversKeys = {
-  [P in keyof Required<Schema.NextToWatchResolvers>]: Resolver<any, any, any>;
+  [P in keyof Schema.NextToWatchResolvers]: Resolver<any, any, any>;
 };
 type NextToWatchResolver<T> = Resolver<
   Maybe<Schema.WatchedEpisodeInput | Schema.WatchedEpisodeInput[] | Schema.UnwatchedEpisodeInput | { showId: number }>,
@@ -69,7 +69,7 @@ export interface NextToWatchResolvers extends NextToWatchResolversKeys {
 }
 
 type EpisodeResolverKeys = {
-  [P in keyof Omit<Required<Schema.EpisodeResolvers>, keyof RootEpisode>]: Resolver<any, any, any>;
+  [P in keyof Omit<Schema.EpisodeResolvers, keyof RootEpisode>]: Resolver<any, any, any>;
 };
 
 export interface EpisodeResolvers extends EpisodeResolverKeys {
@@ -77,7 +77,7 @@ export interface EpisodeResolvers extends EpisodeResolverKeys {
 }
 
 type HistoryResolversKeys = {
-  [P in keyof Omit<Required<Schema.HistoryResolvers>, keyof RootHistory>]: Resolver<any, any, any>;
+  [P in keyof Omit<Schema.HistoryResolvers, keyof RootHistory>]: Resolver<any, any, any>;
 };
 
 export interface HistoryResolver extends HistoryResolversKeys {
@@ -86,7 +86,7 @@ export interface HistoryResolver extends HistoryResolversKeys {
 }
 
 type FollowingResolversKeys = {
-  [P in keyof Omit<Required<Schema.FollowingResolvers>, keyof RootFollowing>]: Resolver<any, any, any>;
+  [P in keyof Omit<Schema.FollowingResolvers, keyof RootFollowing>]: Resolver<any, any, any>;
 };
 
 export interface FollowingResolvers extends FollowingResolversKeys {

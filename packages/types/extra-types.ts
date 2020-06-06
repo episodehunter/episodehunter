@@ -1,1 +1,1 @@
-export type WatchEpisodeType = 0 | 1 | 2 | 3 | 4;
+export type WatchedEnum = 0 | 1 | 2 | 3 | 4;

@@ -20,7 +20,7 @@
     "@types/aws-lambda": "8.10.52",
     "@types/jest": "25.2.3",
     "aws-sdk": "2.690.0",
-    "jest": "25.5.4",
+    "jest": "26.0.1",
     "ts-jest": "26.1.0",
     "typescript": "3.9.5"
   },
@@ -31,7 +31,7 @@
     "@episodehunter/tmdb": "^0.1.4",
     "@episodehunter/types": "^3.0.7",
     "@episodehunter/utils": "^1.1.4",
-    "graphql-request": "1.8.2"
+    "graphql-request": "2.0.0"
   },
   "prettier": {
     "singleQuote": true,
