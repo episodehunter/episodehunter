@@ -26,11 +26,11 @@
     "@episodehunter/utils": "^1.1.4",
     "apollo-server-lambda": "2.14.2",
     "dataloader": "2.0.0",
-    "firebase-admin": "8.9.2",
-    "graphql": "14.6.0",
-    "pg": "7.18.2",
+    "firebase-admin": "8.12.1",
+    "graphql": "15.0.0",
+    "pg": "8.2.1",
     "squid": "0.5.1",
-    "tslib": "1.13.0"
+    "tslib": "2.0.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.53",
@@ -40,13 +40,14 @@
     "@types/pg": "7.14.3",
     "aws-lambda": "1.0.6",
     "fast-check": "1.24.2",
-    "jest": "25.5.4",
+    "jest": "26.0.1",
     "testcontainers": "2.9.0",
     "ts-jest": "26.1.0",
     "typescript": "3.9.5"
   },
   "prettier": {
     "singleQuote": true,
+    "arrowParens": "avoid",
     "printWidth": 120
   }
 }

@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { buildSchema, GraphQLSchema, graphqlSync, introspectionQuery } from 'graphql';
+import { buildSchema, GraphQLSchema, graphqlSync, getIntrospectionQuery } from 'graphql';
 import gql from 'graphql-tag';
 
 const rawSchema = readFileSync('./dragonstone-schema.graphql').toString();
@@ -11,7 +11,7 @@ function createImportableSchema() {
 
 function createSchema() {
   const schema: GraphQLSchema = buildSchema(rawSchema);
-  const result = graphqlSync(schema, introspectionQuery).data;
+  const result = graphqlSync(schema, getIntrospectionQuery()).data;
   writeFileSync('./dragonstone-schema.json', JSON.stringify(result));
 }
 

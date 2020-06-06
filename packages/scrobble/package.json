@@ -33,13 +33,13 @@
     "@types/aws-lambda": "8.10.53",
     "@types/jest": "25.2.3",
     "@types/node": "12.12.31",
-    "@typescript-eslint/eslint-plugin": "2.34.0",
-    "@typescript-eslint/parser": "2.34.0",
+    "@typescript-eslint/eslint-plugin": "3.1.0",
+    "@typescript-eslint/parser": "3.1.0",
     "aws-sdk": "2.690.0",
-    "eslint": "6.8.0",
-    "eslint-plugin-graphql": "3.1.1",
-    "graphql": "14.6.0",
-    "jest": "25.5.4",
+    "eslint": "7.2.0",
+    "eslint-plugin-graphql": "4.0.0",
+    "graphql": "15.0.0",
+    "jest": "26.0.1",
     "ts-jest": "26.1.0",
     "typescript": "3.9.5"
   },
@@ -49,7 +49,7 @@
     "@episodehunter/types": "^3.0.7",
     "@episodehunter/utils": "^1.1.4",
     "aws-lambda-multipart-parser": "0.1.2",
-    "graphql-request": "1.8.2"
+    "graphql-request": "2.0.0"
   },
   "prettier": {
     "singleQuote": true,
