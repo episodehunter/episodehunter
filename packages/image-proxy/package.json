@@ -33,7 +33,7 @@
     "jest": "26.1.0",
     "simple-spy": "3.0.1",
     "ts-jest": "26.1.2",
-    "typescript": "3.9.6"
+    "typescript": "3.9.7"
   },
   "dependencies": {
     "@episodehunter/kingsguard": "^5.1.2",

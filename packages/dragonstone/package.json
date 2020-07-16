@@ -43,7 +43,7 @@
     "jest": "26.1.0",
     "testcontainers": "2.18.3",
     "ts-jest": "26.1.2",
-    "typescript": "3.9.6"
+    "typescript": "3.9.7"
   },
   "prettier": {
     "singleQuote": true,
