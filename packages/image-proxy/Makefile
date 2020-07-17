@@ -1,7 +1,7 @@
 all: deploy
 
 compile: clean
-	npx tsc
+        npm run build
 	cp package-lock.json package.json serverless.yml env.yml dist
         docker run --rm --volume ${PWD}/dist:/build tjoskar/awsnode:12 npm install --production;
 
