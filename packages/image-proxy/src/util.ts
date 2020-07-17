@@ -7,7 +7,7 @@ export interface ImageInformation {
 }
 
 export function imageInformation(path: string): ImageInformation | null {
-  const result = path.match(/(poster|fanart|episode)\/((\d+)x(\d+)\/)?(\d+)\..+/);
+  const result = path.match(/(poster|fanart|episode)\/((\d+|_)x(\d+|_)\/)?(\d+)\..+/);
   if (!result) {
     return null;
   }
@@ -16,10 +16,10 @@ export function imageInformation(path: string): ImageInformation | null {
     type: result[1] as 'episode' | 'fanart' | 'poster',
     id: Number(result[5])
   };
-  if (result[3]) {
+  if (result[3] && result[3] !== '_') {
     obj.width = Number(result[3]);
   }
-  if (result[4]) {
+  if (result[4] && result[4] !== '_') {
     obj.height = Number(result[4]);
   }
   return obj;

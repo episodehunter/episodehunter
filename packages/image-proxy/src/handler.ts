@@ -1,71 +1,81 @@
+import { createGuard, Logger } from '@episodehunter/kingsguard';
+import { NotFound, TheTvDb } from '@episodehunter/thetvdb';
 import { APIGatewayEvent } from 'aws-lambda';
 import { S3 } from 'aws-sdk';
 import * as sharp from 'sharp';
-import { createGuard, Logger } from '@episodehunter/kingsguard';
-import { TheTvDb, NotFound } from '@episodehunter/thetvdb';
-import { imageInformation, ImageInformation } from './util';
-import { BadRequest } from './custom-error';
-import { BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE, move } from './response';
 import { config } from './config';
+import { BadRequest } from './custom-error';
+import { BAD_REQUEST_RESPONSE, createMoveResponse, NOT_FOUND_RESPONSE, Response } from './response';
+import { imageInformation, ImageInformation } from './util';
 
-const theTvDb = new TheTvDb(config.theTvDbApiKey);
-const s3 = new S3();
+const globalTheTvDb = new TheTvDb(config.theTvDbApiKey);
+const globalS3 = new S3();
 
-const ALLOWED_RESOLUTIONS = new Map([[185, 273], [216, 122]]); // [ width, height ]
+interface Box<HasBuffer extends boolean = true> {
+  targetImageInfo: ImageInformation;
+  logger: Logger;
+  buffer: HasBuffer extends true ? Buffer : undefined;
+  s3: S3;
+  theTvDb: TheTvDb;
+}
 
-function fetchImage(logger: Logger, image: ImageInformation) {
+async function fetchImage(box: Box<false>): Promise<Box> {
   const log = (msg: string) => logger.log(msg);
-  if (image.type === 'episode') {
+  const { logger, targetImageInfo, theTvDb } = box;
+  let buffer: Buffer;
+  if (targetImageInfo.type === 'episode') {
     logger.log(`Fetch episode`);
-    return theTvDb.fetchEpisodeImage(image.id, log);
-  } else if (image.type === 'poster') {
+    buffer = await theTvDb.fetchEpisodeImage(targetImageInfo.id, log);
+  } else if (targetImageInfo.type === 'poster') {
     logger.log(`Fetch poster`);
-    return theTvDb.fetchShowPoster(image.id, log);
-  } else if (image.type === 'fanart') {
+    buffer = await theTvDb.fetchShowPoster(targetImageInfo.id, log);
+  } else if (targetImageInfo.type === 'fanart') {
     logger.log(`Fetch fanart`);
-    return theTvDb.fetchShowFanart(image.id, log);
+    buffer = await theTvDb.fetchShowFanart(targetImageInfo.id, log);
   } else {
-    logger.log(`Unknown type`);
     throw new BadRequest();
   }
+  return { ...box, buffer };
 }
 
-function resizeImage(logger: Logger, buffer: Buffer, width?: number, height?: number): Promise<Buffer> {
-  if (width && height) {
-    logger.log('Resize Image');
-    return sharp(buffer)
-      .resize(width, height)
-      .toBuffer();
+async function resizeImage(box: Box): Promise<Box> {
+  const {
+    logger,
+    targetImageInfo: { width, height },
+    buffer,
+  } = box;
+  if (!width && !height) {
+    return box;
   }
-  logger.log('Will not resize Image');
-  return Promise.resolve(buffer);
+  logger.log(`Rezise image to width: ${width}, height: ${height}`);
+  const resizedBuffer = await sharp(buffer).resize(width, height).toBuffer();
+  return { ...box, buffer: resizedBuffer };
 }
 
-function saveImage(logger: Logger, buffer: Buffer, key: string) {
+async function saveImage(box: Box): Promise<Box> {
+  const {
+    buffer,
+    logger,
+    s3,
+    targetImageInfo: { key },
+  } = box;
   logger.log('Put image to disk: ' + key);
-  return s3
+  await s3
     .putObject({
       Bucket: config.bucketName,
       Key: key,
       Body: buffer,
       ContentType: 'image/jpeg',
       CacheControl: 'max-age=86400',
-      ACL: 'public-read'
+      ACL: 'public-read',
     })
     .promise();
+  return box;
 }
 
-function resizeAndSaveImage(logger: Logger, buffer: Buffer, image: ImageInformation) {
-  return resizeImage(logger, buffer, image.width, image.height).then(newBuffer => saveImage(logger, newBuffer, image.key));
-}
-
-function fetchAndSave(logger: Logger, image: ImageInformation) {
-  return fetchImage(logger, image).then(buffer => resizeAndSaveImage(logger, buffer, image));
-}
-
-export function imageFetcher(event: APIGatewayEvent, logger: Logger) {
+export async function imageFetcher(event: APIGatewayEvent, logger: Logger): Promise<Response> {
   if (!event || !event.queryStringParameters || !event.queryStringParameters.key) {
-    return Promise.resolve(BAD_REQUEST_RESPONSE);
+    return BAD_REQUEST_RESPONSE;
   }
   const key = event.queryStringParameters.key;
   logger.log('Requesting: ' + key);
@@ -73,17 +83,28 @@ export function imageFetcher(event: APIGatewayEvent, logger: Logger) {
 
   if (!image) {
     logger.log(`${key} is not a valid key`);
-    return Promise.resolve(BAD_REQUEST_RESPONSE);
-  }
-
-  if (image.width && !ALLOWED_RESOLUTIONS.has(image.width)) {
+    return BAD_REQUEST_RESPONSE;
+  } else if (image.width && (image.width > 2000 || image.width < 100)) {
     logger.log(`${image.width} is not a valid width`);
-    return Promise.resolve(BAD_REQUEST_RESPONSE);
+    return BAD_REQUEST_RESPONSE;
+  } else if (image.height && (image.height > 2000 || image.height < 100)) {
+    logger.log(`${image.height} is not a valid height`);
+    return BAD_REQUEST_RESPONSE;
   }
 
-  return fetchAndSave(logger, image)
-    .then(() => move(image.key))
-    .catch(error => {
+  const box: Box<false> = {
+    logger,
+    s3: globalS3,
+    targetImageInfo: image,
+    theTvDb: globalTheTvDb,
+    buffer: undefined,
+  };
+
+  return fetchImage(box)
+    .then(resizeImage)
+    .then(saveImage)
+    .then((box) => createMoveResponse(box.targetImageInfo.key))
+    .catch((error) => {
       logger.log(error && error.message);
       if (error instanceof NotFound) {
         return NOT_FOUND_RESPONSE;

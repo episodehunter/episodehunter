@@ -12,6 +12,30 @@ test('Extract size information', () => {
   expect(result!.height).toBe(40);
 });
 
+test('Only pass width information', () => {
+  // Arrange
+  const str = '/poster/20x_/1234.jpg';
+
+  // Act
+  const result = imageInformation(str);
+
+  // Assert
+  expect(result!.width).toBe(20);
+  expect(result!.height).toBe(undefined);
+});
+
+test('Only pass height information', () => {
+  // Arrange
+  const str = '/poster/_x40/1234.jpg';
+
+  // Act
+  const result = imageInformation(str);
+
+  // Assert
+  expect(result!.width).toBe(undefined);
+  expect(result!.height).toBe(40);
+});
+
 test('Extract type information', () => {
   // Arrange
   const str = '/poster/20x40/1234.jpg';
