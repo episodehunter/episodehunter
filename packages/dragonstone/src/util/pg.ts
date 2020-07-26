@@ -17,11 +17,7 @@ export interface PgClient {
 }
 
 export function createPostgresClient(): PgClient {
-  let ssl = true;
-  if (process.env.NODE_ENV === 'test') {
-    ssl = false;
-  }
-  const client = new Client({ connectionString: config.pgConnectionUri, ssl });
+  const client = new Client({ connectionString: config.pgConnectionUri, ssl: { rejectUnauthorized: false } });
   client.connect();
 
   const proxy: PgClient = {
