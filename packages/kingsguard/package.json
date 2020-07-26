@@ -41,5 +41,5 @@
     "@episodehunter/logger": "^4.1.2",
     "@types/aws-lambda": ">=8.10.23"
   },
-  "gitHead": "3f86055e9044afc185da3f23f88783f88eea452b"
+  "gitHead": "05d7fbdfc4d7ee6e9ea4d92517f8c1a90b964964"
 }
