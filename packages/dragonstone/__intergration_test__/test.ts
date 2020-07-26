@@ -646,7 +646,7 @@ describe('Intergration test', () => {
       });
     });
 
-    test('Only opdate lastupdate check ', async () => {
+    test('Only update lastupdate check ', async () => {
       // Arrange
       await client.query(`UPDATE shows SET lastupdated_check = 2, lastupdated = 3, update_disable = true WHERE id=1`);
       const event: Message.Dragonstone.UpdateShowMetadataEvent = {
@@ -800,6 +800,7 @@ describe('Intergration test', () => {
         `{
         show(id: 2) {
           nextToWatch {
+            showId
             numberOfEpisodesToWatch
             episode {
               name
@@ -818,6 +819,7 @@ describe('Intergration test', () => {
         data: {
           show: {
             nextToWatch: {
+              showId: 2,
               numberOfEpisodesToWatch: 5,
               episode: {
                 name: 'Cancer Man',

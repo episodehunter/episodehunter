@@ -114,6 +114,14 @@ const NextToWatch: NextToWatchResolvers = {
   madeMutation(root, args, context) {
     // TODO: Remove this resolver
     return true;
+  },
+  showId(root) {
+    if (Array.isArray(root)) {
+      return root[0] && root[0].showId;
+    } else if (root && root.showId) {
+      return root.showId;
+    }
+    return -1;
   }
 };
 
