@@ -27,7 +27,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/aws-lambda": "8.10.59",
-    "@types/jest": "26.0.4",
+    "@types/jest": "26.0.10",
     "@types/jest-image-snapshot": "3.1.0",
     "@types/node": "14.0.26",
     "@types/sharp": "0.25.1",
