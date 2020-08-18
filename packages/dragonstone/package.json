@@ -28,7 +28,7 @@
     "dataloader": "2.0.0",
     "firebase-admin": "9.0.0",
     "graphql": "15.3.0",
-    "pg": "8.3.0",
+    "pg": "8.3.2",
     "squid": "0.5.1",
     "tslib": "2.0.0"
   },
