@@ -32,6 +32,6 @@
     "lerna": "3.22.0"
   },
   "dependencies": {
-    "serverless": "1.72.0"
+    "serverless": "1.79.0"
   }
 }
