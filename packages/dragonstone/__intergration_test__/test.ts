@@ -51,7 +51,7 @@ describe('Intergration test', () => {
     };
   };
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     // When debuging, start a local docker container with "docker run -p 54320:5432 -e POSTGRES_PASSWORD=test -e POSTGRES_USER=test postgres"
     // and uncomment the following line:
     // process.env.PG_DANGEROUS_TEST_CONNECTION_URI = `postgres://test:test@localhost:54320/test`;
@@ -72,30 +72,28 @@ describe('Intergration test', () => {
     process.env.AWS_SENTRY_DSN = ``;
     process.env.NODE_ENV = 'test';
 
-    try {
-      client = new Client({ connectionString: process.env.PG_CONNECTION_URI });
-      client.connect();
+    client = new Client({ connectionString: process.env.PG_CONNECTION_URI });
+    await client.connect();
 
-      handler = await import('../src/handler');
-      done();
-    } catch (error) {
-      done(error);
-    }
+    handler = await import('../src/handler');
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     const sutClient = (global as any).__DANGEROUS_CLIENT;
-    try {
-      await client.end();
-      if (sutClient) {
+    await client.end();
+    if (sutClient) {
+      try {
         await sutClient.end();
+      } catch (error) {
+        console.error(error);
       }
-      if (pg) {
+    }
+    if (pg) {
+      try {
         await pg.stop();
+      } catch (error) {
+        console.error(error);
       }
-      done();
-    } catch (error) {
-      done(error);
     }
   });
 

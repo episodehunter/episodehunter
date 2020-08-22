@@ -3,7 +3,7 @@ import { config } from '../config';
 
 export class DatabaseError extends Error {
   code: number;
-  constructor({code, message}: {code: number, message: string}) {
+  constructor({ code, message }: { code: number; message: string }) {
     super();
     this.name = 'DatabaseError';
     this.message = message;
@@ -17,19 +17,26 @@ export interface PgClient {
 }
 
 export function createPostgresClient(): PgClient {
-  const client = new Client({ connectionString: config.pgConnectionUri, ssl: { rejectUnauthorized: false } });
-  client.connect();
+  const ssl = (process.env.NODE_ENV === 'test') ? false : { rejectUnauthorized: false };
+  const client = new Client({ connectionString: config.pgConnectionUri, ssl });
+  const connecting = client.connect();
 
   const proxy: PgClient = {
     end() {
-      return client.end();
+      return connecting
+        .then(() => client.end())
+        .catch(error => {
+          return Promise.reject(new DatabaseError(error));
+        });
     },
     query(queryConfig, values) {
-      return client.query(queryConfig, values).catch(error => {
-        return Promise.reject(new DatabaseError(error));
-      });
-    }
-  }
+      return connecting
+        .then(() => client.query(queryConfig, values))
+        .catch(error => {
+          return Promise.reject(new DatabaseError(error));
+        });
+    },
+  };
 
   return proxy;
 }
