@@ -33,7 +33,7 @@
     "@types/node": "14.6.0",
     "@types/sharp": "0.25.1",
     "aws-sdk": "2.738.0",
-    "jest": "26.4.1",
+    "jest": "26.4.2",
     "jest-image-snapshot": "4.1.0",
     "simple-spy": "3.0.1",
     "ts-jest": "26.2.0",
