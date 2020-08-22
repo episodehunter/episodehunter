@@ -32,7 +32,7 @@ export function setupLogger(
   return createCreateLogger(dnaLogger, analytics);
 }
 
-function createCreateLogger(logdna: dnaLogger.DnaLogger, analytics: Analytics) {
+function createCreateLogger(logdna: dnaLogger.Logger, analytics: Analytics) {
   return (context: Context, requestStack: string[] = []): Logger => {
     const meta = {
       functionName: context.functionName,

@@ -5,6 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
+    "ncu": "ncu -u",
     "prepare": "npm run build",
     "start": "NODE_ENV=develop node index.js",
     "build": "tsc -p tsconfig.build.json",
@@ -24,26 +25,26 @@
     "@episodehunter/logger": "^4.2.3",
     "@episodehunter/types": "^3.1.0",
     "@episodehunter/utils": "^1.1.5",
-    "apollo-server-lambda": "2.16.0",
+    "apollo-server-lambda": "2.16.1",
     "dataloader": "2.0.0",
-    "firebase-admin": "9.0.0",
+    "firebase-admin": "9.1.1",
     "graphql": "15.3.0",
-    "pg": "8.3.0",
+    "pg": "8.3.2",
     "squid": "0.5.1",
-    "tslib": "2.0.0"
+    "tslib": "2.0.1"
   },
   "devDependencies": {
-    "@types/aws-lambda": "8.10.59",
+    "@types/aws-lambda": "8.10.61",
     "@types/dockerode": "2.5.34",
-    "@types/jest": "26.0.7",
-    "@types/node": "14.0.26",
+    "@types/jest": "26.0.10",
+    "@types/node": "14.6.0",
     "@types/pg": "7.14.4",
     "aws-lambda": "1.0.6",
-    "fast-check": "2.0.0",
-    "jest": "26.1.0",
-    "testcontainers": "3.2.0",
-    "ts-jest": "26.1.3",
-    "typescript": "3.9.7"
+    "fast-check": "2.2.0",
+    "jest": "26.4.1",
+    "testcontainers": "3.4.0",
+    "ts-jest": "26.2.0",
+    "typescript": "4.0.2"
   },
   "prettier": {
     "singleQuote": true,
