@@ -30,7 +30,7 @@
     "@types/aws-lambda": "8.10.61",
     "@types/jest": "26.0.10",
     "@types/jest-image-snapshot": "3.1.0",
-    "@types/node": "14.6.0",
+    "@types/node": "14.6.1",
     "@types/sharp": "0.25.1",
     "aws-sdk": "2.740.0",
     "jest": "26.4.2",
