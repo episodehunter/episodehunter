@@ -34,7 +34,7 @@
     "@types/sharp": "0.25.1",
     "aws-sdk": "2.742.0",
     "jest": "26.4.2",
-    "jest-image-snapshot": "4.1.0",
+    "jest-image-snapshot": "4.2.0",
     "simple-spy": "3.0.1",
     "ts-jest": "26.3.0",
     "typescript": "4.0.2"
