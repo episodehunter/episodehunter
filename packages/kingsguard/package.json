@@ -32,7 +32,7 @@
     "@episodehunter/logger": "^4.2.3",
     "@types/aws-lambda": "8.10.62",
     "@types/jest": "26.0.13",
-    "@types/node": "14.6.4",
+    "@types/node": "14.10.0",
     "jest": "26.4.2",
     "simple-spy": "3.0.1",
     "ts-jest": "26.3.0",
