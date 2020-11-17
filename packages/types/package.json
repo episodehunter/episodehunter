@@ -25,10 +25,10 @@
   "author": "Oskar Karlsson <kontakta@oskarkarlsson.nu>",
   "license": "MIT",
   "devDependencies": {
-    "@graphql-codegen/cli": "1.19.1",
+    "@graphql-codegen/cli": "1.19.2",
     "@graphql-codegen/schema-ast": "1.18.0",
     "@graphql-codegen/typescript": "1.17.11",
-    "@graphql-codegen/typescript-resolvers": "1.17.10",
+    "@graphql-codegen/typescript-resolvers": "1.17.11",
     "@types/node": "14.14.7",
     "graphql": "15.3.0",
     "ts-node": "9.0.0",
