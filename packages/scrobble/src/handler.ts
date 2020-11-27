@@ -23,6 +23,17 @@ export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
   logger.log(JSON.stringify(event.body))
   const payload: PlexEvent = JSON.parse(parse(event, true).payload)
   const eventType = payload.event
+
+  if (eventType !== 'media.scrobble') {
+    const message = `Do not support event type ${eventType} yet. Exit`
+    logger.log(message)
+    return createOkResponse(message)
+  } else if (!payload.Metadata) {
+    const message = `Payload metadata is empty. Exit`
+    logger.log(message)
+    return createOkResponse(message)
+  }
+
   const mediaType = payload.Metadata.type
   const episodeInfo = plexEpisodeParse(payload.Metadata.guid)
 
@@ -40,33 +51,21 @@ export const plex = guard<APIGatewayEvent>(async (event, logger, context) => {
 
   logger.track({ type: 'event', category: 'plex scrobble', action: `${mediaType} ${eventType}` });
 
-  if (eventType !== 'media.scrobble') {
-    const message = `Do not support event type ${eventType} yet. Exit`
-    logger.log(message)
-    return createOkResponse(message)
-  }
-
   if (mediaType !== 'episode') {
     const message = `Do not support media type ${mediaType} yet. Exit`
     logger.log(message)
     return createOkResponse(message)
-  }
-
-  if (!episodeInfo) {
+  } else if (!episodeInfo) {
     logger.log('Not valid episode info: ' + payload.Metadata.guid)
     logger.captureException(
       new Error('Not valid episode info: ' + payload.Metadata.guid)
     )
     return createOkResponse('Was not able to parse episode information')
-  }
-
-  if (!episodeInfo.episode || !episodeInfo.season) {
+  } else if (!episodeInfo.episode || !episodeInfo.season) {
     const message = `Sorry, episodehunter do not accept special episodes at the moment`
     logger.log(message)
     return createOkResponse(message)
-  }
-
-  if (!username || !apikey) {
+  } else if (!username || !apikey) {
     const message = `"username" and/or apikey is missing`
     logger.log(message)
     return Promise.resolve(createUnauthorizedOkResponse(message))

@@ -5,12 +5,13 @@ export type PlexPlaybackEvent =
   | 'media.stop'
   | 'media.scrobble'
   | 'media.rate'
+  | 'device.new'
 export type PlexMediaType = 'movie' | 'track' | 'episode'
 export type MediaProvider = 'thetvdb' | 'imdb'
 
 export interface PlexEvent {
   event: PlexPlaybackEvent;
-  Metadata: {
+  Metadata?: {
     guid: string;
     type: PlexMediaType;
   };
