@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@episodehunter/logger": "^4.2.3",
-    "@types/aws-lambda": "8.10.64",
+    "@types/aws-lambda": "8.10.65",
     "@types/jest": "26.0.18",
     "@types/node": "14.14.11",
     "jest": "26.6.3",
