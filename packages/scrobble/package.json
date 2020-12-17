@@ -50,7 +50,7 @@
     "@episodehunter/types": "^3.1.0",
     "@episodehunter/utils": "^1.1.5",
     "aws-lambda-multipart-parser": "0.1.2",
-    "graphql-request": "3.1.0"
+    "graphql-request": "3.4.0"
   },
   "prettier": {
     "singleQuote": true,
