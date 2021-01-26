@@ -28,7 +28,7 @@
     "apollo-server-lambda": "2.18.2",
     "dataloader": "2.0.0",
     "firebase-admin": "9.2.0",
-    "graphql": "15.3.0",
+    "graphql": "15.5.0",
     "pg": "8.4.0",
     "squid": "0.5.1",
     "tslib": "2.0.1"
