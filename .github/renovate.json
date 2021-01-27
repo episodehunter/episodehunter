@@ -1,5 +1,6 @@
 {
   "extends": ["config:base"],
+  "enabled": false,
   "assignees": ["tjoskar"],
   "commitMessagePrefix": "⬆️",
   "ignoreDeps": ["aws-lambda-multipart-parser"],
